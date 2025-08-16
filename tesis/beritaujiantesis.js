@@ -56,8 +56,8 @@ function collectBeritaAcaraData() {
 
     // Scores
     data["Skor_Penguji1"] = document.getElementById("nilaiP1").textContent || "";
-    data["Skor_Pembimbing"] = document.getElementById("nilaiP2").textContent || "";
-    data["Skor_Penguji2"] = document.getElementById("nilaiP3").textContent || "";
+    data["Skor_Pembimbing"] = document.getElementById("nilaiP3").textContent || "";
+    data["Skor_Penguji2"] = document.getElementById("nilaiP2").textContent || "";
     data["Rata"] = document.getElementById("nilaiRekap").textContent || "";
 
     // Names of examiners
@@ -110,4 +110,5 @@ async function generateBeritaAcaraDoc() {
 }
 
 // Bind to button
+
 document.getElementById("btnPrintBAUjianTesis").addEventListener("click", generateBeritaAcaraDoc);
