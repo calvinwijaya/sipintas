@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="assets/logo.png">
+    <title>Dashboard SIPINTAS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body {
+            min-height: 100vh;
+            display: flex;
+        }
+        .sidebar {
+            min-width: 250px;
+            max-width: 250px;
+            background-color: #0d6efd;
+            color: white;
+            transition: all 0.3s;
+        }
+        .sidebar.collapsed {
+            min-width: 70px;
+            max-width: 70px;
+        }
+        .sidebar .nav-link {
+            color: white;
+            white-space: nowrap;
+        }
+        .sidebar .nav-link:hover {
+            background-color: rgba(255,255,255,0.2);
+        }
+        .sidebar .nav-link.active {
+            background-color: rgba(255,255,255,0.3);
+        }
+        .sidebar .nav-link .label {
+            transition: opacity 0.3s;
+        }
+        .sidebar.collapsed .nav-link .label {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .sidebar .toggle-btn {
+            cursor: pointer;
+            padding: 10px;
+            display: flex;
+            justify-content: flex-end;
+            color: white;
+        }
+        .sidebar.collapsed .toggle-btn {
+            justify-content: center;
+        }
+        .content {
+            flex: 1;
+            padding: 20px;
+            background-color: #f8f9fa;
+            transition: margin-left 0.3s;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar d-flex flex-column p-2" id="sidebar">
+        <div class="toggle-btn" id="toggleSidebar">
+            <i class="bi bi-list fs-4"></i>
+        </div>
+        <ul class="nav nav-pills flex-column mb-auto">
+            <li>
+                <a href="#" class="nav-link">
+                    <i class="bi bi-journal-text me-2"></i>
+                    <span class="label">Penilaian Skripsi</span>
+                </a>
+            </li>
+            <li>
+                <a class="nav-link dropdown-toggle" data-bs-toggle="collapse" href="#tesisMenu" role="button" aria-expanded="false">
+                    <i class="bi bi-book me-2"></i>
+                    <span class="label">Penilaian Tesis</span>
+                </a>
+                <div class="collapse ps-3" id="tesisMenu">
+                    <ul class="nav flex-column">
+                        <li><a href="#" onclick="loadPage('tesis/dashboard_proposaltesis.html')" class="nav-link">Penilaian Proposal</a></li>
+                        <li><a href="#" onclick="loadPage('tesis/dashboard_publikasitesis.html')" class="nav-link">Penilaian Naskah Publikasi</a></li>
+                        <li><a href="#" onclick="loadPage('tesis/dashboard_ujiantesis.html')" class="nav-link">Penilaian Sidang Akhir</a></li>
+                        <li><a href="#" onclick="loadPage('tesis/dashboard_rekaptesis.html')" class="nav-link">Rekapitulasi</a></li>
+                    </ul>
+                </div>
+            </li>
+            <li><a href="#" class="nav-link"><i class="bi bi-mortarboard me-2"></i> <span class="label">Penilaian Disertasi</span></a></li>
+            <li><a href="#" class="nav-link"><i class="bi bi-geo-alt me-2"></i> <span class="label">Penilaian Kemah Kerja</span></a></li>
+            <li><a href="#" class="nav-link"><i class="bi bi-briefcase me-2"></i> <span class="label">Penilaian Kerja Praktik</span></a></li>
+            <li><a href="#" class="nav-link"><i class="bi bi-diagram-3 me-2"></i> <span class="label">Penilaian PRGG</span></a></li>
+        </ul>
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+        <div id="mainContent">
+            <h2 class="fw-bold text-primary">Selamat Datang di SIPINTAS</h2>
+            <h3 class="text-secondary">Sistem Penilaian Terintegrasi Sistematis</h3>
+            <p class="text-muted">Dashboard ini merupakan sistem untuk mempermudah Dosen Departemen Teknik Geodesi Fakultas Teknik Universitas Gadjah Mada dalam melakukan penilaian, khususnya tugas akhir (Skripsi, Tesis, Disertasi), Kemah Kerja, Kerja Praktik, dan PRGG (Capstone Design). Sistem terintegrasi ke dalam basisdata dan tersimpan dengan sistematis. <br><br><strong>Silakan pilih menu di sebelah kiri untuk memulai penilaian!</strong></p>
+        </div>
+    </div>
+
+    <script src="tesis/proposaltesis.js"></script>
+    <script src="tesis/publikasis2.js"></script>
+    <script src="tesis/ujiantesis.js"></script>
+    <script src="tesis/rekaptesis.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.getElementById('toggleSidebar').addEventListener('click', function () {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('collapsed');
+
+            // Tutup semua submenu ketika sidebar dicollapse
+            if (sidebar.classList.contains('collapsed')) {
+                document.querySelectorAll('.sidebar .collapse.show').forEach(el => {
+                    const bsCollapse = bootstrap.Collapse.getInstance(el);
+                    if (bsCollapse) {
+                        bsCollapse.hide();
+                    } else {
+                        new bootstrap.Collapse(el, { toggle: false }).hide();
+                    }
+                });
+            }
+        });
+
+        function loadPage(page) {
+            fetch(page)
+                .then(res => res.text())
+                .then(html => {
+                    document.getElementById("mainContent").innerHTML = html;
+
+                    if (page === "tesis/dashboard_proposaltesis.html") {
+                        loadProposalData();
+                    } if (page === "tesis/dashboard_publikasitesis.html") {
+                        loadPublikasiS2Data(); 
+                    } if (page === "tesis/dashboard_ujiantesis.html") {
+                        loadUjianTesisData(); 
+                    } if (page === "tesis/dashboard_rekaptesis.html") {
+                        loadRekapTesisData(); 
+                    }
+                })
+                .catch(err => {
+                    document.getElementById("mainContent").innerHTML = "<p class='text-danger'>Gagal memuat halaman.</p>";
+                    console.error(err);
+                });
+        }
+    </script>
+</body>
+</html>

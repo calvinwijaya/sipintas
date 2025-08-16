@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="../assets/logo.png">
+    <title>PENILAIAN PUBLIKASI MAGISTER</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+        }
+        .card-header h3 {
+            font-weight: bold;
+        }
+        .score-input {
+            text-align: center;
+        }
+        .info-label {
+            white-space: nowrap;
+            padding-right: 5px;
+        }
+        .info-colon {
+            width: 10px;
+            text-align: center;
+            padding-right: 5px;
+        }
+        #btnKirim, #btnPrint {
+            min-width: 120px;
+        }
+
+        ol.tempat_publikasi {list-style-type: lower-alpha;}
+
+        #loadingOverlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.4);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        }
+
+        .spinner {
+        border: 8px solid #f3f3f3;
+        border-top: 8px solid #007bff;
+        border-radius: 50%;
+        width: 60px;
+        height: 60px;
+        animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+        0%   { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-light">
+
+    <div class="container my-5">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white text-center">
+                <h3 class="mb-0">PENILAIAN PUBLIKASI MAHASISWA MAGISTER</h3>
+            </div>
+            <div class="card-body">
+
+                <!-- Info Table -->
+                <table class="table table-borderless mb-4 align-middle w-auto">
+                <tbody>
+                    <tr>
+                        <td class="info-label">Nama</td>
+                        <td class="info-colon">:</td>
+                        <td id="nama"></td>
+                    </tr>
+                    <tr>
+                        <td class="info-label">NIM</td>
+                        <td class="info-colon">:</td>
+                        <td id="nim"></td>
+                    </tr>
+                    <tr>
+                        <td class="info-label">Pembimbing Utama</td>
+                        <td class="info-colon">:</td>
+                        <td id="pembimbingUtama"></td>
+                    </tr>
+                    <tr>
+                        <td class="info-label">Judul Tesis</td>
+                        <td class="info-colon">:</td>
+                        <td id="judultesis"></td>
+                    </tr>
+                </tbody>
+                </table>
+                    
+                <!-- Dropdown -->
+                <div class="mb-4 position-relative" style="max-width: 300px;">
+                    <label for="dosenPenguji" class="form-label fw-bold">Dosen Penguji:</label>
+                    <input type="text" id="dosenPenguji" class="form-control" placeholder="Ketik nama dosen...">
+                    <ul id="dosenSuggestions" class="list-group position-absolute" 
+                        style="z-index:1000; display:none; width:100%;"></ul>
+                </div>
+
+                <div class="mb-4">
+                    <label for="role" class="form-label fw-bold">Menilai sebagai:</label>
+                    <select id="role" class="form-select">
+                        <option value="">-- Pilih --</option>
+                        <option value="pembimbing">Pembimbing</option>
+                        <option value="penguji1">Penguji 1</option>
+                        <option value="penguji2">Penguji 2</option>
+                    </select>
+                </div>
+
+                <!-- Scoring -->
+                <h5 class="fw-bold text-primary mb-3">Unsur Unsur Penilaian:</h5>
+                <div class="mb-3">
+                    <div class="row gy-2">
+                        <div class="col-12 d-flex justify-content-between align-items-center">
+                            <span>1. Judul dan abstrak mendeskripsikan isi makalah dengan baik</span>
+                            <input type="number" class="form-control score-input" style="width:100px" min="0" max="100">
+                        </div>
+                        <div class="col-12 d-flex justify-content-between align-items-center">
+                            <span>2. Masalah memiliki tingkat kebaruan yang tinggi</span>
+                            <input type="number" class="form-control score-input" style="width:100px" min="0" max="100">
+                        </div>
+                        <div class="col-12 d-flex justify-content-between align-items-center">
+                            <span>3. Penelitian terkait telah dibahas dan diacu dengan baik</span>
+                            <input type="number" class="form-control score-input" style="width:100px" min="0" max="100">
+                        </div>
+                        <div class="col-12 d-flex justify-content-between align-items-center">
+                            <span>4. Parameter dan asumsi yang digunakan dinyatakan dengan jelas dan lengkap</span>
+                            <input type="number" class="form-control score-input" style="width:100px" min="0" max="100">
+                        </div>
+                        <div class="col-12 d-flex justify-content-between align-items-center">
+                            <span>5. Gambar dan tabel disajikan dengan jelas, relevan terhadap pembahasan dan jumlahnya memadai</span>
+                            <input type="number" class="form-control score-input" style="width:100px" min="0" max="100">
+                        </div>
+                        <div class="col-12 d-flex justify-content-between align-items-center">
+                            <span>6. Kesimpulan didukung dengan pembahasan yang baik dan konsisten</span>
+                            <input type="number" class="form-control score-input" style="width:100px" min="0" max="100">
+                        </div>
+                        <div class="col-12 d-flex justify-content-between align-items-center">
+                            <span>7. Referensi/ pustaka telah disajikan dengan lengkap</span>
+                            <input type="number" class="form-control score-input" style="width:100px" min="0" max="100">
+                        </div>
+                        <div class="col-12 d-flex justify-content-between align-items-center">
+                            <span>8. Naskah publikasi berkontribsusi dalam peningkatan ilmu pengetahuan geomatika atau mempromosikan diskusi penting bidang geomatika</span>
+                            <input type="number" class="form-control score-input" style="width:100px" min="0" max="100">
+                        </div>
+                        <div class="col-12 d-flex justify-content-between align-items-center">
+                            <span>9. Naskah publikasi ditulis dengan bahasa yang baik dan mudah dipahami</span>
+                            <input type="number" class="form-control score-input" style="width:100px" min="0" max="100">
+                        </div>
+                        <div class="col-12 d-flex justify-content-between align-items-center">
+                            <span>10. Nilai tempat publikasi*</span>
+                            <input type="number" class="form-control score-input" style="width:100px" min="0" max="100">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Average -->
+                <div class="mt-4 text-end">
+                    <label for="average" class="fw-bold me-2">Rerata:</label>
+                    <input type="text" id="average" class="form-control d-inline-block text-center fw-bold bg-light" style="width:120px" readonly>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="mt-4 text-end">
+                    <button id="btnKirim" class="btn btn-primary me-2">Kirim Nilai</button>
+                    <button id="btnPrint" class="btn btn-outline-primary">Print Nilai</button>
+                </div>
+
+                <p>
+                    <strong>*Nilai tempat publikasi</strong>
+                    <ol class="tempat_publikasi">
+                        <li>Konferensi/seminar nasional		: diterima 80/dipublikasikan 85</li>
+                        <li>Konferensi/seminar internasional	: diterima 85/dipublikasikan 90</li>
+                        <li>Jurnal nasional			: diterima 80/dipublikasikan 85</li> 
+                        <li>Jurnal nasional terakreditasi Sinta 3 dan 4: diterima 85/dipublikasikan 90</li>
+                        <li>Jurnal nasional terakreditasi Sinta 1 dan 2: diterima 90/dipublikasikan 95</li>
+                        <li>Jurnal internasional bereputasi		: diterima 95/dipublikasikan 100</li>
+                    </ol>
+                </p>
+
+                <div class="mt-5">
+                    <a href="../index.html" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Kembali ke Dashboard
+                    </a>
+                </div>
+
+                <div id="loadingOverlay">
+                    <div class="spinner"></div>
+                </div>
+
+                <!-- Bootstrap Icons -->
+                <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+            </div>
+        </div>
+    </div>
+
+    <script src="penilaianpublikasimagister.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pizzip@3.1.5/dist/pizzip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.39.0/docxtemplater.min.js"></script>
+    <script>
+        function getQueryParams() {
+            const params = new URLSearchParams(window.location.search);
+            return {
+                nama: params.get("nama") || "",
+                nim: params.get("nim") || "",
+                pembimbing: params.get("pembimbing") || "",
+                judul: params.get("judul") || ""
+            };
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const data = getQueryParams();
+
+            document.getElementById("nama").textContent = data.nama;
+            document.getElementById("nim").textContent = data.nim;
+            document.getElementById("pembimbingUtama").textContent = data.pembimbing;
+            document.getElementById("judultesis").textContent = data.judul;
+        });
+        </script>
+</body>
+</html>
