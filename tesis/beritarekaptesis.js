@@ -40,7 +40,7 @@ async function generateBeritaAcaraDoc() {
     const data = collectBeritaAcara();
 
     try {
-        const response = await fetch("template_NAtesis.docx");
+        const response = await fetch("template_NATesis.docx");
         if (!response.ok) throw new Error("Template tidak ditemukan");
         const arrayBuffer = await response.arrayBuffer();
 
@@ -75,4 +75,5 @@ async function generateBeritaAcaraDoc() {
 document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("btnPrintRekapTesis").
         addEventListener("click", generateBeritaAcaraDoc);
+
 });
