@@ -180,38 +180,38 @@
         return;
         }
 
-        const nilaiProposal = parseFloat(row[42]) || 0;
-        const nilaiSeminar = parseFloat(row[115]) || 0;
-        const nilaiPublikasi = parseFloat(row[80]) || 0; 
+        const nilaiProposal = parseFloat(row[48]) || 0;
+        const nilaiSeminar = parseFloat(row[121]) || 0;
+        const nilaiPublikasi = parseFloat(row[86]) || 0; 
         const nilaiAkhir = ((2 * nilaiProposal + 5 * nilaiSeminar + 1 * nilaiPublikasi)/8).toFixed(2);
 
         // Tentukan nilai huruf
         let nilaiHuruf = "E";
-        if (nilaiAkhir > 80) {
+        if (nilaiAkhir >= 80) {
           nilaiHuruf = "A";
-        } else if (nilaiAkhir > 77.5) {
+        } else if (nilaiAkhir >= 77.5) {
           nilaiHuruf = "A-";
-        } else if (nilaiAkhir > 75) {
+        } else if (nilaiAkhir >= 75) {
           nilaiHuruf = "A/B";
-        } else if (nilaiAkhir > 72.5) {
+        } else if (nilaiAkhir >= 72.5) {
           nilaiHuruf = "B+";
-        } else if (nilaiAkhir > 70) {
+        } else if (nilaiAkhir >= 70) {
           nilaiHuruf = "B";
-        } else if (nilaiAkhir > 67.5) {
+        } else if (nilaiAkhir >= 67.5) {
           nilaiHuruf = "B-";
-        } else if (nilaiAkhir > 65) {
+        } else if (nilaiAkhir >= 65) {
           nilaiHuruf = "B/C";
-        } else if (nilaiAkhir > 62.5) {
+        } else if (nilaiAkhir >= 62.5) {
           nilaiHuruf = "C+";
-        } else if (nilaiAkhir > 60) {
+        } else if (nilaiAkhir >= 60) {
           nilaiHuruf = "C";
-        } else if (nilaiAkhir > 57.5) {
+        } else if (nilaiAkhir >= 57.5) {
           nilaiHuruf = "C-";
-        } else if (nilaiAkhir > 55) {
+        } else if (nilaiAkhir >= 55) {
           nilaiHuruf = "C/D";
-        } else if (nilaiAkhir > 52.5) {
+        } else if (nilaiAkhir >= 52.5) {
           nilaiHuruf = "D+";
-        } else if (nilaiAkhir > 50) {
+        } else if (nilaiAkhir >= 50) {
           nilaiHuruf = "D";
         } else {
           nilaiHuruf = "E";
@@ -223,9 +223,9 @@
         document.getElementById("nilaiAkhir").textContent = nilaiAkhir;
         document.getElementById("nilaiHuruf").textContent = nilaiHuruf;
 
-        document.getElementById("penguji1").textContent = row[93] || "-";
-        document.getElementById("penguji2").textContent = row[104] || "-"; 
-        document.getElementById("penguji3").textContent = row[82] || "-";
+        document.getElementById("penguji1").textContent = row[99] || "-";
+        document.getElementById("penguji2").textContent = row[110] || "-"; 
+        document.getElementById("penguji3").textContent = row[88] || "-";
 
     } catch (err) {
         console.error(err);

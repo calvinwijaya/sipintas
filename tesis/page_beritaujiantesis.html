@@ -61,6 +61,7 @@
     width: 100%;
     margin-bottom: 1rem;
     }
+    #judulTesisRevisi,
     #metode,
     #penulisan,
     #saran {
@@ -128,7 +129,7 @@
 
         <!-- Result selection -->
         <div class="mb-4">
-            <label class="form-label fw-bold text-primary">dengan hasil</label>
+            <h5 class="fw-bold text-primary mb-3">Hasil Sidang:</h5>
             <div class="border rounded p-3 bg-light">
                 <div class="form-check mb-2">
                 <input class="form-check-input" type="radio" name="hasil" value="Lulus tanpa perbaikan" id="hasil1">
@@ -186,7 +187,11 @@
         </ol>
         </div>
 
+        <h5 class="fw-bold text-primary mb-3">Revisi meliputi:</h5>
         <div class="input-group">
+          <h6 class="fw-bold">Judul:</h6>
+          <textarea id="judulTesisRevisi" rows="2"></textarea><br>
+          
           <h6 class="fw-bold">Metode Penelitian:</h6>
           <textarea id="metode" rows="5"></textarea><br>
 
@@ -296,9 +301,9 @@
         return;
         }
 
-        const nilaiP1 = parseFloat(row[103]) || 0;
-        const nilaiP2 = parseFloat(row[114]) || 0;
-        const nilaiP3 = parseFloat(row[92]) || 0; 
+        const nilaiP1 = parseFloat(row[109]) || 0;
+        const nilaiP2 = parseFloat(row[120]) || 0;
+        const nilaiP3 = parseFloat(row[98]) || 0; 
         const nilaiRekap = (0.25 * nilaiP1 + 0.25 * nilaiP2 + 0.5 * nilaiP3).toFixed(2);
 
         document.getElementById("nilaiP1").textContent = nilaiP1;
@@ -306,9 +311,9 @@
         document.getElementById("nilaiP3").textContent = nilaiP3;
         document.getElementById("nilaiRekap").textContent = nilaiRekap;
 
-        document.getElementById("penguji1").textContent = row[93] || "-";
-        document.getElementById("penguji2").textContent = row[104] || "-"; 
-        document.getElementById("penguji3").textContent = row[82] || "-";
+        document.getElementById("penguji1").textContent = row[99] || "-";
+        document.getElementById("penguji2").textContent = row[110] || "-"; 
+        document.getElementById("penguji3").textContent = row[88] || "-";
 
     } catch (err) {
         console.error(err);

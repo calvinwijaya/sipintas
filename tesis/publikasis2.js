@@ -24,7 +24,8 @@ async function loadPublikasiS2Data() {
 
         let html = `<div class="row g-3">`;
         publikasiS2Rows.forEach(r => {
-            const [status, no, nama, nim, pembimbing, judul] = r;
+            const [status, no, nama, nim, pembimbing, judulProposal, judulTesis] = r;
+            const judul = judulTesis;
             const encodedParams = new URLSearchParams({ nama, nim, pembimbing, judul }).toString();
 
             html += `

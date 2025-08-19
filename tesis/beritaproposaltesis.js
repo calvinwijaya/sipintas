@@ -58,6 +58,7 @@ function collectBeritaAcaraData() {
     data["NamaPenguji2"] = document.getElementById("penguji3").textContent || "";
 
     // Comments
+    data["JudulProposalTesisRevisi"] = document.getElementById("judulProposalTesisRevisi").value || "";
     data["Metode"] = document.getElementById("metode").value || "";
     data["Penulisan"] = document.getElementById("penulisan").value || "";
     data["Saran"] = document.getElementById("saran").value || "";

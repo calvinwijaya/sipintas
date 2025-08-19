@@ -87,6 +87,17 @@ document.addEventListener("DOMContentLoaded", () => {
     // --- Generate DOCX ---
     btnPrint.addEventListener("click", async () => {
         try {
+
+            const jenisPublikasiSelect = document.getElementById("jenisPublikasi");
+            const publikasi = jenisPublikasiSelect.value ? 
+                jenisPublikasiSelect.options[jenisPublikasiSelect.selectedIndex].text : "";
+
+            const statusPublikasiSelect = document.getElementById("statusPublikasi");
+            const status = statusPublikasiSelect.value ? 
+                statusPublikasiSelect.options[statusPublikasiSelect.selectedIndex].text : "";
+
+            const namajurnal = document.getElementById("namaPublikasi").value.trim();
+
             let data = {};
             scoreInputs.forEach((inp, i) => {
                 data[`Skor${i+1}`] = inp.value || "0";
@@ -98,6 +109,9 @@ document.addEventListener("DOMContentLoaded", () => {
             data["NIM"] = mahasiswaData.nim;
             data["Pembimbing"] = mahasiswaData.pembimbing;
             data["JudulTesis"] = mahasiswaData.judul;
+            data["statusPublikasi"] = status;
+            data["namaPublikasi"] = namajurnal;
+            data["jenisPublikasi"] = publikasi;
 
             const response = await fetch("template_penilaianpublikasimagister.docx");
             if (!response.ok) throw new Error("Template file not found");
@@ -134,6 +148,13 @@ document.getElementById("btnKirim").addEventListener("click", async () => {
   const role = document.getElementById("role").value;
   const namaDosen = document.getElementById("dosenPenguji").value.trim();
   const nim = new URLSearchParams(window.location.search).get("nim");
+  const jenisPublikasiSelect = document.getElementById("jenisPublikasi");
+  const publikasi = jenisPublikasiSelect.value ? 
+    jenisPublikasiSelect.options[jenisPublikasiSelect.selectedIndex].text : "";
+  const statusPublikasiSelect = document.getElementById("statusPublikasi");
+  const status = statusPublikasiSelect.value ? 
+    statusPublikasiSelect.options[statusPublikasiSelect.selectedIndex].text : "";
+  const namajurnal = document.getElementById("namaPublikasi").value.trim();
 
   const scores = Array.from(document.querySelectorAll(".score-input"))
     .map(inp => parseFloat(inp.value) || 0);
@@ -147,7 +168,10 @@ document.getElementById("btnKirim").addEventListener("click", async () => {
     role: role,
     namaDosen: namaDosen,
     nim: nim,
-    scores: scores
+    scores: scores,
+    publikasi: publikasi,
+    status: status,
+    namajurnal: namajurnal
   };
 
   const formBody = new URLSearchParams();
@@ -156,7 +180,7 @@ document.getElementById("btnKirim").addEventListener("click", async () => {
   // ✅ Show loading overlay before sending
   loadingOverlay.style.display = "flex";
 
-  fetch("https://script.google.com/macros/s/AKfycbyubqo8LKJEP-c1Vo3z6dryLR6_MFzeCVkxnDUlKWno7mQjNTQxNk8EBR8vHnf_4V5B7w/exec", {
+  fetch("https://script.google.com/macros/s/AKfycbwUxNx7tMAY1-4FKV8rsarnot7ct3A_HQsF5TRwx-ditBNWv3bsS-v96iBQU7le5opm-w/exec", {
     method: "POST",
     body: formBody
   })

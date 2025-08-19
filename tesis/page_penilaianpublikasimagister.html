@@ -30,6 +30,16 @@
         }
 
         ol.tempat_publikasi {list-style-type: lower-alpha;}
+        .publikasi {
+        border-collapse: collapse;
+        }
+        .publikasi td {
+        padding: 2px 8px;
+        vertical-align: top;
+        }
+        .publikasi td:first-child {
+        white-space: nowrap;
+        }
 
         #loadingOverlay {
         position: fixed;
@@ -114,47 +124,80 @@
 
                 <!-- Scoring -->
                 <h5 class="fw-bold text-primary mb-3">Unsur Unsur Penilaian:</h5>
+                <p class="text-muted mb-4"><strong>Skala Penilaian:</strong> keseluruhan unsur penilaian diisi dengan rentang skor 0 (minimum) hingga 100 (maksimum)</p>
                 <div class="mb-3">
                     <div class="row gy-2">
                         <div class="col-12 d-flex justify-content-between align-items-center">
-                            <span>1. Judul dan abstrak mendeskripsikan isi makalah dengan baik</span>
+                            <span>1. Judul dan abstrak mendeskripsikan isi makalah dengan baik (CPMK 1: g5)</span>
                             <input type="number" class="form-control score-input" style="width:100px" min="0" max="100">
                         </div>
                         <div class="col-12 d-flex justify-content-between align-items-center">
-                            <span>2. Masalah memiliki tingkat kebaruan yang tinggi</span>
+                            <span>2. Masalah memiliki tingkat kebaruan yang tinggi (CPMK 1: g5)</span>
                             <input type="number" class="form-control score-input" style="width:100px" min="0" max="100">
                         </div>
                         <div class="col-12 d-flex justify-content-between align-items-center">
-                            <span>3. Penelitian terkait telah dibahas dan diacu dengan baik</span>
+                            <span>3. Penelitian terkait telah dibahas dan diacu dengan baik (CPMK 3: g5)</span>
                             <input type="number" class="form-control score-input" style="width:100px" min="0" max="100">
                         </div>
                         <div class="col-12 d-flex justify-content-between align-items-center">
-                            <span>4. Parameter dan asumsi yang digunakan dinyatakan dengan jelas dan lengkap</span>
+                            <span>4. Parameter dan asumsi yang digunakan dinyatakan dengan jelas dan lengkap (CPMK 3: g5)</span>
                             <input type="number" class="form-control score-input" style="width:100px" min="0" max="100">
                         </div>
                         <div class="col-12 d-flex justify-content-between align-items-center">
-                            <span>5. Gambar dan tabel disajikan dengan jelas, relevan terhadap pembahasan dan jumlahnya memadai</span>
+                            <span>5. Gambar dan tabel disajikan dengan jelas, relevan terhadap pembahasan dan jumlahnya memadai (CPMK 4: d3)</span>
                             <input type="number" class="form-control score-input" style="width:100px" min="0" max="100">
                         </div>
                         <div class="col-12 d-flex justify-content-between align-items-center">
-                            <span>6. Kesimpulan didukung dengan pembahasan yang baik dan konsisten</span>
+                            <span>6. Kesimpulan didukung dengan pembahasan yang baik dan konsisten (CPMK 4: d3)</span>
                             <input type="number" class="form-control score-input" style="width:100px" min="0" max="100">
                         </div>
                         <div class="col-12 d-flex justify-content-between align-items-center">
-                            <span>7. Referensi/ pustaka telah disajikan dengan lengkap</span>
+                            <span>7. Referensi/ pustaka telah disajikan dengan lengkap (CPMK 4: d3)</span>
                             <input type="number" class="form-control score-input" style="width:100px" min="0" max="100">
                         </div>
                         <div class="col-12 d-flex justify-content-between align-items-center">
-                            <span>8. Naskah publikasi berkontribsusi dalam peningkatan ilmu pengetahuan geomatika atau mempromosikan diskusi penting bidang geomatika</span>
+                            <span>8. Naskah publikasi berkontribsusi dalam peningkatan ilmu pengetahuan geomatika atau mempromosikan diskusi penting bidang geomatika (CPMK 6: f1)</span>
                             <input type="number" class="form-control score-input" style="width:100px" min="0" max="100">
                         </div>
                         <div class="col-12 d-flex justify-content-between align-items-center">
-                            <span>9. Naskah publikasi ditulis dengan bahasa yang baik dan mudah dipahami</span>
+                            <span>9. Naskah publikasi ditulis dengan bahasa yang baik dan mudah dipahami (CPMK 4: d3)</span>
                             <input type="number" class="form-control score-input" style="width:100px" min="0" max="100">
                         </div>
                         <div class="col-12 d-flex justify-content-between align-items-center">
-                            <span>10. Nilai tempat publikasi*</span>
-                            <input type="number" class="form-control score-input" style="width:100px" min="0" max="100">
+                            <span>10. Nilai tempat publikasi* (CPMK 4: d3)</span>
+                            <input type="number" id="nilaiPublikasi" class="form-control score-input" style="width:100px" min="0" max="100">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Extra inputs for Publikasi -->
+                <div class="mb-3 p-3 border rounded bg-light">
+                    <div class="row g-3 align-items-center">
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">Jenis Publikasi</label>
+                            <select id="jenisPublikasi" class="form-select" onchange="updateNilaiPublikasi()">
+                                <option value="">-- Pilih Jenis Publikasi --</option>
+                                <option value="konferensi_nasional">Konferensi/seminar nasional</option>
+                                <option value="konferensi_internasional">Konferensi/seminar internasional</option>
+                                <option value="jurnal_nasional">Jurnal nasional</option>
+                                <option value="jurnal_sinta34">Jurnal nasional terakreditasi Sinta 3 dan 4</option>
+                                <option value="jurnal_sinta12">Jurnal nasional terakreditasi Sinta 1 dan 2</option>
+                                <option value="jurnal_internasional">Jurnal internasional bereputasi</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">Status Publikasi</label>
+                            <select id="statusPublikasi" class="form-select" onchange="updateNilaiPublikasi()">
+                                <option value="">-- Pilih Status --</option>
+                                <option value="submitted">Submitted</option>
+                                <option value="diterima">Diterima</option>
+                                <option value="dipublikasikan">Dipublikasikan</option>
+                                <option value="dipresentasikan">Dipresentasikan</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">Nama Jurnal / Konferensi</label>
+                            <input type="text" id="namaPublikasi" class="form-control" placeholder="Isi nama jurnal/konferensi">
                         </div>
                     </div>
                 </div>
@@ -172,15 +215,15 @@
                 </div>
 
                 <p>
-                    <strong>*Nilai tempat publikasi</strong>
-                    <ol class="tempat_publikasi">
-                        <li>Konferensi/seminar nasional		: diterima 80/dipublikasikan 85</li>
-                        <li>Konferensi/seminar internasional	: diterima 85/dipublikasikan 90</li>
-                        <li>Jurnal nasional			: diterima 80/dipublikasikan 85</li> 
-                        <li>Jurnal nasional terakreditasi Sinta 3 dan 4: diterima 85/dipublikasikan 90</li>
-                        <li>Jurnal nasional terakreditasi Sinta 1 dan 2: diterima 90/dipublikasikan 95</li>
-                        <li>Jurnal internasional bereputasi		: diterima 95/dipublikasikan 100</li>
-                    </ol>
+                <strong>*Nilai tempat publikasi</strong>
+                <table class="publikasi">
+                    <tr><td>Konferensi/seminar nasional</td><td>: diterima 80/dipublikasikan 85</td></tr>
+                    <tr><td>Konferensi/seminar internasional</td><td>: diterima 85/dipublikasikan 90</td></tr>
+                    <tr><td>Jurnal nasional</td><td>: diterima 80/dipublikasikan 85</td></tr>
+                    <tr><td>Jurnal nasional terakreditasi Sinta 3 dan 4</td><td>: diterima 85/dipublikasikan 90</td></tr>
+                    <tr><td>Jurnal nasional terakreditasi Sinta 1 dan 2</td><td>: diterima 90/dipublikasikan 95</td></tr>
+                    <tr><td>Jurnal internasional bereputasi</td><td>: diterima 95/dipublikasikan 100</td></tr>
+                </table>
                 </p>
 
                 <div class="mt-5">
@@ -222,6 +265,28 @@
             document.getElementById("pembimbingUtama").textContent = data.pembimbing;
             document.getElementById("judultesis").textContent = data.judul;
         });
-        </script>
+    </script>
+    <script>
+        const nilaiMapping = {
+            konferensi_nasional: { submitted: 75, diterima: 80, dipublikasikan: 85, dipresentasikan: 85 },
+            konferensi_internasional: { submitted: 80, diterima: 85, dipublikasikan: 90, dipresentasikan: 90},
+            jurnal_nasional: { submitted: 75, diterima: 80, dipublikasikan: 85 },
+            jurnal_sinta34: { submitted: 80, diterima: 85, dipublikasikan: 90 },
+            jurnal_sinta12: { submitted: 85, diterima: 90, dipublikasikan: 95 },
+            jurnal_internasional: { submitted: 90, diterima: 95, dipublikasikan: 100 },
+        };
+
+        function updateNilaiPublikasi() {
+            const jenis = document.getElementById("jenisPublikasi").value;
+            const status = document.getElementById("statusPublikasi").value;
+            const nilaiInput = document.getElementById("nilaiPublikasi");
+
+            if (jenis && status) {
+            nilaiInput.value = nilaiMapping[jenis][status];
+
+            nilaiInput.dispatchEvent(new Event("input"));
+            }
+        }
+    </script>
 </body>
 </html>

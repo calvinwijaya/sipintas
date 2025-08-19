@@ -66,6 +66,7 @@ function collectBeritaAcaraData() {
     data["NamaPenguji2"] = document.getElementById("penguji2").textContent || "";
 
     // Comments
+    data["JudulTesisRevisi"] = document.getElementById("judulTesisRevisi").value || "";
     data["Metode"] = document.getElementById("metode").value || "";
     data["Penulisan"] = document.getElementById("penulisan").value || "";
     data["Saran"] = document.getElementById("saran").value || "";

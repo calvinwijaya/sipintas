@@ -201,7 +201,7 @@ document.addEventListener("DOMContentLoaded", () => {
         // ✅ Show loading overlay before sending
         loadingOverlay.style.display = "flex";
 
-        fetch("https://script.google.com/macros/s/AKfycbxnj4qkjViavSlu5LNsNJUy2awWFTD4WR-0D7n213sk3Y7BDFY9A31aWJhBJnNcVgO-/exec", {
+        fetch("https://script.google.com/macros/s/AKfycbz317tl3B62lQxqHoO5dXxsRbd707kzggfbTCWkPmOxHbUnWxhzGJ5iDPwtCG5FliHk/exec", {
             method: "POST",
             body: formBody
         })
