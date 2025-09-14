@@ -14,7 +14,7 @@
         }
         .sidebar {
             min-width: 250px;
-            max-width: 250px;
+            max-width: 350px;
             background-color: #0d6efd;
             color: white;
             transition: all 0.3s;
@@ -86,7 +86,24 @@
                     </ul>
                 </div>
             </li>
-            <li><a href="#" class="nav-link"><i class="bi bi-mortarboard me-2"></i> <span class="label">Penilaian Disertasi</span></a></li>
+            <li>
+                <a class="nav-link dropdown-toggle" data-bs-toggle="collapse" href="#disertasiMenu" role="button" aria-expanded="false">
+                    <i class="bi bi-mortarboard me-2"></i>
+                    <span class="label">Penilaian Disertasi</span>
+                </a>
+                <div class="collapse ps-3" id="disertasiMenu">
+                    <ul class="nav flex-column">
+                        <li><a href="#" onclick="loadPage('disertasi/dashboard_ujiankomprehensif.html')" class="nav-link">Ujian Komprehensif</a></li>
+                        <li><a href="#" onclick="loadPage('disertasi/dashboard_seminar1.html')" class="nav-link">Seminar 1</a></li>
+                        <li><a href="#" onclick="loadPage('disertasi/dashboard_seminar2.html')" class="nav-link">Seminar 2</a></li>
+                        <li><a href="#" onclick="loadPage('disertasi/dashboard_publikasidisertasi.html')" class="nav-link">Penilaian Disertasi & Publikasi</a></li>
+                        <li><a href="#" onclick="loadPage('disertasi/dashboard_ujiantertutup.html')" class="nav-link">Ujian Tertutup</a></li>
+                        <li><a href="#" onclick="loadPage('disertasi/dashboard_naskahakhir.html')" class="nav-link">Naskah Akhir</a></li>
+                        <li><a href="#" onclick="loadPage('disertasi/dashboard_kinerja.html')" class="nav-link">Kinerja</a></li>
+                        <li><a href="#" onclick="loadPage('disertasi/dashboard_rekapdisertasi.html')" class="nav-link">Rekapitulasi</a></li>
+                    </ul>
+                </div>
+            </li>
             <li><a href="#" class="nav-link"><i class="bi bi-geo-alt me-2"></i> <span class="label">Penilaian Kemah Kerja</span></a></li>
             <li><a href="#" class="nav-link"><i class="bi bi-briefcase me-2"></i> <span class="label">Penilaian Kerja Praktik</span></a></li>
             <li><a href="#" class="nav-link"><i class="bi bi-diagram-3 me-2"></i> <span class="label">Penilaian PRGG</span></a></li>
@@ -106,6 +123,14 @@
     <script src="tesis/publikasis2.js"></script>
     <script src="tesis/ujiantesis.js"></script>
     <script src="tesis/rekaptesis.js"></script>
+    <script src="disertasi/ujianKomprehensif.js"></script>
+    <script src="disertasi/seminar1.js"></script>
+    <script src="disertasi/seminar2.js"></script>
+    <script src="disertasi/publikasidisertasi.js"></script>
+    <script src="disertasi/ujiantertutup.js"></script>
+    <script src="disertasi/naskahakhir.js"></script>
+    <script src="disertasi/kinerja.js"></script>
+    <script src="disertasi/rekapdisertasi.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         document.getElementById('toggleSidebar').addEventListener('click', function () {
@@ -139,6 +164,22 @@
                         loadUjianTesisData(); 
                     } if (page === "tesis/dashboard_rekaptesis.html") {
                         loadRekapTesisData(); 
+                    } if (page === "disertasi/dashboard_ujiankomprehensif.html") {
+                        loadQualificationAssessmentData(); 
+                    } if (page === "disertasi/dashboard_seminar1.html") {
+                        loadSeminar1Data(); 
+                    } if (page === "disertasi/dashboard_seminar2.html") {
+                        loadSeminar2Data(); 
+                    } if (page === "disertasi/dashboard_publikasidisertasi.html") {
+                        loadUjianKelayakanData(); 
+                    } if (page === "disertasi/dashboard_ujiantertutup.html") {
+                        loadujianTertutupData(); 
+                    } if (page === "disertasi/dashboard_naskahakhir.html") {
+                        loadnaskahAkhirData(); 
+                    } if (page === "disertasi/dashboard_kinerja.html") {
+                        loadKinerjaData(); 
+                    } if (page === "disertasi/dashboard_rekapdisertasi.html") {
+                        loadRekapDisertasiData(); 
                     }
                 })
                 .catch(err => {
