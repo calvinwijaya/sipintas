@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="../assets/logo.png">
+    <title>PENILAIAN SEMINAR AKHIR SKRIPSI</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+        }
+        .card-header h3 {
+            font-weight: bold;
+        }
+        .score-input {
+            text-align: center;
+        }
+        .info-label {
+            white-space: nowrap;
+            padding-right: 5px;
+        }
+        .info-colon {
+            width: 10px;
+            text-align: center;
+            padding-right: 5px;
+        }
+        #btnKirim, #btnPrint {
+            min-width: 120px;
+        }
+
+        #loadingOverlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.4);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        }
+
+        .spinner {
+        border: 8px solid #f3f3f3;
+        border-top: 8px solid #007bff;
+        border-radius: 50%;
+        width: 60px;
+        height: 60px;
+        animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+        0%   { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-light">
+
+    <div class="container my-5">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white text-center">
+                <h3 class="mb-0">PENILAIAN SEMINAR AKHIR SKRIPSI</h3>
+            </div>
+            <div class="card-body">
+
+                <!-- Info Table -->
+                <table class="table table-borderless mb-4 align-middle w-auto">
+                <tbody>
+                    <tr>
+                        <td class="info-label">Nama</td>
+                        <td class="info-colon">:</td>
+                        <td id="nama"></td>
+                    </tr>
+                    <tr>
+                        <td class="info-label">NIM</td>
+                        <td class="info-colon">:</td>
+                        <td id="nim"></td>
+                    </tr>
+                    <tr>
+                        <td class="info-label">Pembimbing</td>
+                        <td class="info-colon">:</td>
+                        <td id="pembimbing"></td>
+                    </tr>
+                    <tr>
+                        <td class="info-label">Judul Skripsi</td>
+                        <td class="info-colon">:</td>
+                        <td id="judulskripsi"></td>
+                    </tr>
+                </tbody>
+                </table>
+                    
+                <!-- Dropdown -->
+                <div class="mb-4 position-relative" style="max-width: 500px;">
+                    <label for="dosenPenguji" class="form-label fw-bold">Dosen Penguji:</label>
+                    <input type="text" id="dosenPenguji" class="form-control" placeholder="Ketik nama dosen...">
+                    <ul id="dosenSuggestions" class="list-group position-absolute" 
+                        style="z-index:1000; display:none; width:100%;"></ul>
+                </div>
+
+                <div class="mb-4">
+                    <label for="role" class="form-label fw-bold">Menilai sebagai:</label>
+                    <select id="role" class="form-select">
+                        <option value="">-- Pilih --</option>
+                        <option value="pembimbing">Pembimbing</option>
+                        <option value="penguji1">Penguji 1</option>
+                        <option value="penguji2">Penguji 2</option>
+                    </select>
+                </div>
+
+                <!-- Scoring -->
+                <h5 class="fw-bold text-primary mb-3">Unsur Penilaian:</h5>
+                <p class="text-muted mb-4"><strong>Skala Penilaian:</strong> keseluruhan unsur penilaian diisi dengan rentang skor 0 (minimum) hingga 100 (maksimum)</p>
+
+                <!-- A. Metodologi -->
+                <div class="mb-4">
+                <h6>A. Metodologi (bobot = 2)</h6>
+                <div class="row gy-2">
+                    <div class="col-12 d-flex justify-content-between align-items-center">
+                    <span>1. Latar Belakang (CPMK 1: c1)</span>
+                    <input type="number" id="skorA1" class="form-control score-input score-A" style="width:100px" min="0" max="100">
+                    </div>
+                    <div class="col-12 d-flex justify-content-between align-items-center">
+                    <span>2. Perumusan Masalah dan Hipotesis (CPMK 2: e1)</span>
+                    <input type="number" id="skorA2" class="form-control score-input score-A" style="width:100px" min="0" max="100">
+                    </div>
+                    <div class="col-12 d-flex justify-content-between align-items-center">
+                    <span>3. Penentuan Tujuan Skripsi/ Proyek (CPMK 3: j2)</span>
+                    <input type="number" id="skorA3" class="form-control score-input score-A" style="width:100px" min="0" max="100">
+                    </div>
+                    <div class="col-12 d-flex justify-content-between align-items-center">
+                    <span>4. Data (pengumpulan, proses, analisis) dan Pelaksanaan Penerapan Metode (CPMK 4: c3)</span>
+                    <input type="number" id="skorA4" class="form-control score-input score-A" style="width:100px" min="0" max="100">
+                    </div>
+                    <div class="col-12 d-flex justify-content-between align-items-center">
+                    <span>5. Pembahasan (CPMK 5: e3)</span>
+                    <input type="number" id="skorA5" class="form-control score-input score-A" style="width:100px" min="0" max="100">
+                    </div>
+                    <div class="col-12 d-flex justify-content-between align-items-center">
+                    <span>6. Kesimpulan (CPMK 6: h2)</span>
+                    <input type="number" id="skorA6" class="form-control score-input score-A" style="width:100px" min="0" max="100">
+                    </div>
+                    <div class="col-12 d-flex justify-content-between align-items-center">
+                    <span>7. Koherensi (butir 1,2,3,4,5,6,7) (CPMK 7: i1)</span>
+                    <input type="number" id="skorA7" class="form-control score-input score-A" style="width:100px" min="0" max="100">
+                    </div>                                                            
+                </div>
+                <div class="text-end mt-2">
+                    <span>Jumlah A: <strong id="sumA">0</strong></span> |
+                    <span>Rerata A: <strong id="avgA">0.00</strong></span>
+                </div>
+                </div>
+
+                <!-- B. Presentasi -->
+                <div class="mb-4">
+                <h6>B. Presentasi (bobot = 2)</h6>
+                <div class="row gy-2">
+                    <div class="col-12 d-flex justify-content-between align-items-center">
+                    <span>1. Penguasaan materi (CPMK 8: k3)</span>
+                    <input type="number" id="skorB1" class="form-control score-input score-B" style="width:100px" min="0" max="100">
+                    </div>
+                    <div class="col-12 d-flex justify-content-between align-items-center">
+                    <span>2. Teknik Penyajian/ Komunikasi Hasil (CPMK 9: g2)</span>
+                    <input type="number" id="skorB2" class="form-control score-input score-B" style="width:100px" min="0" max="100">
+                    </div>
+                    <div class="col-12 d-flex justify-content-between align-items-center">
+                    <span>3. Penguasaan Materi Komprehensif (CPMK 10: k1)</span>
+                    <input type="number" id="skorB3" class="form-control score-input score-B" style="width:100px" min="0" max="100">
+                    </div>                    
+                </div>
+                <div class="text-end mt-2">
+                    <span>Jumlah B: <strong id="sumB">0</strong></span> |
+                    <span>Rerata B: <strong id="avgB">0.00</strong></span>
+                </div>
+                </div>
+
+                <!-- C. Penulisan laporan -->
+                <div class="mb-4">
+                <h6>C. Penulisan laporan (bobot = 1)</h6>
+                <div class="row gy-2">
+                    <div class="col-12 d-flex justify-content-between align-items-center">
+                    <span>1. Sistematika (CPMK 11: g1)</span>
+                    <input type="number" id="skorC1" class="form-control score-input score-C" style="width:100px" min="0" max="100">
+                    </div>
+                    <div class="col-12 d-flex justify-content-between align-items-center">
+                    <span>2. Redaksional dan Bahasa Indonesia (CPMK 12: f2)</span>
+                    <input type="number" id="skorC2" class="form-control score-input score-C" style="width:100px" min="0" max="100">
+                    </div>
+                </div>
+                <div class="text-end mt-2">
+                    <span>Jumlah C: <strong id="sumC">0</strong></span> |
+                    <span>Rerata C: <strong id="avgC">0.00</strong></span>
+                </div>
+                </div>
+
+                <!-- Final NILAI -->
+                <div class="mt-4 text-end">
+                <label for="nilaiFinal" class="fw-bold me-2">NILAI: (2A + 2B + C)/5</label>
+                <input type="text" id="nilaiFinal" class="form-control d-inline-block text-center fw-bold bg-light" style="width:120px" readonly>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="mt-4 text-end">
+                    <button id="btnKirimNilaiUjianSkripsi" class="btn btn-primary me-2">Kirim Nilai</button>
+                    <button id="btnPrintNilaiUjianSkripsi" class="btn btn-outline-primary">Print Nilai</button>
+                </div>
+
+                <div class="mt-5">
+                    <a href="../index.html" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Kembali ke Dashboard
+                    </a>
+                </div>
+
+                <div id="loadingOverlay">
+                    <div class="spinner"></div>
+                </div>
+
+                <!-- Bootstrap Icons -->
+                <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+            </div>
+        </div>
+    </div>
+
+    <script src="script_penilaianujianskripsi.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pizzip@3.1.5/dist/pizzip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.39.0/docxtemplater.min.js"></script>
+    <script>
+        function getQueryParams() {
+            const params = new URLSearchParams(window.location.search);
+            return {
+                nama: params.get("nama") || "",
+                nim: params.get("nim") || "",
+                pembimbing: params.get("pembimbing") || "",
+                judulskripsi: params.get("judulskripsi") || ""
+            };
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const data = getQueryParams();
+
+            document.getElementById("nama").textContent = data.nama;
+            document.getElementById("nim").textContent = data.nim;
+            document.getElementById("pembimbing").textContent = data.pembimbing;
+            document.getElementById("judulskripsi").textContent = data.judulskripsi;
+        });
+        </script>
+</body>
+</html>
