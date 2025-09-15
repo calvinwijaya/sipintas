@@ -35,6 +35,10 @@ async function loadUjianKelayakanData() {
                             <p class="card-text"><strong>Promotor:</strong> ${promotor}</p>
                             <p class="card-text"><em>${juduldisertasi}</em></p>
                             <div class="d-grid gap-2">
+                            <a href="disertasi/page_beritarapatpendahuluan.html?${encodedParams}" 
+                                class="btn btn-primary btn-sm">
+                                Buat Berita Acara Rapat Pendahuluan
+                            </a>
                             <a href="disertasi/page_penilaiankelayakannaskah.html?${encodedParams}" 
                                 class="btn btn-primary btn-sm">
                                 Lakukan Penilaian Kelayakan Naskah
@@ -42,6 +46,10 @@ async function loadUjianKelayakanData() {
                             <a href="disertasi/page_penilaianpublikasi.html?${encodedParams}" 
                                 class="btn btn-primary btn-sm">
                                 Lakukan Penilaian Publikasi
+                            </a>
+                            <a href="disertasi/page_beritarapatpleno.html?${encodedParams}" 
+                                class="btn btn-primary btn-sm">
+                                Buat Berita Acara Rapat Pleno
                             </a>
                             </div>
                         </div>
