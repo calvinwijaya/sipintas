@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="../assets/logo.png">
+  <title>PENILAIAN KK SHIFT 2</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body { font-family: 'Segoe UI', sans-serif; }
+    .card-header h3 { font-weight: bold; }
+    .score-input { text-align: center; width: 80px; }
+    .rubrik-penilaian {
+      font-size: 0.8rem; /* smaller text */
+      line-height: 1.2;  /* tighter spacing */
+    }
+    .rubrik-header {
+      font-size: 0.75rem; 
+      font-weight: 600;
+    }
+    .col-kategori {
+      width: 100px;     /* adjust smaller/larger as needed */
+      font-size: 0.75rem;
+    }
+    #penilaianTable th:first-child,
+    #penilaianTable td:first-child {
+      width: 5%;
+      white-space: nowrap;
+    }
+
+    #penilaianTable th:nth-child(2),
+    #penilaianTable td:nth-child(2),
+    #penilaianTable th:nth-child(3),
+    #penilaianTable td:nth-child(3) {
+      width: auto;
+    }
+    #loadingOverlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+    }
+  </style>
+</head>
+<body class="bg-light">
+
+<div class="container my-5">
+  <div class="card shadow">
+    <div class="card-header bg-primary text-white text-center">
+      <h3 class="mb-0">PENILAIAN KEMAH KERJA SHIFT 2</h3>
+    </div>
+    <div class="card-body">
+
+        <!-- Info Kelompok -->
+        <h5 id="judulKelompok" class="fw-bold text-primary mb-3">Informasi Kelompok</h5>
+        <table class="table table-bordered w-auto">
+            <thead class="table-light">
+            <tr>
+                <th>No</th>
+                <th>Nama</th>
+                <th>NIM</th>
+            </tr>
+            </thead>
+            <tbody id="tabelMahasiswa">
+            <!-- Akan diisi via JS dari query string -->
+            </tbody>
+        </table>
+
+        <!-- Dosen Penguji -->
+        <div class="mb-4 position-relative" style="max-width: 500px;">
+            <label for="dosenPenguji" class="form-label fw-bold">Dosen Pembimbing:</label>
+            <input type="text" id="dosenPenguji" class="form-control" placeholder="Ketik nama dosen...">
+            <ul id="dosenSuggestions" class="list-group position-absolute" 
+                style="z-index:1000; display:none; width:100%;"></ul>
+        </div>
+
+        <!-- Penilaian KK Shift 1 -->
+        <h5 class="fw-bold text-primary mb-3">Penilaian KK Shift 2</h5>
+        <p class="text-muted">Skor diberikan dalam rentang 0 – 100</p>
+
+        <div class="mb-2 text-end">
+          <button id="toggleKategori" class="btn btn-sm btn-outline-secondary">
+            ▼ Tampilkan/Sembunyikan Kategori
+          </button>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table table-bordered align-middle text-center" id="penilaianTable">
+            <thead class="table-light align-middle rubrik-header">
+              <tr>
+                <th rowspan="2" style="width:5%;">SO</th>
+                <th rowspan="2" style="min-width: 25%;">Course Learning Outcome (CLO)</th>
+                <th rowspan="2" style="min-width: 25%;">Indikator</th>
+                <th id="kategoriHeader" colspan="4" class="text-center">Kategori Penilaian</th>
+                <th id="penilaianMahasiswaHeader" colspan="1" class="text-center">Penilaian Mahasiswa</th>
+              </tr>
+              <tr id="headerMahasiswa">
+                <th class="col-kategori text-success">Sangat Baik <br>A (80-100)</th>
+                <th class="col-kategori text-primary">Baik <br>B (70-79)</th>
+                <th class="col-kategori text-warning">Cukup <br>C (60-69)</th>
+                <th class="col-kategori text-danger">Kurang/Gagal <br>&lt; 60</th>
+                <!-- JS will inject Mhs1..MhsN -->
+              </tr>
+            </thead>
+
+            <tbody id="tabelPenilaian" class="rubrik-penilaian">
+              <tr>
+                <td>f1</td>
+                <td class="text-start">
+                  CLO-9: Mahasiswa mampu bekerjasama dan melaksanakan kegiatan sesuai pencapaian target dan sesuai jadwal kegiatan. (1.a. Kedisiplinan/presensi dan 1.c. Kerjasama dan pencapaian target)
+                </td>
+                <td class="text-start">
+                  Disiplin dalam mengikuti setiap tahapan kegiatan, mengumpulkan laporan harian dan progress kinerja
+                </td>
+                <td class="col-kategori text-start">Menghadiri 100% tahapan kegiatan dan melaksanakan pekerjaan secara lengkap sesuai pencapaian target dan sesuai jadwal kegiatan.</td>
+                <td class="col-kategori text-start">Menghadiri &gt;95% tahapan kegiatan dan melaksanakan pekerjaan secara lengkap sesuai pencapaian target, namun tidak sesuai jadwal kegiatan.</td>
+                <td class="col-kategori text-start">Menghadiri &gt;90% tahapan kegiatan serta tidak mampu melaksanakan pekerjaan secara lengkap sesuai pencapaian target dan tidak sesuai jadwal kegiatan.</td>
+                <td class="col-kategori text-start">Menghadiri &lt;90% tahapan kegiatan serta tidak mampu melaksanakan pekerjaan secara lengkap sesuai pencapaian target dan tidak sesuai jadwal kegiatan.</td>
+              </tr>
+              <tr>
+                <td>g1</td>
+                <td class="text-start">
+                  CLO-10: Mahasiswa mampu menyajikan atau mempresentasikan perkembangan progres pekerjaan
+                </td>
+                <td class="text-start">
+                  Kemampuan mendemonstrasikan pemahaman baik secara lisan maupun tulis
+                </td>
+                <td class="col-kategori text-start">Mampu menyajikan atau mempresentasikan perkembangan progres pekerjaan secara verbal dan tulisan berdasarkan data yang diperoleh secara lengkap sesuai jadwal kegiatan.</td>
+                <td class="col-kategori text-start">Mampu menyajikan atau mempresentasikan perkembangan progres pekerjaan secara verbal atau tulisan berdasarkan data yang belum lengkap.</td>
+                <td class="col-kategori text-start">Mampu menyajikan atau mempresentasikan perkembangan progres pekerjaan secaara verbal maupun tulisan namun tidak  berdasarkan data.</td>
+                <td class="col-kategori text-start">Belum mampu menyajikan atau mempresentasikan progress harian baik secara verbal maupun tulisan.</td>
+              </tr>
+              <tr>
+                <td>g2</td>
+                <td class="text-start">
+                  CLO-11: Mahasiswa mampu memberikan data hasil kemah kerja untuk memberikan informasi mengenai perkembangan progress
+                </td>
+                <td class="text-start">
+                  Kemampuan menyampaikan informasi berdasarkan data
+                </td>
+                <td class="col-kategori text-start">Mampu menyajikan data hasil progress pekerjaan kemah kerja pada tiap tahapannya setiap harinya</td>
+                <td class="col-kategori text-start">Mampu menyajikan data hasil progress pekerjaan kemah kerja pada tiap tahapannya, namun tidak setiap hari</td>
+                <td class="col-kategori text-start">Mampu menyajikan data hasil progress pekerjaan kemah kerja pada beberapa tahapan kegiatan, namun tidak lengkap</td>
+                <td class="col-kategori text-start">Tidak mampu menyajikan data hasil progress pekerjaan kemah kerja pada tiap tahapannya</td>
+              </tr>
+              <tr>
+                <td>c3</td>
+                <td class="text-start">
+                  CLO-3: Mampu melaksanakan pengukuran dan pemetaan sesuai KAK, kondisi, dan permasalahan yang ada di lapangan
+                </td>
+                <td class="text-start">
+                  Kemampuan pelaksanaan pengukuran
+                </td>
+                <td class="col-kategori text-start">Mampu melaksanakan semua pengukuran detil planimetris dan detil tinggi sesuai KAK dan TOR kemah kerja</td>
+                <td class="col-kategori text-start">Mampu melaksanakan semua pengukuran (detil planimetris dan detil tinggi), namun salah satu tidak sesuai KAK dan TOR</td>
+                <td class="col-kategori text-start">Mampu melaksanakan semua pengukuran detil planimetris dan detil tinggi, namun keduanya tidak sesuai KAK dan TOR kemah kerja</td>
+                <td class="col-kategori text-start">Belum mampu melaksanakan semua pengukuran detil planimetris dan detil tinggi</td>
+              </tr>
+              <tr>
+                <td>c4</td>
+                <td class="text-start">
+                  CLO-4: Mahasiswa mampu menentukan solusi alternatif dalam kegiatan desain dan pengukuran Detail planimetris dan Detail tinggi
+                </td>
+                <td class="text-start">
+                  Kemampuan menentukan solusi dan penyelesaian permasalahan dalam setiap tahapan kegiatan
+                </td>
+                <td class="col-kategori text-start">Mampu menentukan solusi alternatif dan penyelesaian permasalahan dalam kegiatan: (a) desain pengukuran detil planimetris, (b) desain pengukuran detil tinggi, (c) pengukuran detil planimetris, (d) pengukuran detil tinggi.</td>
+                <td class="col-kategori text-start">Mampu menentukan solusi alternatif dan penyelesaian permasalahan dalam 3 (tiga) kegiatan saja di antara kegiatan (a), (b), (c), (d).</td>
+                <td class="col-kategori text-start">Hanya mampu  menentukan solusi alternatif dan penyelesaian permasalahan dalam 2 (dua) kegiatan saja di antara kegiatan (a), (b), (c), (d).</td>
+                <td class="col-kategori text-start">Belum mampu  menentukan solusi alternatif dan penyelesaian permasalahan dalam kegiatan.</td>
+              </tr>  
+              <tr>
+                <td>d1</td>
+                <td class="text-start">
+                  CLO-6: Mahasiswa mampu menyusun pembagian tugas untuk memastikan pekerjaan dapat diselesaikan tepat waktu.
+                </td>
+                <td class="text-start">
+                  Kemampuan menyusun pembagian tugas tim
+                </td>
+                <td class="col-kategori text-start">Mampu menyusun:
+                    <ol type="a">
+                      <li>job deksripsi</li>
+                      <li>pembagian tugas yang memastikan semua anggota dapat melakukan setiap tahapan pekerjaan (desain, pengukuran, perhitungan, pengambaran dan evaluasi)</li>
+                    </ol>
+                </td>
+                <td class="col-kategori text-start">Mampu menyusun:
+                    <ol type="a">
+                      <li>job deksripsi</li>
+                      <li>pembagian tugas belum merata untuk setiap tahapan pekerjaan (desain, pengukuran, perhitungan, pengambaran dan evaluasi)</li>
+                    </ol>
+                </td>
+                <td class="col-kategori text-start">Mampu menyusun hanya job deksripsi</td>
+                <td class="col-kategori text-start">Belum  mampu menyusun job deskripsi dan pembagian tugas yang merata</td>
+              </tr>   
+              <tr>
+                <td>d2</td>
+                <td class="text-start">
+                  CLO-7: Mahasiswa mampu mengintegrasikan hasil diskusi kelompok untuk pengambilan keputusan terkait pekerjaan kemah kerja
+                </td>
+                <td class="text-start">
+                  Kemampuan pengambilan keputusan hasil diskusi
+                </td>
+                <td class="col-kategori text-start">Mampu:
+                    <ol type="1">
+                      <li>mengintegrasikan hasil diskusi</li>
+                      <li>mengambil keputusan terkait pekerjaan kemah kerja</li>
+                      <li>mengimplementasikan hasil keputusan</li>
+                    </ol>
+                </td>
+                <td class="col-kategori text-start">Mampu:
+                    <ol type="1">
+                      <li>mengintegrasikan hasil diskusi</li>
+                      <li>mengambil keputusan terkait pekerjaan kemah kerja</li>
+                    </ol>
+                </td>
+                <td class="col-kategori text-start">Mampu hanya mengintegrasikan hasil diskusi</td>
+                <td class="col-kategori text-start">Tidak mampu mengintegrasikan dan mengambil keputusan terkait pekerjaan</td>
+              </tr>   
+              <tr>
+                <td>d3</td>
+                <td class="text-start">
+                  CLO-8: Mahasiswa mampu berkomunikasi antar anggota dan saling memberikan saran dan masukan terkait tugas masing-masing anggota kelompok
+                </td>
+                <td class="text-start">
+                  Kemampuan berkomunikasi dan berinteraksi
+                </td>
+                <td class="col-kategori text-start">Mampu:
+                    <ol type="a">
+                      <li>berkomunikasi antar anggota</li>
+                      <li>saling memberikan saran dan masukan</li>
+                      <li>menyepakati hasil keputusan bersama</li>
+                    </ol>
+                </td>
+                <td class="col-kategori text-start">Mampu berkomunikasi antar anggota dan saling memberikan saran dan masukan</td>
+                <td class="col-kategori text-start">Mampu hanya berkomunikasi antar anggota</td>
+                <td class="col-kategori text-start">Tidak mampu berkomunikasi antar anggota dan saling memberikan saran dan masukan.</td>
+              </tr>                    
+              <tr>
+                <td>k1</td>
+                <td class="text-start">
+                  CLO-12: Mahasiswa mampu menetapkan metode dan peralatan/software dalam kegiatan pengukuran, pengolahan, dan penyajian sesuai kondisi di lapangan berdasarkan KAK yang telah ditetapkan.
+                </td>
+                <td class="text-start">
+                  Kemampuan memilih dan menetapkan metode dan peralatan/ software sesuai kondisi dan KAK
+                </td>
+                <td class="col-kategori text-start">Mampu menetapkan 3 (tiga) kriteria berikut:
+                    <ol type="a">
+                      <li>Metode pengukuran detil planimetris dan detil tinggi</li>
+                      <li>peralatan pengukuran detil planimetris dan detil tinggi</li>
+                      <li>Pengolahan, dan penyajian hasil ukuran detil planimetris dan detil tinggi sesuai kondisi di lapangan dan KAK yang telah ditetapkan.</li>
+                    </ol>
+                </td>
+                <td class="col-kategori text-start">Hanya mampu menetapkan 2 (dua) kriteria diantara: (a), (b), (c).</td>
+                <td class="col-kategori text-start">Hanya mampu menetapkan 1 (satu) kriteria diantara: (a), (b), (c)</td>
+                <td class="col-kategori text-start">Belum  mampu menetapkan diantara kriteria: (a), (b), (c)</td>
+              </tr>
+              <tr>
+                <td>k3</td>
+                <td class="text-start">
+                  CLO-13: Mahasiswa mampu mengaplikasikan metode dan peralatan/software dalam kegiatan pengukuran, pengolahan, dan penyajian sesuai kondisi di lapangan berdasarkan KAK yang telah ditetapkan.
+                </td>
+                <td class="text-start">
+                  Kemampuan mengaplikasikan metode dan peralatan/ software sesuai kondisi dan KAK
+                </td>
+                <td class="col-kategori text-start">Mampu mengaplikasikan 3 (tiga) kriteria berikut:
+                    <ol type="a">
+                      <li>Metode pengukuran detil planimetris dan detil tinggi</li>
+                      <li>peralatan pengukuran detil planimetris dan detil tinggi</li>
+                      <li>Pengolahan, dan penyajian hasil ukuran detil planimetris dan detil tinggi sesuai kondisi di lapangan dan KAK yang telah ditetapkan.</li>
+                    </ol>
+                </td>
+                <td class="col-kategori text-start">Mampu mengaplikasikan penggunaan metode, peralatan, dan software pada 2 (dua) kegiatan saja diantara kegiatan : (a), (b), (c).</td>
+                <td class="col-kategori text-start">Mampu mengaplikasikan penggunaan metode, peralatan, dan software pada 1 (satu) kegiatan saja diantara kegiatan : (a), (b), (c).</td>
+                <td class="col-kategori text-start">Belum  mampu mengaplikasikan penggunaan metode, peralatan, dan software dalam kegiatan: (a), (b), (c).</td>
+              </tr>                                                                                                                          
+            </tbody>
+            <tfoot>
+              <tr id="rowRerata">
+                <th id="rerataLabel" colspan="7" class="text-end">Rata-rata</th>
+                <!-- Kolom rerata dari JS -->
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <!-- Buttons -->
+        <div class="mt-6 text-end">
+            <button id="btnKirim" class="btn btn-primary me-2">Kirim Nilai</button>
+        </div>
+
+        <div class="mt-5">
+            <a href="../index.html" class="btn btn-secondary">← Kembali ke Dashboard</a>
+        </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Loading Overlay -->
+<div id="loadingOverlay" 
+     style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+            background:rgba(255,255,255,0.8); z-index:2000; 
+            align-items:center; justify-content:center;">
+  <div class="spinner-border text-primary" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+</div>
+
+
+<script src="script_penilaiankkshift2.js"></script>
+</body>
+</html>

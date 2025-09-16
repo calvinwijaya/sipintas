@@ -111,7 +111,21 @@
                     </ul>
                 </div>
             </li>
-            <li><a href="#" class="nav-link"><i class="bi bi-geo-alt me-2"></i> <span class="label">Penilaian Kemah Kerja</span></a></li>
+            <li>
+                <a class="nav-link dropdown-toggle" data-bs-toggle="collapse" href="#kkMenu" role="button" aria-expanded="false">
+                    <i class="bi bi-geo-alt me-2"></i>
+                    <span class="label">Penilaian Kemah Kerja</span>
+                </a>
+                <div class="collapse ps-3" id="kkMenu">
+                    <ul class="nav flex-column">
+                        <li><a href="#" onclick="loadPage('kemahkerja/dashboard_pretestkk.html')" class="nav-link">Pre-Test KK</a></li>
+                        <li><a href="#" onclick="loadPage('kemahkerja/dashboard_kkshift1.html')" class="nav-link">Shift 1</a></li>
+                        <li><a href="#" onclick="loadPage('kemahkerja/dashboard_kkshift2.html')" class="nav-link">Shift 2</a></li>
+                        <li><a href="#" onclick="loadPage('kemahkerja/dashboard_kkshift3.html')" class="nav-link">Shift 3</a></li>
+                        <li><a href="#" onclick="loadPage('kemahkerja/dashboard_kkstudio.html')" class="nav-link">Studio</a></li>
+                    </ul>
+                </div>
+            </li>
             <li><a href="#" class="nav-link"><i class="bi bi-briefcase me-2"></i> <span class="label">Penilaian Kerja Praktik</span></a></li>
             <li><a href="#" class="nav-link"><i class="bi bi-diagram-3 me-2"></i> <span class="label">Penilaian PRGG</span></a></li>
         </ul>
@@ -141,6 +155,11 @@
     <script src="disertasi/naskahakhir.js"></script>
     <script src="disertasi/kinerja.js"></script>
     <script src="disertasi/rekapdisertasi.js"></script>
+    <script src="kemahkerja/pretestkk.js"></script>
+    <script src="kemahkerja/kkshift1.js"></script>
+    <script src="kemahkerja/kkshift2.js"></script>
+    <script src="kemahkerja/kkshift3.js"></script>
+    <script src="kemahkerja/kkstudio.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         document.getElementById('toggleSidebar').addEventListener('click', function () {
@@ -196,6 +215,16 @@
                         loadKinerjaData(); 
                     } if (page === "disertasi/dashboard_rekapdisertasi.html") {
                         loadRekapDisertasiData(); 
+                    } if (page === "kemahkerja/dashboard_pretestkk.html") {
+                        loadPreTestKKData(); 
+                    } if (page === "kemahkerja/dashboard_kkshift1.html") {
+                        loadKKShift1Data(); 
+                    } if (page === "kemahkerja/dashboard_kkshift2.html") {
+                        loadKKShift2Data(); 
+                    } if (page === "kemahkerja/dashboard_kkshift3.html") {
+                        loadKKShift3Data(); 
+                    } if (page === "kemahkerja/dashboard_kkstudio.html") {
+                        loadKKStudioData(); 
                     }
                 })
                 .catch(err => {

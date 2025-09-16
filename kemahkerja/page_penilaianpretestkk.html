@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="../assets/logo.png">
+  <title>PENILAIAN PRE-TEST KK</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body { font-family: 'Segoe UI', sans-serif; }
+    .card-header h3 { font-weight: bold; }
+    .score-input { text-align: center; width: 80px; }
+    #loadingOverlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+    }
+  </style>
+</head>
+<body class="bg-light">
+
+<div class="container my-5">
+  <div class="card shadow">
+    <div class="card-header bg-primary text-white text-center">
+      <h3 class="mb-0">PENILAIAN PRE-TEST KEMAH KERJA</h3>
+    </div>
+    <div class="card-body">
+
+        <!-- Info Kelompok -->
+        <h5 id="judulKelompok" class="fw-bold text-primary mb-3">Informasi Kelompok</h5>
+        <table class="table table-bordered w-auto">
+            <thead class="table-light">
+            <tr>
+                <th>No</th>
+                <th>Nama</th>
+                <th>NIM</th>
+            </tr>
+            </thead>
+            <tbody id="tabelMahasiswa">
+            <!-- Akan diisi via JS dari query string -->
+            </tbody>
+        </table>
+
+        <!-- Dosen Penguji -->
+        <div class="mb-4 position-relative" style="max-width: 500px;">
+            <label for="dosenPenguji" class="form-label fw-bold">Dosen Penguji:</label>
+            <input type="text" id="dosenPenguji" class="form-control" placeholder="Ketik nama dosen...">
+            <ul id="dosenSuggestions" class="list-group position-absolute" 
+                style="z-index:1000; display:none; width:100%;"></ul>
+        </div>
+
+        <!-- Penilaian Materi Ujian -->
+        <h5 class="fw-bold text-primary mb-3">Penilaian Materi Ujian</h5>
+        <p class="text-muted">Skor diberikan dalam rentang 0 – 100</p>
+        <div class="table-responsive">
+            <table class="table table-bordered align-middle text-center">
+            <thead class="table-light">
+                <tr id="headerPenilaian">
+                <th>No</th>
+                <th style="width: 100%;">Materi Ujian</th>
+                </tr>
+            </thead>
+            <tbody id="tabelPenilaian">
+                <tr>
+                <td>1</td>
+                <td class="text-start"><strong>Soal Wajib</strong> (Sentering) <br> (80-100) ≤ 3'; (70-79) ≤ 3-5'; (60-69) ≤ 5-7'; (&lt;60) &gt; 7'</td>
+                </tr>
+                <tr>
+                <td>2</td>
+                <td class="text-start"><strong>Soal Pilihan</strong> pertama (a / b / c / d)</td>
+                </tr>
+                <tr>
+                <td>3</td>
+                <td class="text-start"><strong>Soal Pilihan</strong> kedua (a / b / c / d)</td>
+                </tr>            
+            </tbody>
+            <tfoot>
+                <tr id="rowRerata">
+                <th colspan="2">Rata-rata</th>
+                <!-- Kolom rata-rata per mahasiswa otomatis oleh JS -->
+                </tr>
+            </tfoot>
+            </table>
+        </div>
+
+        <!-- Buttons -->
+        <div class="mt-6 text-end">
+            <button id="btnKirim" class="btn btn-primary me-2">Kirim Nilai</button>
+        </div>
+
+        <ol class="text-muted">
+        <li>
+            <strong>Soal Wajib</strong>: Sentering (waktu maksimum 7 menit)
+        </li>
+        <li>
+            <strong>Soal Pilihan</strong>: Pilih salah satu dari a/b/c/d (waktu maksimum 9 menit per soal)
+            <ol type="a">
+            <li>Setting satuan dan setting pengukuran</li>
+            <li>Cek alat atau kalibrasi alat (kolimasi, indeks vertikal, konstanta jarak)</li>
+            <li>Pengukuran sudut dan pengukuran jarak</li>
+            <li>Pengukuran detil dan manajemen data perekaman</li>
+            </ol>
+        </li>
+        <li>Dosen penguji menentukan dua soal pilihan dari daftar yang tersedia pada nomor dua (2)</li>
+        <li>Waktu ujian setiap mahasiswa maksimum 25 menit</li>
+        </ol>
+
+        <div class="mt-5">
+            <a href="../index.html" class="btn btn-secondary">← Kembali ke Dashboard</a>
+        </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Loading Overlay -->
+<div id="loadingOverlay" 
+     style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+            background:rgba(255,255,255,0.8); z-index:2000; 
+            align-items:center; justify-content:center;">
+  <div class="spinner-border text-primary" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+</div>
+
+
+<script src="script_penilaianpretestkk.js"></script>
+</body>
+</html>
