@@ -1,14 +1,12 @@
 document.addEventListener("DOMContentLoaded", () => {
-    loadProposalSkripsiData();
-    loadProposalData();
-    loadDisertasiData();
-    loadKemahKerjaData();
+    loadProposalSkripsi2Data();
+    loadProposalTesisData();
 });
 
 // ======================
 // Skripsi
 // ======================
-async function loadProposalSkripsiData() {
+async function loadProposalSkripsi2Data() {
     const SHEET_ID = "1THmInPem3cxfB1kJJifuC4C1MMi4cPH3zlFN20grBJA";
     const API_KEY = "AIzaSyA3Pgj8HMdb4ak9jToAiTQV0XFdmgvoYPI";
     const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Sheet1?key=${API_KEY}`;
@@ -33,10 +31,9 @@ async function loadProposalSkripsiData() {
 }
 
 // ======================
-// Template fungsi lain (Tesis, Disertasi, KemahKerja)
-// Tinggal ganti SHEET_ID dan nama chart
+// Tesis
 // ======================
-async function loadProposalData() {
+async function loadProposalTesisData() {
     const SHEET_ID = "1lg2tfyzMX99Ib-b5gZ31dGnHHqLHDpElQO22VMVaPbs";
     const API_KEY = "AIzaSyA3Pgj8HMdb4ak9jToAiTQV0XFdmgvoYPI";
     const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Sheet1?key=${API_KEY}`;
@@ -51,19 +48,11 @@ async function loadProposalData() {
         const ujianAkhir = rows.filter(r => r[0]?.trim().toLowerCase() === "sidang akhir").length;
         const selesai = rows.filter(r => r[0]?.trim().toLowerCase() === "selesai").length;
 
-        renderChart("tesisChart", "Tesis", [proposal, revisiProposal, ujianAkhir,, selesai]);
+        renderChart("tesisChart", "Tesis", [proposal, revisiProposal, ujianAkhir, selesai]);
 
     } catch (err) {
         console.error("Error fetching Tesis data:", err);
     }
-}
-
-async function loadDisertasiData() {
-    // sama seperti loadTesisData()
-}
-
-async function loadKemahKerjaData() {
-    // sama seperti loadTesisData()
 }
 
 // ======================
