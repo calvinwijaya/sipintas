@@ -55,14 +55,14 @@ function collectBeritaAcaraData() {
     data["Hasil"] = hasilInput ? hasilInput.value : "";
 
     // Scores
-    data["Skor_Penguji1"] = document.getElementById("nilaiP1").textContent || "";
-    data["Skor_Pembimbing"] = document.getElementById("nilaiP3").textContent || "";
-    data["Skor_Penguji2"] = document.getElementById("nilaiP2").textContent || "";
+    data["Skor_KetuaSidang"] = document.getElementById("nilaiP1").textContent || "";
+    data["Skor_Penguji1"] = document.getElementById("nilaiP2").textContent || "";
+    data["Skor_Penguji2"] = document.getElementById("nilaiP3").textContent || "";
     data["Rata"] = document.getElementById("nilaiRekap").textContent || "";
 
     // Names of examiners
+    data["NamaKetuaSidang"] = document.getElementById("ketuaSidang").textContent || "";
     data["NamaPenguji1"] = document.getElementById("penguji1").textContent || "";
-    data["NamaPembimbing"] = document.getElementById("penguji3").textContent || "";
     data["NamaPenguji2"] = document.getElementById("penguji2").textContent || "";
 
     // Comments
@@ -111,5 +111,70 @@ async function generateBeritaAcaraDoc() {
 }
 
 // Bind to button
-
 document.getElementById("btnPrintBAUjianTesis").addEventListener("click", generateBeritaAcaraDoc);
+
+// Save revisi notes
+const loadingOverlay = document.getElementById("loadingOverlay");
+
+document.getElementById("btnSaveRevisi").addEventListener("click", () => {
+  const payload = {
+    nim: document.getElementById("nim").textContent,
+    revisiJudul: document.getElementById("judulTesisRevisi").value,
+    metode: document.getElementById("metode").value,
+    penulisan: document.getElementById("penulisan").value,
+    saran: document.getElementById("saran").value
+  };
+
+  const formData = new URLSearchParams();
+  formData.append("action", "saveRevisi");
+  formData.append("data", JSON.stringify(payload));
+
+  loadingOverlay.style.display = "flex";
+
+  fetch("https://script.google.com/macros/s/AKfycbxnBP70qPrrEDfwLuQ0KlPj-Gqct-8GN0O4rugzmnUoiVG5EnQysV1NL7av16Ke0GQX/exec", {
+    method: "POST",
+    body: formData
+  })
+    .then(res => res.json())
+    .then(data => {
+      alert(data.message || "Catatan revisi berhasil disimpan");
+    })
+    .catch(err => {
+      console.error(err);
+      alert("Gagal menyimpan catatan revisi");
+    })
+    .finally(() => {
+      loadingOverlay.style.display = "none";
+    });
+});
+
+document.getElementById("btnLoadRevisi").addEventListener("click", () => {
+  const nim = document.getElementById("nim").textContent.trim();
+  if (!nim) {
+    alert("NIM tidak tersedia!");
+    return;
+  }
+
+  const callbackName = "handleRevisiResponse";
+  loadingOverlay.style.display = "flex";
+  window[callbackName] = function (data) {
+    try {
+      if (data.status === "ok") {
+        document.getElementById("judulTesisRevisi").value = data.revisiJudul || "";
+        document.getElementById("metode").value = data.metode || "";
+        document.getElementById("penulisan").value = data.penulisan || "";
+        document.getElementById("saran").value = data.saran || "";
+        alert("Catatan revisi berhasil dimuat");
+      } else {
+        alert(data.message || "Gagal memuat catatan revisi");
+      }
+    } finally {
+      // HIDE loading no matter success or error
+      loadingOverlay.style.display = "none";
+    }
+  };
+
+  const script = document.createElement("script");
+  script.src = `https://script.google.com/macros/s/AKfycbwEytGNhxIp5Wm3d0YzaGRP9Jlwkoor3BwdElM6b8gH74-9CvoCoFRfJdN9BXhrvwQz4A/exec?nim=${encodeURIComponent(nim)}&action=loadRevisi&callback=${callbackName}`;
+  document.body.appendChild(script);
+});

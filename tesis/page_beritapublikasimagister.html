@@ -124,9 +124,9 @@
         <div id="timPenguji">
         <h6 class="fw-bold">Tim Penguji:</h6>
         <ol>
+            <li id="ketuaSidang">-</li>
             <li id="penguji1">-</li>
             <li id="penguji2">-</li>
-            <li id="penguji3">-</li>
         </ol>
         </div>
 
@@ -229,9 +229,9 @@
         return;
         }
 
-        const nilaiP1 = parseFloat(row[73]) || 0;
-        const nilaiP2 = parseFloat(row[85]) || 0;
-        const nilaiP3 = parseFloat(row[61]) || 0;
+        const nilaiP1 = parseFloat(row[67]) || 0;
+        const nilaiP2 = parseFloat(row[79]) || 0;
+        const nilaiP3 = parseFloat(row[91]) || 0;
         const nilaiRekap = (0.25 * nilaiP1 + 0.25 * nilaiP2 + 0.5 * nilaiP3).toFixed(2);
 
         document.getElementById("nilaiP1").textContent = nilaiP1;
@@ -239,9 +239,9 @@
         document.getElementById("nilaiP3").textContent = nilaiP3;
         document.getElementById("nilaiRekap").textContent = nilaiRekap;
 
-        document.getElementById("penguji1").textContent = row[62] || "-";
-        document.getElementById("penguji2").textContent = row[74] || "-";
-        document.getElementById("penguji3").textContent = row[50] || "-";
+        document.getElementById("ketuaSidang").textContent = row[56] || "-";
+        document.getElementById("penguji1").textContent = row[68] || "-";
+        document.getElementById("penguji2").textContent = row[80] || "-";
 
     } catch (err) {
         console.error(err);

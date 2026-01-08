@@ -28,14 +28,14 @@ function collectBeritaAcaraData() {
     data["Ruang"] = document.getElementById("tempat").value || "";
 
     // Scores
-    data["Skor_Penguji1"] = document.getElementById("nilaiP1").textContent || "";
-    data["Skor_Pembimbing"] = document.getElementById("nilaiP2").textContent || "";
+    data["Skor_KetuaSidang"] = document.getElementById("nilaiP1").textContent || "";
+    data["Skor_Penguji1"] = document.getElementById("nilaiP2").textContent || "";
     data["Skor_Penguji2"] = document.getElementById("nilaiP3").textContent || "";
     data["Rata"] = document.getElementById("nilaiRekap").textContent || "";
 
     // Names of examiners
+    data["NamaKetuaSidang"] = document.getElementById("ketuaSidang").textContent || "";
     data["NamaPenguji1"] = document.getElementById("penguji1").textContent || "";
-    data["NamaPembimbing"] = document.getElementById("penguji3").textContent || "";
     data["NamaPenguji2"] = document.getElementById("penguji2").textContent || "";
 
     return data;

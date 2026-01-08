@@ -140,8 +140,9 @@
     <!-- Content -->
     <div class="content">
         <div id="mainContent">
-            <h2 class="fw-bold text-primary">Selamat Datang di SIPINTAS</h2>
-            <h3 class="text-secondary">Sistem Penilaian Terintegrasi Sistematis</h3>
+            <h1 class="display-4 fw-bold text-primary mb-0">SIPINTAS</h1>
+            <h4 class="text-secondary mt-2">Selamat Datang <span id="userNama" class="fw-semibold"></span></h4>
+            <h5 class="text-muted mt-3">Sistem Penilaian Terintegrasi Sistematis</h5>
             <p class="text-muted">
                 Dashboard ini merupakan sistem untuk mempermudah Dosen Departemen Teknik Geodesi Fakultas Teknik Universitas Gadjah Mada dalam melakukan penilaian, khususnya tugas akhir (Skripsi, Tesis, Disertasi), Kemah Kerja, Kerja Praktik, dan PRGG (Capstone Design). 
                 Sistem terintegrasi ke dalam basisdata dan tersimpan dengan sistematis. 
@@ -164,8 +165,13 @@
         </div>
     </div>
 
-
-
+    <script>
+        const user = JSON.parse(sessionStorage.getItem("user"));
+        if (!user) {
+            window.location.href = 'login.html';
+        }
+        document.getElementById("userNama").textContent = user.nama;
+    </script>    
     <script src="skripsi/proposalskripsi.js"></script>
     <script src="skripsi/ujianskripsi.js"></script>
     <script src="skripsi/rekapskripsi.js"></script>

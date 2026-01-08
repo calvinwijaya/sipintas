@@ -97,19 +97,16 @@
                 </tbody>
                 </table>
                     
-                <!-- Dropdown -->
                 <div class="mb-4 position-relative" style="max-width: 300px;">
                     <label for="dosenPenguji" class="form-label fw-bold">Dosen Penguji:</label>
-                    <input type="text" id="dosenPenguji" class="form-control" placeholder="Ketik nama dosen...">
-                    <ul id="dosenSuggestions" class="list-group position-absolute" 
-                        style="z-index:1000; display:none; width:100%;"></ul>
+                    <input type="text" id="dosenPenguji" class="form-control bg-light" readonly>
                 </div>
 
                 <div class="mb-4">
                     <label for="role" class="form-label fw-bold">Menilai sebagai:</label>
                     <select id="role" class="form-select">
                         <option value="">-- Pilih --</option>
-                        <option value="pembimbing">Pembimbing</option>
+                        <option value="ketuaSidang">Ketua Sidang</option>
                         <option value="penguji1">Penguji 1</option>
                         <option value="penguji2">Penguji 2</option>
                     </select>

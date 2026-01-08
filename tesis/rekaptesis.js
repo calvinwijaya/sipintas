@@ -1,5 +1,29 @@
+const ADMIN_EMAILS = [
+    "afiat@ugm.ac.id",
+    "helmy@ugm.ac.id",
+    "calvin.wijaya@mail.ugm.ac.id",
+    "cecep.pratama@ugm.ac.id",
+    "herisutanta@ugm.ac.id",
+    "madeandi@ugm.ac.id"
+];
+
 async function loadRekapTesisData() {
     console.log("Script running...");
+    
+    const user = JSON.parse(sessionStorage.getItem("user"));
+    const currentEmail = user.email.toLowerCase().trim();
+
+    const isAdmin = ADMIN_EMAILS.includes(currentEmail);
+
+    // If not admin, immediately show restricted message
+    if (!isAdmin) {
+        document.getElementById("rekaptesisList").innerHTML = `
+        <div class="alert alert-info">
+            Menu ini hanya bisa diakses oleh administrator atau enumerator.
+        </div>
+        `;
+        return;
+    }
 
     const SHEET_ID = "1lg2tfyzMX99Ib-b5gZ31dGnHHqLHDpElQO22VMVaPbs";
     const API_KEY = "AIzaSyA3Pgj8HMdb4ak9jToAiTQV0XFdmgvoYPI";
@@ -8,13 +32,9 @@ async function loadRekapTesisData() {
     try {
         const res = await fetch(url);
         const data = await res.json();
-        console.log("Fetched data:", data);
 
         const rows = data.values?.slice(1) || [];
-        console.log("Rows:", rows);
-
         const rekaptesisRows = rows.filter(r => r[0]?.trim().toLowerCase() === "selesai");
-        console.log("Rekap Tesis rows:", rekaptesisRows);
 
         if (rekaptesisRows.length === 0) {
             document.getElementById("rekaptesisList").innerHTML =
@@ -44,7 +64,6 @@ async function loadRekapTesisData() {
             `;
         });
         html += `</div>`;
-
         document.getElementById("rekaptesisList").innerHTML = html;
 
     } catch (err) {

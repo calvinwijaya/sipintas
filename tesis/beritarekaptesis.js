@@ -16,8 +16,8 @@ function collectBeritaAcara() {
     data["NilaiHuruf"] = document.getElementById("nilaiHuruf").textContent || "";
 
     // Names of examiners
+    data["NamaKetuaSidang"] = document.getElementById("ketuaSidang").textContent || "";
     data["NamaPenguji1"] = document.getElementById("penguji1").textContent || "";
-    data["NamaPembimbing"] = document.getElementById("penguji3").textContent || "";
     data["NamaPenguji2"] = document.getElementById("penguji2").textContent || "";
 
     // --- Tanggal in Indonesian format ---

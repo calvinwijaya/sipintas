@@ -3,8 +3,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const avgInput = document.getElementById("average");
     const btnPrint = document.getElementById("btnPrint");
     const dosenInput = document.getElementById("dosenPenguji");
-    const suggestionBox = document.getElementById("dosenSuggestions");
-    let dosenList = [];
 
     // --- Ambil query params ---
     function getQueryParams() {
@@ -18,52 +16,30 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     const mahasiswaData = getQueryParams();
 
-    // --- Load daftar dosen from TXT ---
-    fetch("../DaftarDosen.txt")
-        .then(res => res.text())
-        .then(text => {
-            dosenList = text.split("\n").map(n => n.trim()).filter(Boolean);
-        })
-        .catch(err => console.error("Gagal memuat daftar dosen:", err));
+    // --- Ambil data dosen dari autentikasi ---
+    const user = JSON.parse(sessionStorage.getItem("user"));
 
-    // --- Autocomplete search ---
-    dosenInput.addEventListener("input", () => {
-        const query = dosenInput.value.toLowerCase();
-        suggestionBox.innerHTML = "";
+    if (!user) {
+        alert("Sesi login tidak ditemukan. Silakan login ulang.");
+        window.location.href = "../login.html";
+        return;
+    }
 
-        if (!query) {
-            suggestionBox.style.display = "none";
-            return;
-        }
+    // Set nama dosen otomatis
+    dosenInput.value = user.nama || user.name || "";
 
-        // Filter and limit to 3 matches
-        const matches = dosenList
-            .filter(name => name.toLowerCase().includes(query))
-            .slice(0, 3);
+    // Set role otomatis
+    const roleSelect = document.getElementById("role");
+    const params = new URLSearchParams(window.location.search);
+    const role = params.get("role");
 
-        if (matches.length > 0) {
-            matches.forEach(name => {
-                const li = document.createElement("li");
-                li.textContent = name;
-                li.className = "list-group-item list-group-item-action";
-                li.addEventListener("click", () => {
-                    dosenInput.value = name;
-                    suggestionBox.style.display = "none";
-                });
-                suggestionBox.appendChild(li);
-            });
-            suggestionBox.style.display = "block";
-        } else {
-            suggestionBox.style.display = "none";
-        }
-    });
-
-    // Hide suggestions if clicked outside
-    document.addEventListener("click", (e) => {
-        if (!dosenInput.contains(e.target) && !suggestionBox.contains(e.target)) {
-            suggestionBox.style.display = "none";
-        }
-    });
+    if (!role) {
+        alert("Role tidak ditemukan. Akses tidak valid.");
+        window.location.href = "../index.html";
+        return;
+    }
+    roleSelect.value = role;
+    roleSelect.disabled = true;
 
     // --- Date in Bahasa Indonesia ---
     function getTanggalIndonesia() {
@@ -180,7 +156,7 @@ document.getElementById("btnKirim").addEventListener("click", async () => {
   // ✅ Show loading overlay before sending
   loadingOverlay.style.display = "flex";
 
-  fetch("https://script.google.com/macros/s/AKfycbwUxNx7tMAY1-4FKV8rsarnot7ct3A_HQsF5TRwx-ditBNWv3bsS-v96iBQU7le5opm-w/exec", {
+  fetch("https://script.google.com/macros/s/AKfycbwSV8pMJSvOvyrxqy1JH9gATe6XPvRAz0ToTIj66UJKc8mU6J-Fe9IZbEMU-0WOfY43YQ/exec", {
     method: "POST",
     body: formBody
   })
