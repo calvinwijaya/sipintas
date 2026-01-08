@@ -104,3 +104,70 @@ async function generateBeritaAcaraDoc() {
 
 // Bind to button
 document.getElementById("btnPrintBAProposalSkripsi").addEventListener("click", generateBeritaAcaraDoc);
+
+
+// Save revisi notes
+const loadingOverlay = document.getElementById("loadingOverlay");
+
+document.getElementById("btnSaveRevisi").addEventListener("click", () => {
+  const payload = {
+    nim: document.getElementById("nim").textContent,
+    revisiJudul: document.getElementById("judulProposalSkripsiRevisi").value,
+    metode: document.getElementById("metode").value,
+    penulisan: document.getElementById("penulisan").value,
+    saran: document.getElementById("saran").value
+  };
+
+  const formData = new URLSearchParams();
+  formData.append("action", "saveRevisi");
+  formData.append("data", JSON.stringify(payload));
+
+  loadingOverlay.style.display = "flex";
+
+  fetch("https://script.google.com/macros/s/AKfycbwjdEhhi2ViQyAwMJRYjCbA6mwcaME_eBgY33AA2focw9NGLajH4tr8hLvIiHn1mdyt/exec", {
+    method: "POST",
+    body: formData
+  })
+    .then(res => res.json())
+    .then(data => {
+      alert(data.message || "Catatan revisi berhasil disimpan");
+    })
+    .catch(err => {
+      console.error(err);
+      alert("Gagal menyimpan catatan revisi");
+    })
+    .finally(() => {
+      loadingOverlay.style.display = "none";
+    });
+});
+
+document.getElementById("btnLoadRevisi").addEventListener("click", () => {
+  const nim = document.getElementById("nim").textContent.trim();
+  if (!nim) {
+    alert("NIM tidak tersedia!");
+    return;
+  }
+
+  const callbackName = "handleRevisiResponse";
+  loadingOverlay.style.display = "flex";
+  window[callbackName] = function (data) {
+    try {
+      if (data.status === "ok") {
+        document.getElementById("judulProposalSkripsiRevisi").value = data.revisiJudul || "";
+        document.getElementById("metode").value = data.metode || "";
+        document.getElementById("penulisan").value = data.penulisan || "";
+        document.getElementById("saran").value = data.saran || "";
+        alert("Catatan revisi berhasil dimuat");
+      } else {
+        alert(data.message || "Gagal memuat catatan revisi");
+      }
+    } finally {
+      // HIDE loading no matter success or error
+      loadingOverlay.style.display = "none";
+    }
+  };
+
+  const script = document.createElement("script");
+  script.src = `https://script.google.com/macros/s/AKfycbyFXiMOM374Xfc3Mh3sgIktHAbvE0UKWMCGNJJLU3eBg8Nem-brx4-Y9pg4CmEjDjvm/exec?nim=${encodeURIComponent(nim)}&action=loadRevisi&callback=${callbackName}`;
+  document.body.appendChild(script);
+});

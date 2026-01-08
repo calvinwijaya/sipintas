@@ -175,8 +175,8 @@
         return;
         }
 
-        const nilaiProposal = parseFloat(row[40]) || 0;
-        const nilaiSeminar = parseFloat(row[85]) || 0;
+        const nilaiProposal = parseFloat(row[44]) || 0;
+        const nilaiSeminar = parseFloat(row[89]) || 0;
         const nilaiAkhir = ((nilaiProposal + 3 * nilaiSeminar)/4).toFixed(2);
 
         // Tentukan nilai huruf
@@ -216,9 +216,9 @@
         document.getElementById("nilaiAkhir").textContent = nilaiAkhir;
         document.getElementById("nilaiHuruf").textContent = nilaiHuruf;
 
-        document.getElementById("pembimbingskripsi").textContent = row[43] || "-";
-        document.getElementById("penguji1").textContent = row[57] || "-"; 
-        document.getElementById("penguji2").textContent = row[71] || "-";
+        document.getElementById("pembimbingskripsi").textContent = row[47] || "-";
+        document.getElementById("penguji1").textContent = row[61] || "-"; 
+        document.getElementById("penguji2").textContent = row[75] || "-";
 
     } catch (err) {
         console.error(err);

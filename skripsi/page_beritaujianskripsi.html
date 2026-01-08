@@ -208,6 +208,8 @@
 
         <div class="mt-3 mb-3">
             <button id="btnPrintBAUjianSkripsi" class="btn btn-primary">Print Berita Acara</button>
+            <button id="btnSaveRevisi" class="btn btn-outline-secondary ms-2">Simpan Catatan Revisi</button>
+            <button id="btnLoadRevisi" class="btn btn-outline-secondary ms-2">Load Catatan Revisi</button>
         </div>
 
         <div class="mt-5">
@@ -305,9 +307,9 @@
         return;
         }
 
-        const nilaiP1 = parseFloat(row[56]) || 0;
-        const nilaiP2 = parseFloat(row[70]) || 0;
-        const nilaiP3 = parseFloat(row[84]) || 0; 
+        const nilaiP1 = parseFloat(row[60]) || 0;
+        const nilaiP2 = parseFloat(row[74]) || 0;
+        const nilaiP3 = parseFloat(row[88]) || 0; 
         const nilaiRekap = ((2 * nilaiP1 + nilaiP2 + nilaiP3) / 4).toFixed(2);
 
         document.getElementById("nilaiP1").textContent = nilaiP1;
@@ -315,9 +317,9 @@
         document.getElementById("nilaiP3").textContent = nilaiP3;
         document.getElementById("nilaiRekap").textContent = nilaiRekap;
 
-        document.getElementById("pembimbingskripsi").textContent = row[43] || "-";
-        document.getElementById("penguji1").textContent = row[57] || "-"; 
-        document.getElementById("penguji2").textContent = row[71] || "-";
+        document.getElementById("pembimbingskripsi").textContent = row[47] || "-";
+        document.getElementById("penguji1").textContent = row[61] || "-"; 
+        document.getElementById("penguji2").textContent = row[75] || "-";
 
     } catch (err) {
         console.error(err);

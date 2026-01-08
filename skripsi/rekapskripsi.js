@@ -1,5 +1,29 @@
+const ADMIN_EMAILS = [
+    "afiat@ugm.ac.id",
+    "helmy@ugm.ac.id",
+    "calvin.wijaya@mail.ugm.ac.id",
+    "cecep.pratama@ugm.ac.id",
+    "herisutanta@ugm.ac.id",
+    "madeandi@ugm.ac.id"
+];
+
 async function loadRekapSkripsiData() {
     console.log("Script running...");
+
+    const user = JSON.parse(sessionStorage.getItem("user"));
+    const currentEmail = user.email.toLowerCase().trim();
+
+    const isAdmin = ADMIN_EMAILS.includes(currentEmail);
+
+    // If not admin, immediately show restricted message
+    if (!isAdmin) {
+        document.getElementById("rekaptesisList").innerHTML = `
+        <div class="alert alert-info">
+            Menu ini hanya bisa diakses oleh administrator atau enumerator.
+        </div>
+        `;
+        return;
+    }
 
     const SHEET_ID = "1THmInPem3cxfB1kJJifuC4C1MMi4cPH3zlFN20grBJA";
     const API_KEY = "AIzaSyA3Pgj8HMdb4ak9jToAiTQV0XFdmgvoYPI";
@@ -24,7 +48,7 @@ async function loadRekapSkripsiData() {
 
         let html = `<div class="row g-3">`;
         rekapskripsiRows.forEach(r => {
-            const [status, no, nama, nim, pembimbing, judulProposal, judulskripsi] = r;
+            const [status, no, nama, nim, pembimbing, judulProposal, ketuaSidangProposal, penguji1Proposal, penguji2Proposal, linkGDriveProposal, judulskripsi] = r;
             const encodedParams = new URLSearchParams({ nama, nim, pembimbing, judulProposal, judulskripsi }).toString();
 
             html += `

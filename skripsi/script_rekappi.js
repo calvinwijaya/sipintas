@@ -37,18 +37,18 @@ document.addEventListener("DOMContentLoaded", () => {
             };
 
             // === Hitung PI === pakai yang Atas
-            const c1Indices = [14, 23, 32, 44, 58, 72];
-            const e1Indices = [15, 24, 33, 45, 59, 73];
-            const j2Indices = [19, 28, 37, 46, 60, 74];
-            const c3Indices = [47, 61, 75];
-            const e3Indices = [18, 27, 36, 48, 62, 76];
-            const h2Indices = [49, 63, 77];
-            const i1Indices = [50, 64, 78];
-            const k3Indices = [17, 26, 35, 51, 65, 79];
-            const g2Indices = [52, 66, 80];
-            const k1Indices = [16, 25, 34, 53, 67, 81];
-            const g1Indices = [20, 29, 38, 54, 68, 82];
-            const f2Indices = [55, 69, 83];
+            const c1Indices = [18, 27, 36, 48, 62, 76];
+            const e1Indices = [19, 28, 37, 49, 63, 77];
+            const j2Indices = [23, 32, 41, 50, 64, 78];
+            const c3Indices = [51, 65, 79];
+            const e3Indices = [22, 31, 40, 52, 66, 80];
+            const h2Indices = [53, 67, 81];
+            const i1Indices = [54, 68, 82];
+            const k3Indices = [21, 30, 39, 55, 69, 83];
+            const g2Indices = [56, 70, 84];
+            const k1Indices = [20, 29, 38, 57, 71, 85];
+            const g1Indices = [24, 33, 42, 58, 72, 86];
+            const f2Indices = [59, 73, 87];
 
             // Hitung
             const c1 = avgFromRow(c1Indices).toFixed(2);

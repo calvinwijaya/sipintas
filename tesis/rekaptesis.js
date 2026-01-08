@@ -1,4 +1,4 @@
-const ADMIN_EMAILS = [
+const REKAPTESIS_ADMIN_EMAILS = [
     "afiat@ugm.ac.id",
     "helmy@ugm.ac.id",
     "calvin.wijaya@mail.ugm.ac.id",
@@ -13,7 +13,7 @@ async function loadRekapTesisData() {
     const user = JSON.parse(sessionStorage.getItem("user"));
     const currentEmail = user.email.toLowerCase().trim();
 
-    const isAdmin = ADMIN_EMAILS.includes(currentEmail);
+    const isAdmin = REKAPTESIS_ADMIN_EMAILS.includes(currentEmail);
 
     // If not admin, immediately show restricted message
     if (!isAdmin) {
