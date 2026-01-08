@@ -1,8 +1,11 @@
+const PROPOSAL_ADMIN_EMAILS = ["afiat@ugm.ac.id"];
+
 async function loadProposalData() {
     console.log("Script running...");
 
     const user = JSON.parse(sessionStorage.getItem("user"));
     const currentEmail = user.email.toLowerCase().trim();
+    const isAdmin = PROPOSAL_ADMIN_EMAILS.includes(currentEmail);
 
     const SHEET_ID = "1lg2tfyzMX99Ib-b5gZ31dGnHHqLHDpElQO22VMVaPbs";
     const API_KEY = "AIzaSyA3Pgj8HMdb4ak9jToAiTQV0XFdmgvoYPI";
@@ -38,22 +41,23 @@ async function loadProposalData() {
             const penguji1 = r[COL_PENGUJI1] || "";
             const penguji2 = r[COL_PENGUJI2] || "";
 
+            const isKetua   = ketua.toLowerCase() === currentEmail;
+            const isPenguji1 = penguji1.toLowerCase() === currentEmail;
+            const isPenguji2 = penguji2.toLowerCase() === currentEmail;
+            const isAdminHere = isAdmin;
+
             let role = null;
-            if (ketua.toLowerCase() === currentEmail) {
-                role = "ketuaSidang";
-            } else if (penguji1.toLowerCase() === currentEmail) {
-                role = "penguji1";
-            } else if (penguji2.toLowerCase() === currentEmail) {
-                role = "penguji2";
-            } else {
-                return; // safety: should never happen
-            }
-            const roles = [ketua.toLowerCase(), penguji1.toLowerCase(), penguji2.toLowerCase()];
-            if (!roles.includes(currentEmail)) return;
+
+            // Role assignment
+            if (isKetua) role = "ketuaSidang";
+            else if (isPenguji1) role = "penguji1";
+            else if (isPenguji2) role = "penguji2";
+            else if (isAdminHere) role = "admin";
+            else return; // user not related to this proposal
+
             hasVisibleCard = true;
 
             const encodedParams = new URLSearchParams({ nama, nim, pembimbing, judul, role }).toString();
-            const isKetua = ketua === currentEmail;
 
             html += `
                 <div class="col-md-6">
@@ -62,12 +66,15 @@ async function loadProposalData() {
                             <h5 class="card-title">${nama} <small class="text-muted">(${nim})</small></h5>
                             <p class="card-text"><strong>Pembimbing:</strong> ${pembimbing}</p>
                             <p class="card-text"><em>${judul}</em></p>
-                            <a href="tesis/page_penilaianproposaltesis.html?${encodedParams}" class="btn btn-primary btn-sm">
-                                Lakukan Penilaian
+                            ${role !== "admin" ? `
+                                <a href="tesis/page_penilaianproposaltesis.html?${encodedParams}" class="btn btn-primary btn-sm">
+                                    Lakukan Penilaian
                             </a>
-                            ${isKetua ? `
+                            ` : ""}
+
+                            ${role === "ketuaSidang" || role === "admin" ? `
                                 <a href="tesis/page_beritaproposaltesis.html?${encodedParams}" class="btn btn-primary btn-sm">
-                                Buat Berita Acara
+                                    Buat Berita Acara
                             </a>
                             ` : ""}
                         </div>

@@ -44,7 +44,7 @@ async function loadRekapTesisData() {
 
         let html = `<div class="row g-3">`;
         rekaptesisRows.forEach(r => {
-            const [status, no, nama, nim, pembimbing, judulProposal, judulTesis] = r;
+            const [status, no, nama, nim, pembimbing, judulProposal, ketuasidangproposal, penguji1proposal, penguji2proposal, judulTesis] = r;
             const judul = judulTesis;
             const encodedParams = new URLSearchParams({ nama, nim, pembimbing, judul }).toString();
 
