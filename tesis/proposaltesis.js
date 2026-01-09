@@ -33,9 +33,12 @@ async function loadProposalData() {
         proposalRows.forEach(r => {
             const [status, no, nama, nim, pembimbing, judul] = r;
 
-            const COL_KETUA   = 130;
-            const COL_PENGUJI1 = 131;
-            const COL_PENGUJI2 = 132;
+            const COL_LINK = 9; 
+            const linkGoogleDriveProposalTesis = r[COL_LINK] || "";
+
+            const COL_KETUA   = 133;
+            const COL_PENGUJI1 = 134;
+            const COL_PENGUJI2 = 135;
 
             const ketua   = r[COL_KETUA]   || "";
             const penguji1 = r[COL_PENGUJI1] || "";
@@ -57,7 +60,7 @@ async function loadProposalData() {
 
             hasVisibleCard = true;
 
-            const encodedParams = new URLSearchParams({ nama, nim, pembimbing, judul, role }).toString();
+            const encodedParams = new URLSearchParams({ nama, nim, pembimbing, judul, linkGoogleDriveProposalTesis, role }).toString();
 
             html += `
                 <div class="col-md-6">

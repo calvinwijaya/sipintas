@@ -31,11 +31,17 @@ async function loadUjianTesisData() {
         let html = `<div class="row g-3">`;
         let hasVisibleCard = false;        
         ujiantesisRows.forEach(r => {
-            const [status, no, nama, nim, pembimbing, judulProposal, ketuasidangproposal, penguji1proposal, penguji2proposal, judulTesis] = r;
-            
-            const COL_KETUA   = 133;
-            const COL_PENGUJI1 = 134;
-            const COL_PENGUJI2 = 135;
+            const [status, no, nama, nim, pembimbing] = r;
+                        
+            const COL_JUDUL_TESIS = 10;
+            const judulTesis = r[COL_JUDUL_TESIS] || "";
+
+            const COL_LINK = 15; 
+            const linkGoogleDriveNaskahTesis = r[COL_LINK] || "";
+
+            const COL_KETUA   = 136;
+            const COL_PENGUJI1 = 137;
+            const COL_PENGUJI2 = 138;
 
             const ketua   = r[COL_KETUA]   || "";
             const penguji1 = r[COL_PENGUJI1] || "";
@@ -58,7 +64,7 @@ async function loadUjianTesisData() {
             hasVisibleCard = true;
 
             const judul = judulTesis;
-            const encodedParams = new URLSearchParams({ nama, nim, pembimbing, judul, role }).toString();
+            const encodedParams = new URLSearchParams({ nama, nim, pembimbing, judul, linkGoogleDriveNaskahTesis, role }).toString();
 
             html += `
                 <div class="col-md-6">

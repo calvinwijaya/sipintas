@@ -205,4 +205,46 @@ document.addEventListener("DOMContentLoaded", () => {
             loadingOverlay.style.display = "none";
             });
     });
+
+    document.getElementById("btnLoadNilaiSkripsi").addEventListener("click", () => {
+        const nim = document.getElementById("nim").textContent.trim();
+        const role = document.getElementById("role").value;
+
+        if (!nim || !role) {
+            alert("NIM atau peran belum tersedia!");
+            return;
+        }
+
+        const callbackName = "handleLoadNilaiResponse_" + Date.now();
+        loadingOverlay.style.display = "flex";
+
+        window[callbackName] = function (data) {
+            try {
+            if (data.status === "ok") {
+                const inputs = document.querySelectorAll(".score-input");
+
+                inputs.forEach((inp, i) => {
+                    inp.value = data.scores[i] !== undefined ? data.scores[i] : "";
+                });
+
+                alert("Nilai berhasil dimuat.");
+            } else {
+                alert(data.message || "Gagal memuat nilai.");
+            }
+            } finally {
+            loadingOverlay.style.display = "none";
+            delete window[callbackName];
+            }
+        };
+
+        const script = document.createElement("script");
+        script.src =
+            "https://script.google.com/macros/s/AKfycbw-6QmFiWUpTwGDSy9DcILCqyg3K01PldHNpecTCne2E-NbtzpphGom4XgvTRvzrZpH/exec" +
+            `?nim=${encodeURIComponent(nim)}` +
+            `&role=${encodeURIComponent(role)}` +
+            `&action=loadRevisi` +
+            `&callback=${callbackName}`;
+
+        document.body.appendChild(script);
+    });
 });

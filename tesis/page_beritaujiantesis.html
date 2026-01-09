@@ -303,9 +303,9 @@
         return;
         }
 
-        const nilaiP1 = parseFloat(row[104]) || 0;
-        const nilaiP2 = parseFloat(row[115]) || 0;
-        const nilaiP3 = parseFloat(row[126]) || 0; 
+        const nilaiP1 = parseFloat(row[107]) || 0;
+        const nilaiP2 = parseFloat(row[118]) || 0;
+        const nilaiP3 = parseFloat(row[129]) || 0; 
         const nilaiRekap = (0.25 * nilaiP1 + 0.25 * nilaiP2 + 0.5 * nilaiP3).toFixed(2);
 
         document.getElementById("nilaiP1").textContent = nilaiP1;
@@ -313,9 +313,9 @@
         document.getElementById("nilaiP3").textContent = nilaiP3;
         document.getElementById("nilaiRekap").textContent = nilaiRekap;
 
-        document.getElementById("ketuaSidang").textContent = row[94] || "-";
-        document.getElementById("penguji1").textContent = row[105] || "-";
-        document.getElementById("penguji2").textContent = row[116] || "-"; 
+        document.getElementById("ketuaSidang").textContent = row[97] || "-";
+        document.getElementById("penguji1").textContent = row[108] || "-";
+        document.getElementById("penguji2").textContent = row[119] || "-"; 
 
     } catch (err) {
         console.error(err);

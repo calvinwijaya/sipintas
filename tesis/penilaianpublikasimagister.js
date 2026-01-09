@@ -156,7 +156,7 @@ document.getElementById("btnKirim").addEventListener("click", async () => {
   // ✅ Show loading overlay before sending
   loadingOverlay.style.display = "flex";
 
-  fetch("https://script.google.com/macros/s/AKfycbwSV8pMJSvOvyrxqy1JH9gATe6XPvRAz0ToTIj66UJKc8mU6J-Fe9IZbEMU-0WOfY43YQ/exec", {
+  fetch("https://script.google.com/macros/s/AKfycbyGNFdnlGQUFX8GmI-hj25gk91vBNZV71xcCVoHarCFuW1bZdXjPYmUVyiGP0azdObxbg/exec", {
     method: "POST",
     body: formBody
   })
@@ -177,3 +177,45 @@ document.getElementById("btnKirim").addEventListener("click", async () => {
       loadingOverlay.style.display = "none";
     });
 });
+
+document.getElementById("btnLoadNilaiPublikasiTesis").addEventListener("click", () => {
+    const nim = document.getElementById("nim").textContent.trim();
+    const role = document.getElementById("role").value;
+
+    if (!nim || !role) {
+        alert("NIM atau peran belum tersedia!");
+        return;
+    }
+
+    const callbackName = "handleLoadNilaiResponse_" + Date.now();
+    loadingOverlay.style.display = "flex";
+
+    window[callbackName] = function (data) {
+        try {
+        if (data.status === "ok") {
+            const inputs = document.querySelectorAll(".score-input");
+
+            inputs.forEach((inp, i) => {
+                inp.value = data.scores[i] !== undefined ? data.scores[i] : "";
+            });
+
+            alert("Nilai berhasil dimuat.");
+        } else {
+            alert(data.message || "Gagal memuat nilai.");
+        }
+        } finally {
+        loadingOverlay.style.display = "none";
+        delete window[callbackName];
+        }
+    };
+
+    const script = document.createElement("script");
+    script.src =
+        "https://script.google.com/macros/s/AKfycbyWtlgujhqx-RMAO3Nfv6yUyxxL2WWfZ4VKyyDgPPgUYrDhkApQ8xErCxnxsZqGoVmf/exec" +
+        `?nim=${encodeURIComponent(nim)}` +
+        `&role=${encodeURIComponent(role)}` +
+        `&action=loadRevisi` +
+        `&callback=${callbackName}`;
+
+    document.body.appendChild(script);
+  });

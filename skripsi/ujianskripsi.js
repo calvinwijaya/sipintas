@@ -31,7 +31,13 @@ async function loadUjianSkripsiData() {
         let html = `<div class="row g-3">`;
         let hasVisibleCard = false;
         ujianSkripsiRows.forEach(r => {
-            const [status, no, nama, nim, pembimbing, judulproposal, ketuaSidangProposal, penguji1Proposal, penguji2Proposal, linkGDriveProposal, judulskripsi] = r;
+            const [status, no, nama, nim, pembimbing, judulproposal] = r;
+
+            const COL_JUDUL_SKRIPSI = 10;
+            const judulskripsi = r[COL_JUDUL_SKRIPSI] || "";
+
+            const COL_LINK = 14;
+            const linkGoogleDriveSkripsi = r[COL_LINK] || "";
 
             const COL_KETUA   = 97;
             const COL_PENGUJI1 = 98;
@@ -57,7 +63,7 @@ async function loadUjianSkripsiData() {
 
             hasVisibleCard = true;                        
             
-            const encodedParams = new URLSearchParams({ nama, nim, pembimbing, judulproposal, judulskripsi, role }).toString();
+            const encodedParams = new URLSearchParams({ nama, nim, pembimbing, judulproposal, judulskripsi, linkGoogleDriveSkripsi, role }).toString();
 
             html += `
                 <div class="col-md-6">

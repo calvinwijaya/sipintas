@@ -112,7 +112,12 @@
                         <option value="Ruang Lab GGGF"></option>
                         </datalist>
                     </td>
-                    </tr>           
+                    </tr>
+                    <tr>
+                        <td class="info-label">Link Google Drive Proposal</td>
+                        <td class="info-colon">:</td>
+                        <td id="linkGoogleDriveProposal"></td>
+                    </tr>
                 </tbody>
                 </table>
                     
@@ -175,8 +180,9 @@
 
                 <!-- Action Buttons -->
                 <div class="mt-4 text-end">
-                    <button id="btnKirim" class="btn btn-primary me-2">Kirim Nilai</button>
-                    <button id="btnPrint" class="btn btn-outline-primary">Print Nilai</button>
+                    <button id="btnKirim" class="btn btn-primary me-1">Kirim Nilai</button>
+                    <button id="btnPrint" class="btn btn-outline-primary me-1">Print Nilai</button>
+                    <button id="btnLoadNilai" class="btn btn-outline-primary">Load Nilai</button>
                 </div>
 
                 <div class="mt-5">
@@ -206,7 +212,8 @@
                 nama: params.get("nama") || "",
                 nim: params.get("nim") || "",
                 pembimbing: params.get("pembimbing") || "",
-                judulproposal: params.get("judulproposal") || ""
+                judulproposal: params.get("judulproposal") || "",
+                linkGoogleDriveProposal: params.get("linkGoogleDriveProposal") || ""
             };
         }
 
@@ -217,6 +224,14 @@
             document.getElementById("nim").textContent = data.nim;
             document.getElementById("pembimbing").textContent = data.pembimbing;
             document.getElementById("judulproposal").textContent = data.judulproposal;
+            const linkCell = document.getElementById("linkGoogleDriveProposal");
+            const url = data.linkGoogleDriveProposal;
+
+            if (url) {
+                linkCell.innerHTML = `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`;
+                } else {
+                linkCell.textContent = "";
+            }
         });
         </script>
         <script>
