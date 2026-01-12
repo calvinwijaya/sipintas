@@ -134,6 +134,7 @@
             </li>
             <li><a href="#" class="nav-link"><i class="bi bi-briefcase me-2"></i> <span class="label">Penilaian Kerja Praktik</span></a></li>
             <li><a href="#" class="nav-link"><i class="bi bi-diagram-3 me-2"></i> <span class="label">Penilaian PRGG</span></a></li>
+            <li><a href="#" class="nav-link" id="btnLogout"><i class="bi bi-box-arrow-right me-2"></i><span class="label">Log Out</span></a></li>
         </ul>
     </div>
 
@@ -328,5 +329,40 @@
             }
         });
     </script>
+    <script>
+    document.getElementById("btnLogout").addEventListener("click", (e) => {
+    e.preventDefault();
+
+    if (!confirm("Are you sure you want to log out?")) return;
+
+    try {
+        const userRaw = sessionStorage.getItem("user");
+        const user = userRaw ? JSON.parse(userRaw) : null;
+        const email = user?.email;
+
+        if (window.google?.accounts?.id) {
+        // Prevent automatic re-login
+        google.accounts.id.disableAutoSelect();
+
+        // Revoke Google session if email is available
+        if (email) {
+            google.accounts.id.revoke(email, () => {
+            console.log("Google session revoked for", email);
+            });
+        }
+        }
+    } catch (err) {
+        console.warn("Logout cleanup error:", err);
+    }
+
+    // Clear session
+    sessionStorage.clear();
+    localStorage.clear();
+
+    // Redirect back to login
+    window.location.href = "login.html";
+    });
+    </script>
+
 </body>
 </html>
