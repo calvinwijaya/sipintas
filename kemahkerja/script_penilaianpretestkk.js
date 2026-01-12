@@ -101,51 +101,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // --- Autocomplete Dosen ---
     const dosenInput = document.getElementById("dosenPenguji");
-    const suggestionBox = document.getElementById("dosenSuggestions");
-    let dosenList = [];
 
-    fetch("../DaftarDosen.txt")
-        .then(res => res.text())
-        .then(text => {
-        dosenList = text.split("\n").map(n => n.trim()).filter(Boolean);
-        })
-        .catch(err => console.error("Gagal memuat daftar dosen:", err));
+    // --- Ambil data dosen dari autentikasi ---
+    const user = JSON.parse(sessionStorage.getItem("user"));
 
-    dosenInput.addEventListener("input", () => {
-        const query = dosenInput.value.toLowerCase();
-        suggestionBox.innerHTML = "";
-
-        if (!query) {
-        suggestionBox.style.display = "none";
+    if (!user) {
+        alert("Sesi login tidak ditemukan. Silakan login ulang.");
+        window.location.href = "../login.html";
         return;
-        }
+    }
 
-        const matches = dosenList
-        .filter(name => name.toLowerCase().includes(query))
-        .slice(0, 3);
-
-        if (matches.length > 0) {
-        matches.forEach(name => {
-            const li = document.createElement("li");
-            li.textContent = name;
-            li.className = "list-group-item list-group-item-action";
-            li.addEventListener("click", () => {
-            dosenInput.value = name;
-            suggestionBox.style.display = "none";
-            });
-            suggestionBox.appendChild(li);
-        });
-        suggestionBox.style.display = "block";
-        } else {
-        suggestionBox.style.display = "none";
-        }
-    });
-
-    document.addEventListener("click", (e) => {
-        if (!dosenInput.contains(e.target) && !suggestionBox.contains(e.target)) {
-        suggestionBox.style.display = "none";
-        }
-    });
+    // Set nama dosen otomatis
+    dosenInput.value = user.nama || user.name || "";
 
     // --- Kirim data ke Google Apps Script ---
     const loadingOverlay = document.getElementById("loadingOverlay");
@@ -178,7 +145,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         loadingOverlay.style.display = "flex";
 
-        fetch("https://script.google.com/macros/s/AKfycbzhXmF-mziohYv1SNQBBNav3rtATns6n2-69QbFL1fRRsiAr_bsiJnFIiyKH5RvQxBV4g/exec", {
+        fetch("https://script.google.com/macros/s/AKfycbyjMzhrDyfpWx_uWv7RQQM9DiW-S32gnDVQgedk2h-dgkh8DGiwqagJecjYn1b4anHA/exec", {
         method: "POST",
         body: formBody
         })
@@ -198,4 +165,54 @@ document.addEventListener("DOMContentLoaded", () => {
             loadingOverlay.style.display = "none";
         });
     });
+
+    // document.getElementById("btnLoadNilai").addEventListener("click", () => {
+    //     const namaDosen = dosenInput.value.trim();
+    //     if (!namaDosen) {
+    //         alert("Nama dosen belum tersedia.");
+    //         return;
+    //     }
+
+    //     loadingOverlay.style.display = "flex";
+
+    //     const payload = {
+    //         namaDosen: namaDosen,
+    //         mahasiswa: dataMahasiswa
+    //     };
+
+    //     const callbackName = "handleLoadNilai_" + Date.now();
+
+    //     window[callbackName] = function (result) {
+    //         try {
+    //         if (result.status !== "ok") {
+    //             alert(result.message || "Gagal memuat nilai");
+    //             return;
+    //         }
+
+    //         const rows = document.querySelectorAll("tbody.rubrik-penilaian tr");
+
+    //         rows.forEach((row, rIndex) => {
+    //             const inputs = row.querySelectorAll(".score-input");
+    //             inputs.forEach((inp, cIndex) => {
+    //             inp.value = result.data?.scores?.[rIndex]?.[cIndex] ?? "";
+    //             });
+    //         });
+
+    //         alert("Nilai berhasil dimuat.");
+    //         } finally {
+    //         loadingOverlay.style.display = "none";
+    //         delete window[callbackName];
+    //         }
+    //     };
+
+    //     const script = document.createElement("script");
+    //     script.src =
+    //         "https://script.google.com/macros/s/AKfycbxC-c4Zn2JemsXFRrNAlCQKx3ZU8UhlVQScg298oVYi_KkGT5ryZCqUuULInyWjVoq8qQ/exec" +
+    //         `?action=loadNilai` +
+    //         `&data=${encodeURIComponent(JSON.stringify(payload))}` +
+    //         `&callback=${callbackName}`;
+
+    //     document.body.appendChild(script);
+    //     });
+
 });

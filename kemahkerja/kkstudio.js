@@ -1,5 +1,9 @@
+const KKStudio_ADMIN_EMAILS = ["sigitm@ugm.ac.id"];
+
 async function loadKKStudioData() {
-    console.log("Script running...");
+    const user = JSON.parse(sessionStorage.getItem("user"));
+    const currentEmail = user.email.toLowerCase().trim();
+    const isAdmin = KKStudio_ADMIN_EMAILS.includes(currentEmail);
 
     const SHEET_ID = "17JdVhNRwi_UsYmWk4m9GAljkveGrGkUboI_lPNrFrnU"; // only the ID
     const API_KEY = "AIzaSyA3Pgj8HMdb4ak9jToAiTQV0XFdmgvoYPI";
@@ -8,14 +12,7 @@ async function loadKKStudioData() {
     try {
         const res = await fetch(url);
         const data = await res.json();
-        console.log("Fetched data:", data);
-
-        const rows = data.values?.slice(1) || []; // skip header row
-        console.log("Rows:", rows);
-
-        // Filter only Pre-Test rows
-        const KKStudioRows = rows.filter(r => r[0]?.trim().toLowerCase() === "studio");
-        console.log("KK Studio rows:", KKStudioRows);
+        const KKStudioRows = data.values?.slice(1) || []; // skip header row
 
         if (KKStudioRows.length === 0) {
             document.getElementById("KKStudioList").innerHTML =
@@ -26,23 +23,38 @@ async function loadKKStudioData() {
         // Group students by Kelompok
         const groups = {};
         KKStudioRows.forEach(r => {
-            const [status, no, nama, nim, kelompok, lokasi] = r;
+            const no       = r[0];
+            const nama     = r[1];
+            const nim      = r[2];
+            const kelompok = r[3];
+            const lokasi   = r[4]; 
             if (!groups[kelompok]) groups[kelompok] = [];
-            groups[kelompok].push({ nama, nim, lokasi });
+            groups[kelompok].push(r);
         });
 
         // Build HTML
         let html = `<div class="row g-3">`;
+        let hasVisibleCard = false;
 
-        Object.entries(groups).forEach(([kelompok, members]) => {
-            const lokasi = members[0].lokasi || "";
+        Object.entries(groups).forEach(([kelompok, rows]) => {
+            const lokasi = rows[0][4] || "";
 
-            // Build query params for this group
+            const PEMBIMBING_STUDIO_COL = 88;
+            const pembimbingStudio = (rows[0][PEMBIMBING_STUDIO_COL] || "").toLowerCase().trim();
+
+            const isPembimbingStudio = pembimbingStudio === currentEmail;
+            const isAdminHere = isAdmin;
+
+            if (!isPembimbingStudio && !isAdminHere) return;
+
+            hasVisibleCard = true;
+
             const encodedParams = new URLSearchParams();
             encodedParams.append("kelompok", kelompok);
-            members.forEach((m, idx) => {
-                encodedParams.append("nama" + (idx+1), m.nama);
-                encodedParams.append("nim" + (idx+1), m.nim);
+
+            rows.forEach((r, idx) => {
+                encodedParams.append("nama" + (idx + 1), r[1]);
+                encodedParams.append("nim" + (idx + 1), r[2]);
             });
 
             html += `
@@ -50,14 +62,12 @@ async function loadKKStudioData() {
                     <div class="card shadow-sm h-100">
                         <div class="card-body text-center">
                             <h4 class="fw-bold text-primary mb-1">Kelompok ${kelompok}</h4>
-                            <p class="text-muted mb-3">
-                                <strong>Lokasi:</strong> ${lokasi}
-                            </p>
+                            <p class="text-muted mb-3"><strong>Lokasi:</strong> ${lokasi}</p>
                             <ol class="text-start small mb-3 ps-3">
-                                ${members.map(m => `<li>${m.nama}</li>`).join("")}
+                                ${rows.map(r => `<li>${r[1]}</li>`).join("")}
                             </ol>
-                            <a href="kemahkerja/page_penilaiankkstudio.html?${encodedParams.toString()}" 
-                               class="btn btn-primary btn-sm">
+                            <a href="kemahkerja/page_penilaiankkstudio.html?${encodedParams}"
+                            class="btn btn-primary btn-sm">
                                 Lakukan Penilaian
                             </a>
                         </div>
@@ -65,6 +75,14 @@ async function loadKKStudioData() {
                 </div>
             `;
         });
+
+        if (!hasVisibleCard) {
+            document.getElementById("KKStudioList").innerHTML =
+                `<div class="alert alert-info">
+                    Tidak ada mahasiswa Studio KK yang ditugaskan kepada Anda.
+                </div>`;
+            return;
+        }        
 
         html += `</div>`;
         document.getElementById("KKStudioList").innerHTML = html;

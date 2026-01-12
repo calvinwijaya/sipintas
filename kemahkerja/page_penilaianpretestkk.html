@@ -49,9 +49,7 @@
         <!-- Dosen Penguji -->
         <div class="mb-4 position-relative" style="max-width: 500px;">
             <label for="dosenPenguji" class="form-label fw-bold">Dosen Penguji:</label>
-            <input type="text" id="dosenPenguji" class="form-control" placeholder="Ketik nama dosen...">
-            <ul id="dosenSuggestions" class="list-group position-absolute" 
-                style="z-index:1000; display:none; width:100%;"></ul>
+            <input type="text" id="dosenPenguji" class="form-control bg-light" readonly>
         </div>
 
         <!-- Penilaian Materi Ujian -->
@@ -91,6 +89,7 @@
         <!-- Buttons -->
         <div class="mt-6 text-end">
             <button id="btnKirim" class="btn btn-primary me-2">Kirim Nilai</button>
+            <!-- <button id="btnLoadNilai" class="btn btn-outline-primary">Load Nilai</button> -->
         </div>
 
         <ol class="text-muted">
