@@ -139,11 +139,17 @@ document.addEventListener("DOMContentLoaded", () => {
         })
             .then(res => res.json())
             .then(result => {
-            if (result.status === "success") {
-                alert("Nilai berhasil dikirim!");
-            } else {
-                alert("Gagal: " + result.message);
-            }
+                if (result.status === "success") {
+                showModal({
+                    type: "success",
+                    title: "Nilai berhasil dikirim!",
+                });
+                } else {
+                    showModal({
+                    type: "error",
+                    title: "Gagal mengirim nilai",
+                    });
+                }
             })
             .catch(err => {
             console.error("Error:", err);
@@ -176,9 +182,15 @@ document.addEventListener("DOMContentLoaded", () => {
                     inp.value = data.scores[i] !== undefined ? data.scores[i] : "";
                 });
 
-                alert("Nilai berhasil dimuat.");
+                showModal({
+                    type: "success",
+                    title: "Nilai berhasil dimuat!",
+                });
             } else {
-                alert(data.message || "Gagal memuat nilai.");
+                showModal({
+                    type: "error",
+                    title: "Gagal memuat nilai",
+                    });
             }
             } finally {
             loadingOverlay.style.display = "none";
@@ -196,4 +208,31 @@ document.addEventListener("DOMContentLoaded", () => {
 
         document.body.appendChild(script);
     });
+
+    function showModal({ type, title }) {
+        const modal = document.getElementById("notifyModal");
+        const icon = document.getElementById("modalIcon");
+        const titleEl = document.getElementById("modalTitle");
+
+        // Reset
+        icon.className = "modal-icon";
+        icon.textContent = "";
+
+        if (type === "success") {
+            icon.textContent = "✔";
+            icon.classList.add("success");
+        } else if (type === "error") {
+            icon.textContent = "✖";
+            icon.classList.add("error");
+        }
+
+        titleEl.textContent = title;
+
+        modal.classList.remove("hidden");
+        }
+
+        // Close modal
+        document.getElementById("btnModalOk").addEventListener("click", () => {
+        document.getElementById("notifyModal").classList.add("hidden");
+        });        
 });

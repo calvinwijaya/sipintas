@@ -117,105 +117,145 @@ document.addEventListener("DOMContentLoaded", () => {
             alert("Error generating DOCX: " + error.message);
         }
     });
-});
-const loadingOverlay = document.getElementById("loadingOverlay");
 
-document.getElementById("btnKirim").addEventListener("click", async () => {
-  const role = document.getElementById("role").value;
-  const namaDosen = document.getElementById("dosenPenguji").value.trim();
-  const nim = new URLSearchParams(window.location.search).get("nim");
-  const jenisPublikasiSelect = document.getElementById("jenisPublikasi");
-  const publikasi = jenisPublikasiSelect.value ? 
-    jenisPublikasiSelect.options[jenisPublikasiSelect.selectedIndex].text : "";
-  const statusPublikasiSelect = document.getElementById("statusPublikasi");
-  const status = statusPublikasiSelect.value ? 
-    statusPublikasiSelect.options[statusPublikasiSelect.selectedIndex].text : "";
-  const namajurnal = document.getElementById("namaPublikasi").value.trim();
+    const loadingOverlay = document.getElementById("loadingOverlay");
 
-  const scores = Array.from(document.querySelectorAll(".score-input"))
-    .map(inp => parseFloat(inp.value) || 0);
-
-  if (!role || !namaDosen || !nim) { 
-    alert("Silakan pilih peran, isi nama dosen, dan pastikan NIM tersedia."); 
-    return;
-  }
-
-  const data = {
-    role: role,
-    namaDosen: namaDosen,
-    nim: nim,
-    scores: scores,
-    publikasi: publikasi,
-    status: status,
-    namajurnal: namajurnal
-  };
-
-  const formBody = new URLSearchParams();
-  formBody.append("data", JSON.stringify(data));
-
-  // ✅ Show loading overlay before sending
-  loadingOverlay.style.display = "flex";
-
-  fetch("https://script.google.com/macros/s/AKfycbyGNFdnlGQUFX8GmI-hj25gk91vBNZV71xcCVoHarCFuW1bZdXjPYmUVyiGP0azdObxbg/exec", {
-    method: "POST",
-    body: formBody
-  })
-    .then(res => res.json())
-    .then(result => {
-      if (result.status === "success") {
-        alert("Nilai berhasil dikirim!");
-      } else {
-        alert("Gagal: " + result.message);
-      }
-    })
-    .catch(err => {
-      console.error("Error:", err);
-      alert("Terjadi kesalahan saat mengirim data.");
-    })
-    .finally(() => {
-      // ✅ Hide loading overlay after process
-      loadingOverlay.style.display = "none";
-    });
-});
-
-document.getElementById("btnLoadNilaiPublikasiTesis").addEventListener("click", () => {
-    const nim = document.getElementById("nim").textContent.trim();
+    document.getElementById("btnKirim").addEventListener("click", async () => {
     const role = document.getElementById("role").value;
+    const namaDosen = document.getElementById("dosenPenguji").value.trim();
+    const nim = new URLSearchParams(window.location.search).get("nim");
+    const jenisPublikasiSelect = document.getElementById("jenisPublikasi");
+    const publikasi = jenisPublikasiSelect.value ? 
+        jenisPublikasiSelect.options[jenisPublikasiSelect.selectedIndex].text : "";
+    const statusPublikasiSelect = document.getElementById("statusPublikasi");
+    const status = statusPublikasiSelect.value ? 
+        statusPublikasiSelect.options[statusPublikasiSelect.selectedIndex].text : "";
+    const namajurnal = document.getElementById("namaPublikasi").value.trim();
 
-    if (!nim || !role) {
-        alert("NIM atau peran belum tersedia!");
+    const scores = Array.from(document.querySelectorAll(".score-input"))
+        .map(inp => parseFloat(inp.value) || 0);
+
+    if (!role || !namaDosen || !nim) { 
+        alert("Silakan pilih peran, isi nama dosen, dan pastikan NIM tersedia."); 
         return;
     }
 
-    const callbackName = "handleLoadNilaiResponse_" + Date.now();
-    loadingOverlay.style.display = "flex";
-
-    window[callbackName] = function (data) {
-        try {
-        if (data.status === "ok") {
-            const inputs = document.querySelectorAll(".score-input");
-
-            inputs.forEach((inp, i) => {
-                inp.value = data.scores[i] !== undefined ? data.scores[i] : "";
-            });
-
-            alert("Nilai berhasil dimuat.");
-        } else {
-            alert(data.message || "Gagal memuat nilai.");
-        }
-        } finally {
-        loadingOverlay.style.display = "none";
-        delete window[callbackName];
-        }
+    const data = {
+        role: role,
+        namaDosen: namaDosen,
+        nim: nim,
+        scores: scores,
+        publikasi: publikasi,
+        status: status,
+        namajurnal: namajurnal
     };
 
-    const script = document.createElement("script");
-    script.src =
-        "https://script.google.com/macros/s/AKfycbyWtlgujhqx-RMAO3Nfv6yUyxxL2WWfZ4VKyyDgPPgUYrDhkApQ8xErCxnxsZqGoVmf/exec" +
-        `?nim=${encodeURIComponent(nim)}` +
-        `&role=${encodeURIComponent(role)}` +
-        `&action=loadRevisi` +
-        `&callback=${callbackName}`;
+    const formBody = new URLSearchParams();
+    formBody.append("data", JSON.stringify(data));
 
-    document.body.appendChild(script);
-  });
+    // ✅ Show loading overlay before sending
+    loadingOverlay.style.display = "flex";
+
+    fetch("https://script.google.com/macros/s/AKfycbyGNFdnlGQUFX8GmI-hj25gk91vBNZV71xcCVoHarCFuW1bZdXjPYmUVyiGP0azdObxbg/exec", {
+        method: "POST",
+        body: formBody
+    })
+        .then(res => res.json())
+        .then(result => {
+            if (result.status === "success") {
+            showModal({
+                type: "success",
+                title: "Nilai berhasil dikirim!",
+            });
+            } else {
+                showModal({
+                type: "error",
+                title: "Gagal mengirim nilai",
+                });
+            }
+        })
+        .catch(err => {
+        console.error("Error:", err);
+        alert("Terjadi kesalahan saat mengirim data.");
+        })
+        .finally(() => {
+        // ✅ Hide loading overlay after process
+        loadingOverlay.style.display = "none";
+        });
+    });
+
+    document.getElementById("btnLoadNilaiPublikasiTesis").addEventListener("click", () => {
+        const nim = document.getElementById("nim").textContent.trim();
+        const role = document.getElementById("role").value;
+
+        if (!nim || !role) {
+            alert("NIM atau peran belum tersedia!");
+            return;
+        }
+
+        const callbackName = "handleLoadNilaiResponse_" + Date.now();
+        loadingOverlay.style.display = "flex";
+
+        window[callbackName] = function (data) {
+            try {
+            if (data.status === "ok") {
+                const inputs = document.querySelectorAll(".score-input");
+
+                inputs.forEach((inp, i) => {
+                    inp.value = data.scores[i] !== undefined ? data.scores[i] : "";
+                });
+
+                showModal({
+                        type: "success",
+                        title: "Nilai berhasil dimuat!",
+                    });
+            } else {
+                showModal({
+                        type: "error",
+                        title: "Gagal memuat nilai",
+                        });
+            }
+            } finally {
+            loadingOverlay.style.display = "none";
+            delete window[callbackName];
+            }
+        };
+
+        const script = document.createElement("script");
+        script.src =
+            "https://script.google.com/macros/s/AKfycbyWtlgujhqx-RMAO3Nfv6yUyxxL2WWfZ4VKyyDgPPgUYrDhkApQ8xErCxnxsZqGoVmf/exec" +
+            `?nim=${encodeURIComponent(nim)}` +
+            `&role=${encodeURIComponent(role)}` +
+            `&action=loadRevisi` +
+            `&callback=${callbackName}`;
+
+        document.body.appendChild(script);
+    });
+
+    function showModal({ type, title }) {
+        const modal = document.getElementById("notifyModal");
+        const icon = document.getElementById("modalIcon");
+        const titleEl = document.getElementById("modalTitle");
+
+        // Reset
+        icon.className = "modal-icon";
+        icon.textContent = "";
+
+        if (type === "success") {
+            icon.textContent = "✔";
+            icon.classList.add("success");
+        } else if (type === "error") {
+            icon.textContent = "✖";
+            icon.classList.add("error");
+        }
+
+        titleEl.textContent = title;
+
+        modal.classList.remove("hidden");
+        }
+
+        // Close modal
+        document.getElementById("btnModalOk").addEventListener("click", () => {
+        document.getElementById("notifyModal").classList.add("hidden");
+        });        
+});
