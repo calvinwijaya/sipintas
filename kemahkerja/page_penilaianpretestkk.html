@@ -20,6 +20,89 @@
       align-items: center;
       justify-content: center;
     }
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.45);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+    .modal-box {
+      background: #ffffff;
+      width: 420px;
+      max-width: 90%;
+      padding: 32px;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+      animation: fadeInScale 0.25s ease;
+    }
+    .modal-icon {
+      font-size: 48px;
+      color: #28a745;
+      margin-bottom: 12px;
+    }
+    .modal-box h2 {
+      margin-bottom: 12px;
+      color: #1f2937;
+    }
+    .modal-box p {
+      color: #4b5563;
+      line-height: 1.5;
+      margin-bottom: 24px;
+    }
+    .modal-box button {
+      background: #2563eb;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .modal-box button:hover {
+      background: #1e40af;
+    }
+    .hidden {
+      display: none;
+    }
+    @keyframes fadeInScale {
+      from {
+        opacity: 0;
+        transform: scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+    .modal-actions {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+    }
+    .btn-primary {
+      background: #2563eb;
+      color: #fff;
+    }
+    .btn-primary:hover {
+      background: #1e40af;
+    }
+    .btn-secondary {
+      background: #e5e7eb;
+      color: #111827;
+    }
+    .btn-secondary:hover {
+      background: #d1d5db;
+    }
+    .modal-icon.success {
+      color: #28a745;
+    }
+    .modal-icon.error {
+      color: #dc2626;
+    }    
   </style>
 </head>
 <body class="bg-light">
@@ -113,6 +196,19 @@
             <a href="../index.html?page=pretestkk" class="btn btn-secondary">← Kembali ke Dashboard</a>
         </div>
 
+        <!-- Notification Modal -->
+        <div id="notifyModal" class="modal-overlay hidden">
+          <div class="modal-box">
+            <div id="modalIcon" class="modal-icon"></div>
+            <h2 id="modalTitle"></h2>
+            <p id="modalMessage"></p>
+
+            <div class="modal-actions">
+              <button id="btnModalOk" class="btn-secondary">OK</button>
+              <button id="btnModalDashboard" class="btn-primary">Kembali ke Dashboard</button>
+            </div>
+          </div>
+        </div>
     </div>
   </div>
 </div>

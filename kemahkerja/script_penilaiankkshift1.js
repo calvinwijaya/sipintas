@@ -203,9 +203,17 @@ document.addEventListener("DOMContentLoaded", () => {
             .then(res => res.json())
             .then(result => {
                 if (result.status === "success") {
-                    alert("Nilai berhasil dikirim!");
+                      showModal({
+                        type: "success",
+                        title: "Nilai berhasil dikirim!",
+                        message: "Silakan kembali ke <strong>Dashboard</strong><br>dan lakukan penilaian ke kelompok berikutnya."
+                    });
                 } else {
-                    alert("Gagal: " + result.message);
+                      showModal({
+                        type: "error",
+                        title: "Gagal mengirim nilai",
+                        message: result.message || "Terjadi kesalahan pada sistem."
+                    });
                 }
             })
             .catch(err => {
@@ -275,4 +283,39 @@ document.addEventListener("DOMContentLoaded", () => {
         const today = new Date();
         return `${today.getDate()} ${bulan[today.getMonth()]} ${today.getFullYear()}`;
     }
+
+    
+    function showModal({ type, title, message }) {
+        const modal = document.getElementById("notifyModal");
+        const icon = document.getElementById("modalIcon");
+        const titleEl = document.getElementById("modalTitle");
+        const msgEl = document.getElementById("modalMessage");
+
+        // Reset
+        icon.className = "modal-icon";
+        icon.textContent = "";
+
+        if (type === "success") {
+            icon.textContent = "✔";
+            icon.classList.add("success");
+        } else if (type === "error") {
+            icon.textContent = "✖";
+            icon.classList.add("error");
+        }
+
+        titleEl.textContent = title;
+        msgEl.innerHTML = message.replace(/\n/g, "<br>");
+
+        modal.classList.remove("hidden");
+        }
+
+        // Close modal
+        document.getElementById("btnModalOk").addEventListener("click", () => {
+        document.getElementById("notifyModal").classList.add("hidden");
+        });
+
+        // Redirect
+        document.getElementById("btnModalDashboard").addEventListener("click", () => {
+        window.location.href = "../index.html?page=kkshift1";
+        });
 });
