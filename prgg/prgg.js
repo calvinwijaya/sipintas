@@ -1,4 +1,4 @@
-const PRGG_ADMIN_EMAILS = ["calvin.wijaya@ugm.ac.id"];
+const PRGG_ADMIN_EMAILS = ["cecep.pratama@ugm.ac.id"];
 
 async function loadPRGGData() {
     const user = JSON.parse(sessionStorage.getItem("user"));
@@ -56,19 +56,42 @@ async function loadPRGGData() {
             const penguji1 = rows[0][COL_PENGUJI1] || "";
             const penguji2 = rows[0][COL_PENGUJI2] || "";
 
+            // Indices for checking if scores already exist
+            const COL_SCORE_PEMBIMBING = 23; // Col X
+            const COL_SCORE_PENGUJI1    = 37; // Col AL
+            const COL_SCORE_PENGUJI2    = 51; // Col AZ
+
             const isPembimbing = (email_pembimbing || "").toLowerCase().trim() === currentEmail;
             const isPenguji1   = (penguji1 || "").toLowerCase().trim() === currentEmail;
             const isPenguji2   = (penguji2 || "").toLowerCase().trim() === currentEmail;
             const isAdminHere = isAdmin;
 
             let role = null;
+            let hasBeenAssessed = false;
 
             // Role assignment
-            if (isPembimbing) role = "pembimbing";
-            else if (isPenguji1) role = "penguji1";
-            else if (isPenguji2) role = "penguji2";
-            else if (isAdminHere) role = "admin";
-            else return;
+            // 2. Assign Role AND Check if already assessed
+            // We check rows[0] because if one student in the group is graded, 
+            // usually the whole group session is done.
+            if (isPembimbing) {
+                role = "pembimbing";
+                hasBeenAssessed = !!rows[0][COL_SCORE_PEMBIMBING]; 
+            } else if (isPenguji1) {
+                role = "penguji1";
+                hasBeenAssessed = !!rows[0][COL_SCORE_PENGUJI1];
+            } else if (isPenguji2) {
+                role = "penguji2";
+                hasBeenAssessed = !!rows[0][COL_SCORE_PENGUJI2];
+            } else if (isAdminHere) {
+                role = "admin";
+            } else {
+                return; // Skip if not authorized
+            }
+
+            // 3. Define Styles based on Role and Status
+            const statusColor = hasBeenAssessed ? "#28a745" : "#dc3545"; // Green if done, Red if pending
+            const bgColor = hasBeenAssessed ? "#e8f5e9" : "#fff5f5";    // Very light green vs light red
+            const statusText = hasBeenAssessed ? "SUDAH DINILAI" : "BELUM DINILAI";
 
             hasVisibleCard = true;
 
@@ -93,22 +116,30 @@ async function loadPRGGData() {
             });
 
             html += `
-                <div class="col-md-4">
-                    <div class="card shadow-sm h-100">
-                        <div class="card-body text-center">
-                            <h4 class="fw-bold text-primary mb-1">Kelompok ${kelompok}</h4>
-                            <ol class="text-start small mb-3 ps-3">
-                                ${rows.map(r => `<li>${r[1]}</li>`).join("")}
-                            </ol>
-                            <a href="prgg/page_penilaianprgg.html?${encodedParams}"
-                            class="btn btn-primary btn-sm">
-                                Lakukan Penilaian
-                            </a>
+                    <div class="col-md-4">
+                        <div class="card shadow-sm h-100" style="border-top: 5px solid ${statusColor}; background-color: ${bgColor};">
+                            <div class="card-body text-center">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="badge bg-secondary small">${role.toUpperCase()}</span>
+                                    <span class="fw-bold small" style="color: ${statusColor};">${statusText}</span>
+                                </div>
+                                
+                                <h4 class="fw-bold mb-1">Kelompok ${kelompok}</h4>
+                                <p class="text-muted small mb-2">${topik.substring(0, 50)}...</p>
+                                
+                                <ol class="text-start small mb-3 ps-3">
+                                    ${rows.map(r => `<li>${r[1]}</li>`).join("")}
+                                </ol>
+                                
+                                <a href="prgg/page_penilaianprgg.html?${encodedParams}"
+                                class="btn ${hasBeenAssessed ? 'btn-outline-success' : 'btn-primary'} btn-sm w-100">
+                                    ${hasBeenAssessed ? 'Ubah Nilai' : 'Lakukan Penilaian'}
+                                </a>
+                            </div>
                         </div>
                     </div>
-                </div>
-            `;
-        });
+                `;
+            });
 
         if (!hasVisibleCard) {
             document.getElementById("prggList").innerHTML =
