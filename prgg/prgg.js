@@ -1,4 +1,4 @@
-const PRGG_ADMIN_EMAILS = ["calvin.wijaya@mail.ugm.ac.id"];
+const PRGG_ADMIN_EMAILS = ["calvin.wijaya@ugm.ac.id"];
 
 async function loadPRGGData() {
     const user = JSON.parse(sessionStorage.getItem("user"));
@@ -27,8 +27,9 @@ async function loadPRGGData() {
             const nama     = r[1];
             const nim      = r[2];
             const kelompok = r[3];
-            const pembimbing = r[4];
-            const topik = r[5];
+            const niu     = r[4];
+            const pembimbing = r[5];
+            const topik = r[6];
             if (!groups[kelompok]) groups[kelompok] = [];
             groups[kelompok].push(r);
         });
@@ -38,26 +39,26 @@ async function loadPRGGData() {
         let hasVisibleCard = false;
 
         Object.entries(groups).forEach(([kelompok, rows]) => {
-            const pembimbing = rows[0][4] || "";
-            const topik = rows[0][5] || "";
-            const linkGDriveProposalPRGG = rows[0][6] || "";
-            const linkGDriveLapPendahuluanPRGG = rows[0][7] || "";
-            const linkGDriveLapAntaraPRGG = rows[0][8] || "";
-            const linkGDriveLapAkhirPRGG = rows[0][9] || "";
-            const linkGDrivePosterPRGG = rows[0][10] || "";
-            const linkProdukPRGG = rows[0][11] || ""; 
+            const pembimbing = rows[0][5] || "";
+            const topik = rows[0][6] || "";
+            const linkGDriveProposalPRGG = rows[0][7] || "";
+            const linkGDriveLapPendahuluanPRGG = rows[0][8] || "";
+            const linkGDriveLapAntaraPRGG = rows[0][9] || "";
+            const linkGDriveLapAkhirPRGG = rows[0][10] || "";
+            const linkGDrivePosterPRGG = rows[0][11] || "";
+            const linkProdukPRGG = rows[0][12] || "";
 
-            const COL_PEMBIMBING   = 67;
-            const COL_PENGUJI1 = 68;
-            const COL_PENGUJI2 = 69;
+            const COL_PEMBIMBING   = 68;
+            const COL_PENGUJI1 = 69;
+            const COL_PENGUJI2 = 70;
 
             const email_pembimbing = rows[0][COL_PEMBIMBING] || "";
             const penguji1 = rows[0][COL_PENGUJI1] || "";
             const penguji2 = rows[0][COL_PENGUJI2] || "";
 
-            const isPembimbing   = email_pembimbing.toLowerCase() === currentEmail;
-            const isPenguji1 = penguji1.toLowerCase() === currentEmail;
-            const isPenguji2 = penguji2.toLowerCase() === currentEmail;
+            const isPembimbing = (email_pembimbing || "").toLowerCase().trim() === currentEmail;
+            const isPenguji1   = (penguji1 || "").toLowerCase().trim() === currentEmail;
+            const isPenguji2   = (penguji2 || "").toLowerCase().trim() === currentEmail;
             const isAdminHere = isAdmin;
 
             let role = null;
@@ -71,12 +72,24 @@ async function loadPRGGData() {
 
             hasVisibleCard = true;
 
-            const encodedParams = new URLSearchParams();
+            const encodedParams = new URLSearchParams({
+                pembimbing, 
+                topik, 
+                linkGDriveProposalPRGG, 
+                linkGDriveLapPendahuluanPRGG, 
+                linkGDriveLapAntaraPRGG, 
+                linkGDriveLapAkhirPRGG, 
+                linkGDrivePosterPRGG,
+                linkProdukPRGG,
+                kelompok,
+                role
+            });
             encodedParams.append("kelompok", kelompok);
 
             rows.forEach((r, idx) => {
                 encodedParams.append("nama" + (idx + 1), r[1]);
                 encodedParams.append("nim" + (idx + 1), r[2]);
+                encodedParams.append("niu" + (idx + 1), r[4]);
             });
 
             html += `
