@@ -53,9 +53,9 @@ function collectBeritaAcaraData() {
     data["Rata"] = document.getElementById("nilaiRekap").textContent || "";
 
     // Names of examiners
-    data["NamaKetuaSidang"] = document.getElementById("penguji1").textContent || "";
-    data["NamaPenguji1"] = document.getElementById("penguji2").textContent || "";
-    data["NamaPenguji2"] = document.getElementById("penguji3").textContent || "";
+    data["NamaKetuaSidang"] = document.getElementById("ketuaSidang").textContent || "";
+    data["NamaPenguji1"] = document.getElementById("penguji1").textContent || "";
+    data["NamaPenguji2"] = document.getElementById("penguji2").textContent || "";
 
     // Comments
     data["JudulProposalTesisRevisi"] = document.getElementById("judulProposalTesisRevisi").value || "";
