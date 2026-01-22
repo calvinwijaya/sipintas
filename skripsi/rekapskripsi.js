@@ -12,18 +12,7 @@ async function loadRekapSkripsiData() {
 
     const user = JSON.parse(sessionStorage.getItem("user"));
     const currentEmail = user.email.toLowerCase().trim();
-
     const isAdmin = ADMIN_EMAILS.includes(currentEmail);
-
-    // If not admin, immediately show restricted message
-    if (!isAdmin) {
-        document.getElementById("rekaptesisList").innerHTML = `
-        <div class="alert alert-info">
-            Menu ini hanya bisa diakses oleh administrator atau enumerator.
-        </div>
-        `;
-        return;
-    }
 
     const SHEET_ID = "1THmInPem3cxfB1kJJifuC4C1MMi4cPH3zlFN20grBJA";
     const API_KEY = "AIzaSyA3Pgj8HMdb4ak9jToAiTQV0XFdmgvoYPI";
@@ -32,13 +21,71 @@ async function loadRekapSkripsiData() {
     try {
         const res = await fetch(url);
         const data = await res.json();
-        console.log("Fetched data:", data);
-
         const rows = data.values?.slice(1) || [];
-        console.log("Rows:", rows);
+        const validStatuses = ["selesai", "seminar akhir"];
+        
+        const COL_KETUA = 97;
+        const COL_PENGUJI1 = 98;
+        const COL_PENGUJI2 = 99;
 
-        const rekapskripsiRows = rows.filter(r => r[0]?.trim().toLowerCase() === "selesai");
-        console.log("Rekap Skripsi rows:", rekapskripsiRows);
+        const rekapskripsiRows = rows.filter(r => {
+            const status = r[0]?.trim().toLowerCase();
+            if (!validStatuses.includes(status)) return false;
+            if (isAdmin) return true;
+            const ketua = (r[COL_KETUA] || "").toLowerCase();
+            if (ketua === currentEmail) return true;
+            return false;
+        });
+
+        let userRole = null;
+
+        for (const r of rekapskripsiRows) {
+            const ketua = (r[COL_KETUA] || "").toLowerCase();
+            const penguji1 = (r[COL_PENGUJI1] || "").toLowerCase();
+            const penguji2 = (r[COL_PENGUJI2] || "").toLowerCase();
+
+            if (ketua === currentEmail) {
+                userRole = "ketuaSidang";
+                break;
+            }
+            if (penguji1 === currentEmail || penguji2 === currentEmail) {
+                userRole = "penguji";
+            }
+        }
+
+        if (rekapskripsiRows.length === 0) {
+            document.getElementById("rekapskripsiList").innerHTML = `
+                <div class="alert alert-info">
+                    Tidak ada mahasiswa skripsi dengan status <strong>selesai</strong>
+                    yang berada di bawah kewenangan Anda.
+                </div>
+            `;
+            return;
+        }
+
+        if (!userRole && isAdmin) {
+            userRole = "admin";
+        }
+
+        if (userRole === "penguji") {
+            document.getElementById("rekapskripsiList").innerHTML = `
+                <div class="alert alert-warning">
+                    Anda terdaftar sebagai <strong>Penguji</strong>.
+                    Menu rekapitulasi nilai hanya dapat diakses oleh
+                    <strong>Ketua Sidang</strong> atau <strong>Administrator</strong>.
+                </div>
+            `;
+            return;
+        }
+
+        if (userRole !== "ketuaSidang" && userRole !== "admin") {
+            document.getElementById("rekapskripsiList").innerHTML = `
+                <div class="alert alert-info">
+                    Anda tidak memiliki hak akses ke menu ini.
+                </div>
+            `;
+            return;
+        }
 
         if (rekapskripsiRows.length === 0) {
             document.getElementById("rekapskripsiList").innerHTML =
@@ -49,7 +96,10 @@ async function loadRekapSkripsiData() {
         let html = `<div class="row g-3">`;
         rekapskripsiRows.forEach(r => {
             const [status, no, nama, nim, pembimbing, judulProposal, ketuaSidangProposal, penguji1Proposal, penguji2Proposal, linkGDriveProposal, judulskripsi] = r;
-            const encodedParams = new URLSearchParams({ nama, nim, pembimbing, judulProposal, judulskripsi }).toString();
+
+            hasVisibleCard = true;
+            
+            const encodedParams = new URLSearchParams({ nama, nim, pembimbing, judulProposal, judulskripsi, role: userRole }).toString();
 
             html += `
                 <div class="col-md-6">

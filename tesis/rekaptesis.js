@@ -12,18 +12,7 @@ async function loadRekapTesisData() {
     
     const user = JSON.parse(sessionStorage.getItem("user"));
     const currentEmail = user.email.toLowerCase().trim();
-
     const isAdmin = REKAPTESIS_ADMIN_EMAILS.includes(currentEmail);
-
-    // If not admin, immediately show restricted message
-    if (!isAdmin) {
-        document.getElementById("rekaptesisList").innerHTML = `
-        <div class="alert alert-info">
-            Menu ini hanya bisa diakses oleh administrator atau enumerator.
-        </div>
-        `;
-        return;
-    }
 
     const SHEET_ID = "1lg2tfyzMX99Ib-b5gZ31dGnHHqLHDpElQO22VMVaPbs";
     const API_KEY = "AIzaSyA3Pgj8HMdb4ak9jToAiTQV0XFdmgvoYPI";
@@ -32,9 +21,71 @@ async function loadRekapTesisData() {
     try {
         const res = await fetch(url);
         const data = await res.json();
-
         const rows = data.values?.slice(1) || [];
-        const rekaptesisRows = rows.filter(r => r[0]?.trim().toLowerCase() === "selesai");
+        const validStatuses = ["selesai", "sidang akhir"];
+        
+        const COL_KETUA   = 136;
+        const COL_PENGUJI1 = 137;
+        const COL_PENGUJI2 = 138;
+
+        const rekaptesisRows = rows.filter(r => {
+            const status = r[0]?.trim().toLowerCase();
+            if (!validStatuses.includes(status)) return false;
+            if (isAdmin) return true;
+            const ketua = (r[COL_KETUA] || "").toLowerCase();
+            if (ketua === currentEmail) return true;
+            return false;
+        });
+
+        let userRole = null;
+
+        for (const r of rekaptesisRows) {
+            const ketua = (r[COL_KETUA] || "").toLowerCase();
+            const penguji1 = (r[COL_PENGUJI1] || "").toLowerCase();
+            const penguji2 = (r[COL_PENGUJI2] || "").toLowerCase();
+
+            if (ketua === currentEmail) {
+                userRole = "ketuaSidang";
+                break;
+            }
+            if (penguji1 === currentEmail || penguji2 === currentEmail) {
+                userRole = "penguji";
+            }
+        }
+
+        if (rekaptesisRows.length === 0) {
+            document.getElementById("rekaptesisList").innerHTML = `
+                <div class="alert alert-info">
+                    Tidak ada mahasiswa tesis dengan status <strong>selesai</strong>
+                    yang berada di bawah kewenangan Anda.
+                </div>
+            `;
+            return;
+        }
+
+        if (!userRole && isAdmin) {
+            userRole = "admin";
+        }
+
+        if (userRole === "penguji") {
+            document.getElementById("rekaptesisList").innerHTML = `
+                <div class="alert alert-warning">
+                    Anda terdaftar sebagai <strong>Penguji</strong>.
+                    Menu rekapitulasi nilai hanya dapat diakses oleh
+                    <strong>Ketua Sidang</strong> atau <strong>Administrator</strong>.
+                </div>
+            `;
+            return;
+        }
+
+        if (userRole !== "ketuaSidang" && userRole !== "admin") {
+            document.getElementById("rekaptesisList").innerHTML = `
+                <div class="alert alert-info">
+                    Anda tidak memiliki hak akses ke menu ini.
+                </div>
+            `;
+            return;
+        }        
 
         if (rekaptesisRows.length === 0) {
             document.getElementById("rekaptesisList").innerHTML =
@@ -47,9 +98,9 @@ async function loadRekapTesisData() {
             const [status, no, nama, nim, pembimbing] = r;
             const COL_JUDUL_TESIS = 10;
             const judulTesis = r[COL_JUDUL_TESIS] || "";
-
+            hasVisibleCard = true;
             const judul = judulTesis;
-            const encodedParams = new URLSearchParams({ nama, nim, pembimbing, judul }).toString();
+            const encodedParams = new URLSearchParams({ nama, nim, pembimbing, judul, role: userRole }).toString();
 
             html += `
                 <div class="col-md-6">
