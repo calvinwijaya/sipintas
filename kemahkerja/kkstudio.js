@@ -47,6 +47,16 @@ async function loadKKStudioData() {
 
             if (!isPembimbingStudio && !isAdminHere) return;
 
+            const col_score_pembimbingStudio = 68;
+            let hasBeenAssessed = false;
+            if (hasBeenAssessed = !!rows[0][col_score_pembimbingStudio]) {
+                hasBeenAssessed = true;
+            }
+
+            const statusColor = hasBeenAssessed ? "#28a745" : "#dc3545"; // Green if done, Red if pending
+            const bgColor = hasBeenAssessed ? "#e8f5e9" : "#fff5f5";    // Very light green vs light red
+            const statusText = hasBeenAssessed ? "SUDAH DINILAI" : "BELUM DINILAI";
+
             hasVisibleCard = true;
 
             const encodedParams = new URLSearchParams();
@@ -59,17 +69,22 @@ async function loadKKStudioData() {
 
             html += `
                 <div class="col-md-4">
-                    <div class="card shadow-sm h-100">
+                    <div class="card shadow-sm h-100" style="border-top: 5px solid ${statusColor}; background-color: ${bgColor};">
                         <div class="card-body text-center">
+                            
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="fw-bold small" style="color: ${statusColor};">${statusText}</span>
+                            </div>
+
                             <h4 class="fw-bold text-primary mb-1">Kelompok ${kelompok}</h4>
-                            <p class="text-muted mb-3"><strong>Lokasi:</strong> ${lokasi}</p>
-                            <ol class="text-start small mb-3 ps-3">
-                                ${rows.map(r => `<li>${r[1]}</li>`).join("")}
-                            </ol>
-                            <a href="kemahkerja/page_penilaiankkstudio.html?${encodedParams}"
-                            class="btn btn-primary btn-sm">
-                                Lakukan Penilaian
-                            </a>
+                                <p class="text-muted mb-3"><strong>Lokasi:</strong> ${lokasi}</p>
+                                <ol class="text-start small mb-3 ps-3">
+                                    ${rows.map(r => `<li>${r[1]}</li>`).join("")}
+                                </ol>
+                                <a href="kemahkerja/page_penilaiankkstudio.html?${encodedParams}"
+                                class="btn ${hasBeenAssessed ? 'btn-outline-success' : 'btn-primary'} btn-sm w-100">
+                                    ${hasBeenAssessed ? 'Ubah Nilai' : 'Lakukan Penilaian'}
+                                </a>
                         </div>
                     </div>
                 </div>
