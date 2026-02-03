@@ -39,7 +39,7 @@ async function loadPreTestKKData() {
         Object.entries(groups).forEach(([kelompok, rows]) => {
             const lokasi = rows[0][4] || "";
 
-            const PENGUJI_PRE_TESTKK_COL = 88;
+            const PENGUJI_PRE_TESTKK_COL = 90;
             const pengujiPreTestKK = (rows[0][PENGUJI_PRE_TESTKK_COL] || "").toLowerCase().trim();
 
             const isPengujiPreTestKK = pengujiPreTestKK === currentEmail;
