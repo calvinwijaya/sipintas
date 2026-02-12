@@ -121,68 +121,90 @@ document.addEventListener("DOMContentLoaded", () => {
     const loadingOverlay = document.getElementById("loadingOverlay");
 
     document.getElementById("btnKirim").addEventListener("click", async () => {
-    const role = document.getElementById("role").value;
-    const namaDosen = document.getElementById("dosenPenguji").value.trim();
-    const nim = new URLSearchParams(window.location.search).get("nim");
-    const jenisPublikasiSelect = document.getElementById("jenisPublikasi");
-    const publikasi = jenisPublikasiSelect.value ? 
-        jenisPublikasiSelect.options[jenisPublikasiSelect.selectedIndex].text : "";
-    const statusPublikasiSelect = document.getElementById("statusPublikasi");
-    const status = statusPublikasiSelect.value ? 
-        statusPublikasiSelect.options[statusPublikasiSelect.selectedIndex].text : "";
-    const namajurnal = document.getElementById("namaPublikasi").value.trim();
-
-    const scores = Array.from(document.querySelectorAll(".score-input"))
-        .map(inp => parseFloat(inp.value) || 0);
-
-    if (!role || !namaDosen || !nim) { 
-        alert("Silakan pilih peran, isi nama dosen, dan pastikan NIM tersedia."); 
-        return;
-    }
-
-    const data = {
-        role: role,
-        namaDosen: namaDosen,
-        nim: nim,
-        scores: scores,
-        publikasi: publikasi,
-        status: status,
-        namajurnal: namajurnal
-    };
-
-    const formBody = new URLSearchParams();
-    formBody.append("data", JSON.stringify(data));
-
-    // ✅ Show loading overlay before sending
-    loadingOverlay.style.display = "flex";
-
-    fetch("https://script.google.com/macros/s/AKfycbyGNFdnlGQUFX8GmI-hj25gk91vBNZV71xcCVoHarCFuW1bZdXjPYmUVyiGP0azdObxbg/exec", {
-        method: "POST",
-        body: formBody
-    })
-        .then(res => res.json())
-        .then(result => {
-            if (result.status === "success") {
-            showModal({
-                type: "success",
-                title: "Nilai berhasil dikirim!",
+        const role = document.getElementById("role").value;
+        const namaDosen = document.getElementById("dosenPenguji").value.trim();
+        const nim = new URLSearchParams(window.location.search).get("nim");
+        const jenisPublikasiSelect = document.getElementById("jenisPublikasi");
+        const publikasi = jenisPublikasiSelect.value ? 
+            jenisPublikasiSelect.options[jenisPublikasiSelect.selectedIndex].text : "";
+        const statusPublikasiSelect = document.getElementById("statusPublikasi");
+        const status = statusPublikasiSelect.value ? 
+            statusPublikasiSelect.options[statusPublikasiSelect.selectedIndex].text : "";
+        const namajurnal = document.getElementById("namaPublikasi").value.trim();
+    
+        if (!role || !namaDosen || !nim) { 
+            Swal.fire({
+                icon: 'warning',
+                title: 'Data Belum Lengkap',
+                text: 'Silakan pilih peran, isi nama dosen, dan pastikan NIM tersedia.'
             });
-            } else {
-                showModal({
-                type: "error",
-                title: "Gagal mengirim nilai",
-                });
+            return;
+        }
+
+        const scores = Array.from(document.querySelectorAll(".score-input"))
+            .map(inp => parseFloat(inp.value) || 0);
+
+        Swal.fire({
+            title: "Kirim Nilai Sekarang?",
+            text: "Pastikan semua parameter penilaian sudah sesuai.",
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Ya, Kirim!",
+            cancelButtonText: "Batal"
+        }).then((result) => {
+            // Jika user menekan tombol "Ya, Kirim!"
+            if (result.isConfirmed) {
+                jalankanPengirimanData(role, namaDosen, nim, scores, publikasi, status, namajurnal);
             }
-        })
-        .catch(err => {
-        console.error("Error:", err);
-        alert("Terjadi kesalahan saat mengirim data.");
-        })
-        .finally(() => {
-        // ✅ Hide loading overlay after process
-        loadingOverlay.style.display = "none";
         });
     });
+
+    function jalankanPengirimanData(role, namaDosen, nim, scores, publikasi, status, namajurnal) {
+        const data = {
+            role: role,
+            namaDosen: namaDosen,
+            nim: nim,
+            scores: scores,
+            publikasi: publikasi,
+            status: status,
+            namajurnal: namajurnal
+        };
+
+        const formBody = new URLSearchParams();
+        formBody.append("data", JSON.stringify(data));
+
+        // ✅ Show loading overlay before sending
+        loadingOverlay.style.display = "flex";
+
+        fetch("https://script.google.com/macros/s/AKfycbyGNFdnlGQUFX8GmI-hj25gk91vBNZV71xcCVoHarCFuW1bZdXjPYmUVyiGP0azdObxbg/exec", {
+            method: "POST",
+            body: formBody
+        })
+            .then(res => res.json())
+            .then(result => {
+                if (result.status === "success") {
+                showModal({
+                    type: "success",
+                    title: "Nilai berhasil dikirim!",
+                });
+                } else {
+                    showModal({
+                    type: "error",
+                    title: "Gagal mengirim nilai",
+                    });
+                }
+            })
+            .catch(err => {
+            console.error("Error:", err);
+            Swal.fire("Error", "Terjadi kesalahan saat mengirim data.", "error");
+            })
+            .finally(() => {
+            // ✅ Hide loading overlay after process
+            loadingOverlay.style.display = "none";
+            });
+    }
 
     document.getElementById("btnLoadNilaiPublikasiTesis").addEventListener("click", () => {
         const nim = document.getElementById("nim").textContent.trim();
@@ -194,6 +216,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         const callbackName = "handleLoadNilaiResponse_" + Date.now();
+        document.querySelector("#loadingOverlay div:last-child").innerText = "Mengambil data dari sistem...";
         loadingOverlay.style.display = "flex";
 
         window[callbackName] = function (data) {

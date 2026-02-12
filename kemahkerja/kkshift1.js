@@ -39,7 +39,7 @@ async function loadKKShift1Data() {
         Object.entries(groups).forEach(([kelompok, rows]) => {
             const lokasi = rows[0][4] || "";
 
-            const PEMBIMBING_SHIFT1_COL = 85;
+            const PEMBIMBING_SHIFT1_COL = 86;
             const pembimbingShift1 = (rows[0][PEMBIMBING_SHIFT1_COL] || "").toLowerCase().trim();
 
             const isPembimbingShift1 = pembimbingShift1 === currentEmail;
@@ -56,7 +56,6 @@ async function loadKKShift1Data() {
             const statusColor = hasBeenAssessed ? "#28a745" : "#dc3545"; // Green if done, Red if pending
             const bgColor = hasBeenAssessed ? "#e8f5e9" : "#fff5f5";    // Very light green vs light red
             const statusText = hasBeenAssessed ? "SUDAH DINILAI" : "BELUM DINILAI";
-
 
             hasVisibleCard = true;
 

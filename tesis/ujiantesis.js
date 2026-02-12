@@ -1,8 +1,6 @@
 const UJIANTESIS_ADMIN_EMAILS = ["afiat@ugm.ac.id"];
 
 async function loadUjianTesisData() {
-    console.log("Script running...");
-
     const user = JSON.parse(sessionStorage.getItem("user"));
     const currentEmail = user.email.toLowerCase().trim();
     const isAdmin = UJIANTESIS_ADMIN_EMAILS.includes(currentEmail);
@@ -14,13 +12,8 @@ async function loadUjianTesisData() {
     try {
         const res = await fetch(url);
         const data = await res.json();
-        console.log("Fetched data:", data);
-
         const rows = data.values?.slice(1) || [];
-        console.log("Rows:", rows);
-
         const ujiantesisRows = rows.filter(r => r[0]?.trim().toLowerCase() === "sidang akhir");
-        console.log("Ujian Tesis rows:", ujiantesisRows);
 
         if (ujiantesisRows.length === 0) {
             document.getElementById("ujiantesisList").innerHTML =
@@ -53,13 +46,54 @@ async function loadUjianTesisData() {
             const isAdminHere = isAdmin;
 
             let role = null;
+            let colCheck = null;
 
             // Role assignment
-            if (isKetua) role = "ketuaSidang";
-            else if (isPenguji1) role = "penguji1";
-            else if (isPenguji2) role = "penguji2";
-            else if (isAdminHere) role = "admin";
-            else return; // user not related to this proposal
+            if (isKetua) {
+                role = "ketuaSidang";
+                colCheck = 98;
+            } else if (isPenguji1) {
+                role = "penguji1";
+                colCheck = 109;
+            } else if (isPenguji2) {
+                role = "penguji2";
+                colCheck = 120;
+            } else if (isAdminHere) {
+                role = "admin";
+                colCheck = 98;
+            } else {
+                return; 
+            }
+
+            // Logika pengecekan apakah sudah dinilai            
+            let hasBeenAssessed = false;
+            if (colCheck !== null) {
+                hasBeenAssessed = !!r[colCheck]; 
+            }
+
+            if (role === "admin") {
+                const sudahKetua   = !!r[98];
+                const sudahPenguji1 = !!r[109];
+                const sudahPenguji2 = !!r[120];
+                
+                // Admin dianggap "Sudah Dinilai" jika Ketua sudah mengisi
+                hasBeenAssessed = sudahKetua; 
+                
+                // Opsional: Tambahkan info tambahan untuk Admin nantinya
+                var statusDetailAdmin = `K:${sudahKetua?'✅':'❌'} P1:${sudahPenguji1?'✅':'❌'} P2:${sudahPenguji2?'✅':'❌'}`;
+            }
+
+            const roleLabels = {
+                "ketuaSidang": "Ketua Sidang",
+                "penguji1": "Penguji 1",
+                "penguji2": "Penguji 2",
+                "admin": "Admin"
+            };
+
+            // Tentukan warna dan teks berdasarkan status
+            const statusColor = hasBeenAssessed ? "#28a745" : "#dc3545"; 
+            const bgColor = hasBeenAssessed ? "#e8f5e9" : "#fff5f5";    
+            const statusText = hasBeenAssessed ? "SUDAH DINILAI" : "BELUM DINILAI";
 
             hasVisibleCard = true;
 
@@ -68,22 +102,35 @@ async function loadUjianTesisData() {
 
             html += `
                 <div class="col-md-6">
-                    <div class="card shadow-sm">
+                    <div class="card shadow-sm h-100" style="border-top: 5px solid ${statusColor}; background-color: ${bgColor};">
                         <div class="card-body">
-                            <h5 class="card-title">${nama} <small class="text-muted">(${nim})</small></h5>
-                            <p class="card-text"><strong>Pembimbing:</strong> ${pembimbing}</p>
-                            <p class="card-text"><em>${judul}</em></p>
+
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="badge" style="background-color: ${statusColor};">${statusText}</span>
+                                <small class="text-muted fw-bold">
+                                    ${role === "admin" ? statusDetailAdmin : `Sebagai: ${roleLabels[role] || role}`}
+                                </small>
+                            </div>
+
+                            <h5 class="card-title fw-bold">${nama} <small class="text-muted">(${nim})</small></h5>
+                            <p class="card-text mb-1"><strong>Pembimbing:</strong> ${pembimbing}</p>
+                            <p class="card-text mb-3"><em>${judul}</em></p>
+                            
+                            <div class="d-grid gap-2 d-md-block">
                             ${role !== "admin" ? `
-                                <a href="tesis/page_penilaianujiantesis.html?${encodedParams}" class="btn btn-primary btn-sm">
-                                    Lakukan Penilaian
+                                <a href="tesis/page_penilaianujiantesis.html?${encodedParams}" 
+                                   class="btn ${hasBeenAssessed ? 'btn-outline-success' : 'btn-primary'} btn-sm">
+                                    <i class="bi ${hasBeenAssessed ? 'bi-pencil-square' : 'bi-check-circle'}"></i>
+                                    ${hasBeenAssessed ? 'Ubah Nilai' : 'Lakukan Penilaian'}
                                 </a>
                             ` : ""}
 
                             ${role === "ketuaSidang" || role === "admin" ? `
-                                <a href="tesis/page_beritaujiantesis.html?${encodedParams}" class="btn btn-primary btn-sm">
-                                Buat Berita Acara
-                            </a>
+                                <a href="tesis/page_beritaujiantesis.html?${encodedParams}" class="btn btn-outline-primary btn-sm">
+                                    Buat Berita Acara
+                                </a>
                             ` : ""}
+                            </div>
                         </div>
                     </div>
                 </div>

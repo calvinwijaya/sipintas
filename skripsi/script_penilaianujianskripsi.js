@@ -141,7 +141,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // Nama file dinamis
             const safeNama = mahasiswaData.nama.replace(/[^a-z0-9]/gi, "_"); 
-            const fileName = `Hasil Penilaian Ujian Tesis - ${safeNama}.docx`;
+            const fileName = `Hasil Penilaian Ujian Skripsi - ${safeNama}.docx`;
 
             const link = document.createElement("a");
             link.href = URL.createObjectURL(out);
@@ -161,14 +161,37 @@ document.addEventListener("DOMContentLoaded", () => {
         const namaDosen = document.getElementById("dosenPenguji").value.trim();
         const nim = new URLSearchParams(window.location.search).get("nim");
         const avg = parseFloat(document.getElementById("nilaiFinal").value) || 0;
-        const scores = Array.from(document.querySelectorAll(".score-input"))
-            .map(inp => parseFloat(inp.value) || 0);
 
         if (!role || !namaDosen || !nim) { 
-            alert("Silakan pilih peran, isi nama dosen, dan pastikan NIM tersedia."); 
+            Swal.fire({
+                icon: 'warning',
+                title: 'Data Belum Lengkap',
+                text: 'Silakan pilih peran, isi nama dosen, dan pastikan NIM tersedia.'
+            });
             return;
         }
 
+        const scores = Array.from(document.querySelectorAll(".score-input"))
+            .map(inp => parseFloat(inp.value) || 0);
+
+        Swal.fire({
+            title: "Kirim Nilai Sekarang?",
+            text: "Pastikan semua parameter penilaian sudah sesuai.",
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Ya, Kirim!",
+            cancelButtonText: "Batal"
+        }).then((result) => {
+            // Jika user menekan tombol "Ya, Kirim!"
+            if (result.isConfirmed) {
+                jalankanPengirimanData(role, namaDosen, nim, scores, avg);
+            }
+        });
+    });
+
+    function jalankanPengirimanData(role, namaDosen, nim, scores, avg) {
         const data = {
             role: role,
             namaDosen: namaDosen,
@@ -204,15 +227,16 @@ document.addEventListener("DOMContentLoaded", () => {
             })
             .catch(err => {
             console.error("Error:", err);
-            alert("Terjadi kesalahan saat mengirim data.");
+            Swal.fire("Error", "Terjadi kesalahan saat mengirim data.", "error");
             })
             .finally(() => {
             // ✅ Hide loading overlay after process
             loadingOverlay.style.display = "none";
             });
-    });
+    }
 
     document.getElementById("btnLoadNilaiSkripsi").addEventListener("click", () => {
+        document.querySelector("#loadingOverlay div:last-child").innerText = "Mengambil data dari sistem...";
         const nim = document.getElementById("nim").textContent.trim();
         const role = document.getElementById("role").value;
 

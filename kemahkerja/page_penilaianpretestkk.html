@@ -6,6 +6,7 @@
   <link rel="icon" type="image/png" href="../assets/logo.png">
   <title>PENILAIAN PRE-TEST KK</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <style>
     body { font-family: 'Segoe UI', sans-serif; }
     .card-header h3 { font-weight: bold; }
@@ -218,11 +219,19 @@
      style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
             background:rgba(255,255,255,0.8); z-index:2000; 
             align-items:center; justify-content:center;">
-  <div class="spinner-border text-primary" role="status">
-    <span class="visually-hidden">Loading...</span>
+  
+  <div style="display: flex; flex-direction: column; align-items: center;">
+    
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+
+    <span style="margin-top: 10px; font-weight: 500; color: #0d6efd;">
+      Mengirim nilai ke sistem...
+    </span>
+
   </div>
 </div>
-
 
 <script src="script_penilaianpretestkk.js"></script>
 </body>

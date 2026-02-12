@@ -39,7 +39,7 @@ async function loadKKShift3Data() {
         Object.entries(groups).forEach(([kelompok, rows]) => {
             const lokasi = rows[0][4] || "";
 
-            const PEMBIMBING_SHIFT3_COL = 87;
+            const PEMBIMBING_SHIFT3_COL = 88;
             const pembimbingShift3 = (rows[0][PEMBIMBING_SHIFT3_COL] || "").toLowerCase().trim();
 
             const isPembimbingShift3 = pembimbingShift3 === currentEmail;

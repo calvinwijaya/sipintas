@@ -39,7 +39,7 @@ async function loadKKStudioData() {
         Object.entries(groups).forEach(([kelompok, rows]) => {
             const lokasi = rows[0][4] || "";
 
-            const PEMBIMBING_STUDIO_COL = 88;
+            const PEMBIMBING_STUDIO_COL = 89;
             const pembimbingStudio = (rows[0][PEMBIMBING_STUDIO_COL] || "").toLowerCase().trim();
 
             const isPembimbingStudio = pembimbingStudio === currentEmail;

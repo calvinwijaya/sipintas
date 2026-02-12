@@ -110,15 +110,37 @@ document.addEventListener("DOMContentLoaded", () => {
         const role = document.getElementById("role").value;
         const namaDosen = document.getElementById("dosenPenguji").value.trim();
         const nim = new URLSearchParams(window.location.search).get("nim");
+        
+        if (!role || !namaDosen || !nim) { 
+            Swal.fire({
+                icon: 'warning',
+                title: 'Data Belum Lengkap',
+                text: 'Silakan pilih peran, isi nama dosen, dan pastikan NIM tersedia.'
+            });
+            return;
+        }
 
         const scores = Array.from(document.querySelectorAll(".score-input"))
             .map(inp => parseFloat(inp.value) || 0);
 
-        if (!role || !namaDosen || !nim) { 
-            alert("Silakan pilih peran, isi nama dosen, dan pastikan NIM tersedia."); 
-            return;
-        }
+        Swal.fire({
+            title: "Kirim Nilai Sekarang?",
+            text: "Pastikan semua parameter penilaian sudah sesuai.",
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Ya, Kirim!",
+            cancelButtonText: "Batal"
+        }).then((result) => {
+            // Jika user menekan tombol "Ya, Kirim!"
+            if (result.isConfirmed) {
+                jalankanPengirimanData(role, namaDosen, nim, scores);
+            }
+        });
+    });
 
+    function jalankanPengirimanData(role, namaDosen, nim, scores) {
         const data = {
             role: role,
             namaDosen: namaDosen,
@@ -153,13 +175,13 @@ document.addEventListener("DOMContentLoaded", () => {
             })
             .catch(err => {
             console.error("Error:", err);
-            alert("Terjadi kesalahan saat mengirim data.");
+            Swal.fire("Error", "Terjadi kesalahan saat mengirim data.", "error");
             })
             .finally(() => {
             // ✅ Hide loading overlay after process
             loadingOverlay.style.display = "none";
             });
-    });
+    }
 
     document.getElementById("btnLoadNilaiProposalTesis").addEventListener("click", () => {
         const nim = document.getElementById("nim").textContent.trim();
@@ -171,6 +193,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         const callbackName = "handleLoadNilaiResponse_" + Date.now();
+        document.querySelector("#loadingOverlay div:last-child").innerText = "Mengambil data dari sistem...";
         loadingOverlay.style.display = "flex";
 
         window[callbackName] = function (data) {

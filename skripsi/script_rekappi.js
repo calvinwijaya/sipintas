@@ -2,6 +2,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const btnKirim = document.getElementById("btnKirimPI");
     if (!btnKirim) return;
 
+    function showLoading(show) {
+      const overlay = document.getElementById("loadingOverlay");
+      document.getElementById("loadingText").innerText = "Mengirim data ke sistem...";
+      if (overlay) {
+        overlay.style.display = show ? "flex" : "none";
+      }
+    }
+
     btnKirim.addEventListener("click", async () => {
         showLoading(true);
         const params = new URLSearchParams(window.location.search);
@@ -86,11 +94,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 } 
                 
             await sendData();
-            alert("Data berhasil dikirim!");
+            Swal.fire("Berhasil", "Data berhasil dikirim!", "success");
             
         } catch (err) {
             console.error(err);
-            alert("Terjadi kesalahan saat memuat data.");
+            Swal.fire("Error", "Terjadi kesalahan saat memuat data.", "error");
         } finally {
         showLoading(false);
         }

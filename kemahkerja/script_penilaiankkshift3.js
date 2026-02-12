@@ -173,10 +173,32 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("btnKirim").addEventListener("click", async () => {
         const namaDosen = dosenInput.value.trim();
         if (!namaDosen) {
-            alert("Silakan isi nama dosen.");
+            Swal.fire({
+                icon: 'warning',
+                title: 'Opss...',
+                text: 'Silakan isi nama dosen terlebih dahulu.'
+            });
             return;
         }
 
+        Swal.fire({
+            title: "Apakah anda yakin?",
+            text: "Pastikan semua nilai sudah benar sebelum mengirim.",
+            icon: "question", // Logo tanda tanya
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Ya, Kirim Nilai!",
+            cancelButtonText: "Batal"
+        }).then((result) => {
+            // Jika pengguna menekan tombol "Ya"
+            if (result.isConfirmed) {
+                prosesKirimData(namaDosen);
+            }
+        });
+    });
+
+    function prosesKirimData(namaDosen) {
         loadingOverlay.style.display = "flex";
 
         const scores = [];
@@ -217,13 +239,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             })
             .catch(err => {
-                console.error("Error:", err);
-                alert("Terjadi kesalahan saat mengirim data.");
+                Swal.fire("Error", "Terjadi kesalahan saat mengirim data.", "error");
             })
             .finally(() => {
                 loadingOverlay.style.display = "none";
             });
-    });
+    }
 
     // document.getElementById("btnLoadNilai").addEventListener("click", () => {
     //     const namaDosen = dosenInput.value.trim();

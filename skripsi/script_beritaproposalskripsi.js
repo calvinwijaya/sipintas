@@ -110,6 +110,7 @@ document.getElementById("btnPrintBAProposalSkripsi").addEventListener("click", g
 const loadingOverlay = document.getElementById("loadingOverlay");
 
 document.getElementById("btnSaveRevisi").addEventListener("click", () => {
+  document.getElementById("loadingText").innerText = "Mengirim data ke sistem...";
   const payload = {
     nim: document.getElementById("nim").textContent,
     revisiJudul: document.getElementById("judulProposalSkripsiRevisi").value,
@@ -130,11 +131,11 @@ document.getElementById("btnSaveRevisi").addEventListener("click", () => {
   })
     .then(res => res.json())
     .then(data => {
-      alert(data.message || "Catatan revisi berhasil disimpan");
+      Swal.fire("Berhasil", "Catatan revisi telah disimpan.", "success");
     })
     .catch(err => {
       console.error(err);
-      alert("Gagal menyimpan catatan revisi");
+      Swal.fire("Error", "Gagal menyimpan revisi.", "error");
     })
     .finally(() => {
       loadingOverlay.style.display = "none";
@@ -142,10 +143,10 @@ document.getElementById("btnSaveRevisi").addEventListener("click", () => {
 });
 
 document.getElementById("btnLoadRevisi").addEventListener("click", () => {
+  document.querySelector("#loadingOverlay div:last-child").innerText = "Mengambil data dari sistem...";
   const nim = document.getElementById("nim").textContent.trim();
   if (!nim) {
-    alert("NIM tidak tersedia!");
-    return;
+    Swal.fire("Error", "NIM tidak tersedia!", "error");
   }
 
   const callbackName = "handleRevisiResponse";
@@ -157,9 +158,9 @@ document.getElementById("btnLoadRevisi").addEventListener("click", () => {
         document.getElementById("metode").value = data.metode || "";
         document.getElementById("penulisan").value = data.penulisan || "";
         document.getElementById("saran").value = data.saran || "";
-        alert("Catatan revisi berhasil dimuat");
+        Swal.fire("Berhasil", "Catatan revisi berhasil dimuat", "success");
       } else {
-        alert(data.message || "Gagal memuat catatan revisi");
+        Swal.fire("Error", "Gagal memuat catatan revisi.", "error");
       }
     } finally {
       // HIDE loading no matter success or error

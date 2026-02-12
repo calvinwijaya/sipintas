@@ -7,9 +7,7 @@ const REKAPTESIS_ADMIN_EMAILS = [
     "madeandi@ugm.ac.id"
 ];
 
-async function loadRekapTesisData() {
-    console.log("Script running...");
-    
+async function loadRekapTesisData() {  
     const user = JSON.parse(sessionStorage.getItem("user"));
     const currentEmail = user.email.toLowerCase().trim();
     const isAdmin = REKAPTESIS_ADMIN_EMAILS.includes(currentEmail);

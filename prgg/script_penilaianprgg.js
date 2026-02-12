@@ -279,6 +279,37 @@ document.addEventListener("DOMContentLoaded", async () => {
     document.getElementById("btnKirim").addEventListener("click", async () => {
         const role = document.getElementById("role").value;
         const namaDosen = document.getElementById("dosenPenguji").value.trim();
+
+        if (!namaDosen) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Nama Dosen Kosong',
+                text: 'Silakan isi nama dosen penguji terlebih dahulu.'
+            });
+            return;
+        }
+
+        Swal.fire({
+            title: "Kirim Nilai Sekarang?",
+            text: "Pastikan semua nilai yang Anda masukkan sudah benar.",
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Ya, Kirim!",
+            cancelButtonText: "Batal"
+        }).then((result) => {
+            // Jika user menekan tombol "Ya, Kirim!"
+            if (result.isConfirmed) {
+                jalankanKirimData(role, namaDosen);
+            }
+        });
+    });
+
+    function jalankanKirimData(role, namaDosen) {
+        const loadingText = document.getElementById("loadingText");
+        if (loadingText) loadingText.innerText = "Mengirim data ke sistem...";
+
         loadingOverlay.style.display = "flex";
 
         const scores = [];
@@ -306,27 +337,27 @@ document.addEventListener("DOMContentLoaded", async () => {
             .then(res => res.json())
             .then(result => {
                 if (result.status === "success") {
-                      showModal({
-                        type: "success",
-                        title: "Nilai berhasil dikirim!",
-                        message: "Silakan kembali ke <strong>Dashboard</strong><br>dan lakukan penilaian ke kelompok berikutnya."
+                      Swal.fire({
+                        icon: 'success',
+                        title: 'Nilai Berhasil Dikirim!',
+                        html: 'Silakan kembali ke <strong>Dashboard</strong> dan lakukan penilaian ke kelompok berikutnya.',
                     });
                 } else {
-                      showModal({
-                        type: "error",
-                        title: "Gagal mengirim nilai",
-                        message: result.message || "Terjadi kesalahan pada sistem."
+                      Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal Mengirim Nilai',
+                        text: result.message || "Terjadi kesalahan pada sistem."
                     });
                 }
             })
             .catch(err => {
                 console.error("Error:", err);
-                alert("Terjadi kesalahan saat mengirim data.");
+                Swal.fire("Error", "Terjadi kesalahan saat mengirim data.", "error");
             })
             .finally(() => {
                 loadingOverlay.style.display = "none";
             });
-    })
+    }
 
     // --- Helper: Tanggal Indonesia ---
     function getTanggalIndonesia() {

@@ -8,8 +8,6 @@ const ADMIN_EMAILS = [
 ];
 
 async function loadRekapSkripsiData() {
-    console.log("Script running...");
-
     const user = JSON.parse(sessionStorage.getItem("user"));
     const currentEmail = user.email.toLowerCase().trim();
     const isAdmin = ADMIN_EMAILS.includes(currentEmail);
