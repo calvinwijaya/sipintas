@@ -25,6 +25,7 @@ function getKelompokInfoFromQuery() {
         kelompok: params.get("kelompok") || "",
         pembimbing: params.get("pembimbing") || "",
         topikusulan: params.get("topikusulan") || "",
+        instansiKP: params.get("instansiKP") || "",
         linkGDriveProposalKP: params.get("linkGDriveProposalKP") || "",
         linkGDriveLapAkhirKP: params.get("linkGDriveLapAkhirKP") || "",
     };
@@ -106,6 +107,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     document.getElementById("kelompok").textContent = kelompokInfo.kelompok;
     document.getElementById("pembimbing").textContent = kelompokInfo.pembimbing;
     document.getElementById("judulUsulanTopikKP").textContent = kelompokInfo.topikusulan;
+    document.getElementById("instansiKP").textContent = kelompokInfo.instansiKP;
 
     setLink("linkGoogleDriveProposalKP", kelompokInfo.linkGDriveProposalKP);
     setLink("linkGoogleDriveLaporanAkhirKP", kelompokInfo.linkGDriveLapAkhirKP);

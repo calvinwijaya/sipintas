@@ -30,6 +30,9 @@ async function loadKPData() {
             const niu     = r[4];
             const pembimbing = r[5];
             const topikusulan = r[6];
+            const instansiKP = r[14];
+            const linkGDriveProposalKP = r[8];
+            const linkGDriveLapAkhirKP = r[9];
             if (!groups[kelompok]) groups[kelompok] = [];
             groups[kelompok].push(r);
         });
@@ -43,6 +46,7 @@ async function loadKPData() {
             const topikusulan = rows[0][6] || "";
             const linkGDriveProposalKP = rows[0][8] || "";
             const linkGDriveLapAkhirKP = rows[0][9] || "";
+            const instansiKP = rows[0][14] || "";
 
             const COL_PEMBIMBING   = 46;
 
@@ -83,6 +87,7 @@ async function loadKPData() {
                 linkGDriveProposalKP, 
                 linkGDriveLapAkhirKP,
                 kelompok,
+                instansiKP,
                 role
             });
             encodedParams.append("kelompok", kelompok);
