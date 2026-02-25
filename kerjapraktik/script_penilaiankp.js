@@ -24,14 +24,14 @@ function getKelompokInfoFromQuery() {
     return {
         kelompok: params.get("kelompok") || "",
         pembimbing: params.get("pembimbing") || "",
-        topik: params.get("topik") || "",
+        topikusulan: params.get("topikusulan") || "",
         linkGDriveProposalKP: params.get("linkGDriveProposalKP") || "",
         linkGDriveLapAkhirKP: params.get("linkGDriveLapAkhirKP") || "",
     };
 }
 
 async function fetchPhotoURL(studentID) {
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbzhS6pwUUbbiiDLMWxNVlu3WCNokw95Ryot7RrcB99rLEg-TJB9jCZL128PgucD2Dw1Zg/exec";
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbx04fxpy-KNCmvxtGwYqJTfDNuPDmaZGPIsIm57Z_JFE5Tsm1JDGsvg1KzKSi4NgXYcRQ/exec";
     try {
         const res = await fetch(
             `${GAS_URL}?action=getPhoto&studentID=${encodeURIComponent(studentID)}`
@@ -89,6 +89,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             <td>${m.nama}</td>
             <td>${m.nim}</td>
             <td>${photos[idx]}</td>
+            <td><input type="text" class="form-control input-keterangan" placeholder="Pindah kelompok, dll..." style="width:100%; min-width:150px;"></td>
         `;
         tbody.appendChild(tr);
 
@@ -104,7 +105,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     document.getElementById("kelompok").textContent = kelompokInfo.kelompok;
     document.getElementById("pembimbing").textContent = kelompokInfo.pembimbing;
-    document.getElementById("judulTopikKP").textContent = kelompokInfo.topik;
+    document.getElementById("judulUsulanTopikKP").textContent = kelompokInfo.topikusulan;
 
     setLink("linkGoogleDriveProposalKP", kelompokInfo.linkGDriveProposalKP);
     setLink("linkGoogleDriveLaporanAkhirKP", kelompokInfo.linkGDriveLapAkhirKP);
@@ -311,18 +312,30 @@ document.addEventListener("DOMContentLoaded", async () => {
             scores.push(Array.from(inputs).map(inp => parseFloat(inp.value) || 0));
         });
 
+        const judulRealisasiEl = document.getElementById("inputJudulRealisasi");
+        const judulRealisasi = judulRealisasiEl ? judulRealisasiEl.value.trim() : "";
+
+        const keteranganInputs = document.querySelectorAll(".input-keterangan");
+        const mahasiswaLengkap = dataMahasiswa.map((m, idx) => {
+            return {
+                ...m,
+                keterangan: keteranganInputs[idx] ? keteranganInputs[idx].value.trim() : ""
+            };
+        });
+
         const data = {
             namaDosen: namaDosen,
-            mahasiswa: dataMahasiswa,
+            mahasiswa: mahasiswaLengkap,
             role: role,
             scores: scores,
-            tanggal: getTanggalIndonesia()
+            tanggal: getTanggalIndonesia(),
+            judulRealisasi: judulRealisasi,
         };
 
         const formBody = new URLSearchParams();
         formBody.append("data", JSON.stringify(data));
 
-        fetch("https://script.google.com/macros/s/AKfycbwmVfMyQrwpWJfbzTZr2p3D2BxXJwAycH8YemhoPH_utr5GxD9O9WnYB3JUtSqdK6DS/exec", {
+        fetch("https://script.google.com/macros/s/AKfycbxz_hVWK5DpATV0ME_vmA7Tus36Xn1wWyhpgCuX5uueMcvMhUSBEDnrbDHaRtjQW3iq/exec", {
             method: "POST",
             body: formBody
         })

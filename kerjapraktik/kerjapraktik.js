@@ -1,4 +1,4 @@
-const KP_ADMIN_EMAILS = ["cecep.pratama@ugm.ac.id"];
+const KP_ADMIN_EMAILS = ["cecep.pratama@ugm.ac.id", "calvin.wijaya@mail.ugm.ac.id"];
 
 async function loadKPData() {
     const user = JSON.parse(sessionStorage.getItem("user"));
@@ -29,7 +29,7 @@ async function loadKPData() {
             const kelompok = r[3];
             const niu     = r[4];
             const pembimbing = r[5];
-            const topik = r[6];
+            const topikusulan = r[6];
             if (!groups[kelompok]) groups[kelompok] = [];
             groups[kelompok].push(r);
         });
@@ -40,9 +40,9 @@ async function loadKPData() {
 
         Object.entries(groups).forEach(([kelompok, rows]) => {
             const pembimbing = rows[0][5] || "";
-            const topik = rows[0][6] || "";
-            const linkGDriveProposalKP = rows[0][7] || "";
-            const linkGDriveLapAkhirKP = rows[0][8] || "";
+            const topikusulan = rows[0][6] || "";
+            const linkGDriveProposalKP = rows[0][8] || "";
+            const linkGDriveLapAkhirKP = rows[0][9] || "";
 
             const COL_PEMBIMBING   = 46;
 
@@ -79,7 +79,7 @@ async function loadKPData() {
 
             const encodedParams = new URLSearchParams({
                 pembimbing, 
-                topik, 
+                topikusulan, 
                 linkGDriveProposalKP, 
                 linkGDriveLapAkhirKP,
                 kelompok,
@@ -103,7 +103,7 @@ async function loadKPData() {
                                 </div>
                                 
                                 <h4 class="fw-bold mb-1">Kelompok ${kelompok}</h4>
-                                <p class="text-muted small mb-2">${topik.substring(0, 50)}...</p>
+                                <p class="text-muted small mb-2">${topikusulan.substring(0, 50)}...</p>
                                 
                                 <ol class="text-start small mb-3 ps-3">
                                     ${rows.map(r => `<li>${r[1]}</li>`).join("")}
