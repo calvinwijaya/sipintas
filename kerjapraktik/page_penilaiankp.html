@@ -163,6 +163,13 @@
                 <td id="pembimbing"></td>
             </tr>
             <tr>
+                <td class="info-label">Nama Pembimbing di Instansi KP</td>
+                <td class="info-colon">:</td>
+                <td id="namaPembimbingInstansi">
+                    <input type="text" id="inputPembimbingInstansi" class="form-control" placeholder="Masukkan Nama Pembimbing Instansi" style="width: 100%;">
+                </td>
+            </tr>
+            <tr>
                 <td class="info-label">Instansi KP</td>
                 <td class="info-colon">:</td>
                 <td id="instansiKP"></td>
@@ -194,7 +201,7 @@
 
         <!-- Dosen Penguji -->
         <div class="mb-4 position-relative" style="max-width: 500px;">
-            <label for="dosenPenguji" class="form-label fw-bold">Dosen Penguji:</label>
+            <label for="dosenPenguji" class="form-label fw-bold">Dosen Pembimbing:</label>
             <input type="text" id="dosenPenguji" class="form-control bg-light" readonly>
         </div>
 
@@ -206,8 +213,8 @@
             </select>
         </div>        
 
-        <!-- Penilaian KP -->
-        <h5 class="fw-bold text-primary mb-3">Penilaian KP</h5>
+        <!-- Penilaian KP oleh Dosen Geodesi UGM -->
+        <h5 class="fw-bold text-primary mb-3">Penilaian KP oleh Dosen Geodesi UGM</h5>
         <p class="text-muted">Skor diberikan dalam rentang 0 – 100</p>
 
         <div class="mb-2 text-end">
@@ -313,6 +320,136 @@
         <!-- Buttons -->
         <div class="mt-6 text-end">
             <button id="btnKirim" class="btn btn-primary me-2">Kirim Nilai</button>
+            <!-- <button id="btnLoadNilai" class="btn btn-outline-primary">Load Nilai</button> -->
+        </div>
+
+        <!-- Penilaian KP oleh Instansi KP -->
+        <h5 class="fw-bold text-primary mb-3">Penilaian oleh Instansi KP</h5>
+        <p class="text-muted">Skor diberikan dalam rentang 0 – 100</p>
+
+        <div class="mb-2 text-end">
+          <button id="toggleKategoriInstansi" class="btn btn-sm btn-outline-secondary">
+            ▼ Tampilkan/Sembunyikan Kategori
+          </button>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table table-bordered align-middle text-center" id="penilaianTableInstansi">
+            <thead class="table-light align-middle rubrik-header">
+              <tr>
+                <th rowspan="2" style="width:5%;">SO</th>
+                <th rowspan="2" style="min-width: 20%;">Course Learning Outcome (CLO)</th>
+                <th id="kategoriHeaderInstansi" colspan="4" class="text-center">Kategori Penilaian</th>
+                <th id="penilaianMahasiswaHeaderInstansi" colspan="1" class="text-center">Penilaian Mahasiswa</th>
+              </tr>
+              <tr id="headerMahasiswaInstansi">
+                <th class="col-kategori text-success">Sangat Baik <br>A (80-100)</th>
+                <th class="col-kategori text-primary">Baik <br>B (70-79)</th>
+                <th class="col-kategori text-warning">Cukup <br>C (60-69)</th>
+                <th class="col-kategori text-danger">Kurang/Gagal <br>&lt; 60</th>
+                <!-- JS will inject Mhs1..MhsN -->
+              </tr>
+            </thead>
+
+            <tbody id="tabelPenilaianInstansi" class="rubrik-penilaian-instansi">
+              <tr>
+                <td>SO d</td>
+                <td class="text-start">
+                  CPMK-1: Etos Kerja, kerajinan, dan kedisiplinan
+                </td>
+                <td class="col-kategori text-start">Tiga komponen yaitu: Etos kerja, kerajinan, dan kedisiplinan sangat baik</td>
+                <td class="col-kategori text-start">Tiga komponen yaitu: Etos kerja, kerajinan, dan kedisiplinan bernilai baik</td>
+                <td class="col-kategori text-start">Dua komponen dari aspek: etos kerja, kerajinan, dan kedisiplinan yang baik</td>
+                <td class="col-kategori text-start">Etos kerja rendah, kerajinan, dan kedisiplinan kurang baik</td>
+              </tr>
+              <tr>
+                <td>SO i</td>
+                <td class="text-start">
+                  CPMK-2: Daya tangkap terhadap pekerjaan
+                </td>
+                <td class="col-kategori text-start">Cepat dan responsif dalam memahami permasalahan</td>
+                <td class="col-kategori text-start">Mampu memahami permasalahan dengan cukup cepat, tetapi kurang responsif.</td>
+                <td class="col-kategori text-start">Mampu memahami permasalahan, tetapi lambat</td>
+                <td class="col-kategori text-start">Tidak mampu memahami permasalahan</td>
+              </tr>
+              <tr>
+                <td>SO e</td>
+                <td class="text-start">
+                  CPMK-3: Kemampuan menyelesaikan pekerjaan/Responsi
+                </td>
+                <td class="col-kategori text-start">Cepat menyelesaikan semua pekerjaan (100%) dengan hasil baik</td>
+                <td class="col-kategori text-start">Hanya mampu menyelesaikan sekitar 70 - ≤ 100 %  dari semua pekerjaan</td>
+                <td class="col-kategori text-start">Hanya mampu menyelesaikan sekitar 60 – ≤ 70 %  dari semua pekerjaan</td>
+                <td class="col-kategori text-start">Tidak mampu menyelesaikan pekerjaan</td>
+              </tr>   
+              <tr>
+                <td>SO f</td>
+                <td class="text-start">
+                  CPMK-4: Tanggung jawab terhadap pekerjaan
+                </td>
+                <td class="col-kategori text-start">Bertanggung jawah terhadap semua (100%) yang ditugaskan dan dikerjakan</td>
+                <td class="col-kategori text-start">Bertanggung jawah 70 - ≤ 100 % dari yang ditugaskan dan dikerjakan</td>
+                <td class="col-kategori text-start">Bertanggung jawah 60 - ≤ 70 % dari yang ditugaskan dan dikerjakan</td>
+                <td class="col-kategori text-start">Tidak mau bertanggung jawah terhadap semua yang ditugaskan dan dikerjakan</td>
+              </tr>  
+              <tr>
+                <td>SO g</td>
+                <td class="text-start">
+                  CPMK-5: Hubungan terhadap rekan kerja dan masyarakat
+                </td>
+                <td class="col-kategori text-start">Sangat baik berinteraksi dengan rekan kerja dan pihak lain (tempat KP)</td>
+                <td class="col-kategori text-start">Berinteraksi baik dengan rekan kerja dan pihak lain (misal tempat KP)</td>
+                <td class="col-kategori text-start">Berinteraksi baik dengan salah satu dari rekan kerja atau pihak lain</td>
+                <td class="col-kategori text-start">Tidak baik berinteraksi dengan rekan kerja dan/atau pihak lain</td>
+              </tr>  
+              <tr>
+                <td>SO g</td>
+                <td class="text-start">
+                  CPMK-6: Akhlak/ kelakuan
+                </td>
+                <td class="col-kategori text-start">Berkelakuan baik dan mampu membawa diri</td>
+                <td class="col-kategori text-start">Berkelakuan  cukup baik dan mampu membawa diri</td>
+                <td class="col-kategori text-start">Berkelakuan cukup baik.</td>
+                <td class="col-kategori text-start">Berkelakuan kurang baik dan pernah memciptakan suasana kerja tidak baik (trouble maker)</td>
+              </tr>
+              <tr>
+                <td>SO e</td>
+                <td class="text-start">
+                  CPMK-7: Kepercayaan Diri
+                </td>
+                <td class="col-kategori text-start">Sangat percaya diri</td>
+                <td class="col-kategori text-start">Percaya diri</td>
+                <td class="col-kategori text-start">Cukup percaya diri</td>
+                <td class="col-kategori text-start">Tidak percaya diri</td>
+              </tr> 
+              <tr>
+                <td>SO k</td>
+                <td class="text-start">
+                  CPMK-8: Ketrampilan
+                </td>
+                <td class="col-kategori text-start">Sangat Terampil</td>
+                <td class="col-kategori text-start">Trampil</td>
+                <td class="col-kategori text-start">Cukup trampil</td>
+                <td class="col-kategori text-start">Tidak Terampil, tidak mampu mengerjakan</td>
+              </tr>                                                                                                                                                                                                                                        
+            </tbody>
+            <tfoot>
+              <tr id="rowRerataInstansi">
+                <th id="rerataLabelInstansi" colspan="6" class="text-end">Rata-rata</th>
+                <!-- Kolom rerata dari JS -->
+              </tr>
+            </tfoot>
+            <tfoot>
+              <tr id="rowNilaiHurufInstansi">
+                <th id="nilaiHurufLabelInstansi" colspan="6" class="text-end">Nilai</th>
+              </tr>
+            </tfoot>              
+          </table>
+        </div>
+
+        <!-- Buttons -->
+        <div class="mt-6 text-end">
+            <button id="btnKirimInstansi" class="btn btn-primary me-2">Kirim Nilai Instansi KP</button>
             <!-- <button id="btnLoadNilai" class="btn btn-outline-primary">Load Nilai</button> -->
         </div>
 

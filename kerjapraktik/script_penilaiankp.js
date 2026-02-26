@@ -51,20 +51,12 @@ async function fetchPhotoURL(studentID) {
 document.addEventListener("DOMContentLoaded", async () => {
     const dataMahasiswa = getMahasiswaFromQuery(); 
 
-    // DOM refs
+    // DOM refs dasar
     const tbody = document.getElementById("tabelMahasiswa");
-    const headerMahasiswaRow = document.getElementById("headerMahasiswa"); // row for second header
-    const penilaianHeader = document.getElementById("penilaianMahasiswaHeader"); // merged "Penilaian Mahasiswa" cell
-    const rowRerata = document.getElementById("rowRerata");
-    const rerataLabel = document.getElementById("rerataLabel");
-    const toggleBtn = document.getElementById("toggleKategori");
-    const kategoriHeader = document.getElementById("kategoriHeader");
 
-    // -------------- build mahasiswa list & header Mhs ----------------
-    // isi tabel mahasiswa (no, nama, nim)
+    // -------------- build mahasiswa list (tabel paling atas) ----------------
     tbody.innerHTML = "";
 
-    // Prepare all fetch promises
     const photoPromises = dataMahasiswa.map(async (m) => {
         if (m.studentID) {
             try {
@@ -79,10 +71,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         return "—";
     });
 
-    // Wait for all photos to be fetched
     const photos = await Promise.all(photoPromises);
 
-    // Build table rows
     dataMahasiswa.forEach((m, idx) => {
         const tr = document.createElement("tr");
         tr.innerHTML = `
@@ -93,12 +83,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             <td><input type="text" class="form-control input-keterangan" placeholder="Pindah kelompok, dll..." style="width:100%; min-width:150px;"></td>
         `;
         tbody.appendChild(tr);
-
-        // Build Mhs headers
-        const th = document.createElement("th");
-        th.textContent = `Mhs-${idx + 1}`;
-        th.style.width = "80px";
-        headerMahasiswaRow.appendChild(th);
     });
 
     // -------------- populate kelompok info ---------------- 
@@ -107,137 +91,167 @@ document.addEventListener("DOMContentLoaded", async () => {
     document.getElementById("kelompok").textContent = kelompokInfo.kelompok;
     document.getElementById("pembimbing").textContent = kelompokInfo.pembimbing;
     document.getElementById("judulUsulanTopikKP").textContent = kelompokInfo.topikusulan;
-    document.getElementById("instansiKP").textContent = kelompokInfo.instansiKP;
+    
+    // Pastikan ID instansiKP ada di HTML
+    const instansiEl = document.getElementById("instansiKP");
+    if(instansiEl) instansiEl.textContent = kelompokInfo.instansiKP;
 
     setLink("linkGoogleDriveProposalKP", kelompokInfo.linkGDriveProposalKP);
     setLink("linkGoogleDriveLaporanAkhirKP", kelompokInfo.linkGDriveLapAkhirKP);
 
-    // set the merged "Penilaian Mahasiswa" colspan to number of students
-    penilaianHeader.colSpan = dataMahasiswa.length;
+    // --- FUNGSI HELPER UNTUK SETUP KEDUA TABEL PENILAIAN ---
+    function setupTabelPenilaian(tbodyId, rowRerataId, rowNilaiHurufId, headerRowId, mergedHeaderId) {
+        const rubrikRows = document.querySelectorAll(`#${tbodyId} tr`);
+        const rowRerata = document.getElementById(rowRerataId);
+        const rowNilaiHuruf = document.getElementById(rowNilaiHurufId);
+        const headerRow = document.getElementById(headerRowId);
+        const mergedHeader = document.getElementById(mergedHeaderId);
 
-    // -------------- ensure body kategori cells have class "col-kategori" --------------
-    // assume kategori columns are at index 3..(3+4-1) -> adjust if layout different
-    const bodyRows = document.querySelectorAll("tbody.rubrik-penilaian tr");
-    bodyRows.forEach(row => {
-        for (let c = 3; c < 3 + 4; c++) {
-        const cell = row.cells[c];
-        if (cell) cell.classList.add("col-kategori");
+        // A. Merge kolom "Penilaian Mahasiswa"
+        if(mergedHeader) {
+            mergedHeader.colSpan = dataMahasiswa.length;
         }
-    });
-    // Also ensure header th for kategori already have class col-kategori (your HTML probably already does)
 
-    // -------------- inject input box for each mahasiswa di setiap baris rubrik --------------
-    const rubrikRows = document.querySelectorAll("#tabelPenilaian tr");
-    rubrikRows.forEach(row => {
-    dataMahasiswa.forEach(() => {
-        const td = document.createElement("td");
-        td.innerHTML = `<input type="number" min="0" max="100" 
-                        class="form-control text-center score-input" style="width:80px">`;
-        row.appendChild(td);
-    });
-    });
+        // B. Inject Header "Mhs-1", "Mhs-2" dll
+        if(headerRow) {
+            dataMahasiswa.forEach((m, idx) => {
+                const th = document.createElement("th");
+                th.textContent = `Mhs-${idx + 1}`;
+                th.style.width = "80px";
+                th.className = "text-center align-middle";
+                headerRow.appendChild(th);
+            });
+        }
 
-    // -------------- add rerata columns (one per mahasiswa) --------------
-    // remove existing appended rerata cells first (safe if re-run)
-    Array.from(rowRerata.children).forEach(ch => {
-        if (!ch.id || ch.id !== "rerataLabel") ch.remove();
-    });
-    dataMahasiswa.forEach(() => {
-        const td = document.createElement("td");
-        td.innerHTML = `<input type="text" class="form-control text-center fw-bold bg-light rerata-col" readonly style="width:80px">`;
-        rowRerata.appendChild(td);
-    });
+        // C. Inject input scores ke tiap baris rubrik
+        rubrikRows.forEach(row => {
+            // Beri class col-kategori ke sel kategori (kolom index 3,4,5,6) 
+            for (let c = 2; c < 6; c++) { 
+                if(row.cells[c]) row.cells[c].classList.add("col-kategori");
+            }
 
-    // -------------- add nilaiHuruf columns (one per mahasiswa) --------------
-    const rowNilaiHuruf = document.getElementById("rowNilaiHuruf");
+            dataMahasiswa.forEach(() => {
+                const td = document.createElement("td");
+                // Class untuk meratakan form ke tengah kotak
+                td.className = "align-middle text-center"; 
+                td.innerHTML = `<input type="number" min="0" max="100" class="form-control text-center score-input mx-auto" style="width:80px">`;
+                row.appendChild(td);
+            });
+        });
 
-    Array.from(rowNilaiHuruf.children).forEach(ch => {
-    if (!ch.id || ch.id !== "nilaiHurufLabel") ch.remove();
-    });
+        // D. Setup Rerata & Nilai Huruf
+        Array.from(rowRerata.children).forEach(ch => {
+            if (!ch.id || !ch.id.includes("Label")) ch.remove();
+        });
+        dataMahasiswa.forEach(() => {
+            const td = document.createElement("td");
+            td.className = "align-middle text-center";
+            td.innerHTML = `<input type="text" class="form-control text-center fw-bold bg-light rerata-col mx-auto" readonly style="width:80px">`;
+            rowRerata.appendChild(td);
+        });
 
-    dataMahasiswa.forEach(() => {
-    const td = document.createElement("td");
-    td.innerHTML = `<input type="text" class="form-control text-center fw-bold bg-light nilai-huruf-col" readonly style="width:80px">`;
-    rowNilaiHuruf.appendChild(td);
-    });
-
-    // -------------- helper to update footer colspan --------------
-    let kategoriVisible = true;
-    function updateRerataColspan() {
-        // base columns always visible: No SO + CLO = 2
-        let baseCols = 2;
-        if (kategoriVisible) baseCols += 4; // add 4 kategori columns if visible
-        // set colspan on the "Rata-rata" label cell
-        rerataLabel.colSpan = baseCols;
-        document.getElementById("nilaiHurufLabel").colSpan = baseCols;
+        Array.from(rowNilaiHuruf.children).forEach(ch => {
+            if (!ch.id || !ch.id.includes("Label")) ch.remove();
+        });
+        dataMahasiswa.forEach(() => {
+            const td = document.createElement("td");
+            td.className = "align-middle text-center";
+            td.innerHTML = `<input type="text" class="form-control text-center fw-bold bg-light nilai-huruf-col mx-auto" readonly style="width:80px">`;
+            rowNilaiHuruf.appendChild(td);
+        });
     }
-    updateRerataColspan();
 
-    // -------------- calculation of rata-rata per mahasiswa (column-wise) --------------
-    function hitungRerata() {
-        const rows = document.querySelectorAll("tbody.rubrik-penilaian tr");
-        const rerataInputs = document.querySelectorAll("#rowRerata .rerata-col");
-        const nilaiHurufInputs = document.querySelectorAll("#rowNilaiHuruf .nilai-huruf-col");
+    // Eksekusi setup untuk Tabel 1 (Dosen)
+    setupTabelPenilaian("tabelPenilaian", "rowRerata", "rowNilaiHuruf", "headerMahasiswa", "penilaianMahasiswaHeader");
+    
+    // Eksekusi setup untuk Tabel 2 (Instansi)
+    setupTabelPenilaian("tabelPenilaianInstansi", "rowRerataInstansi", "rowNilaiHurufInstansi", "headerMahasiswaInstansi", "penilaianMahasiswaHeaderInstansi");
+
+
+    // --- FUNGSI HITUNG RERATA (Tetap Sama) ---
+    function hitungRerataUntukTabel(tbodyId, rowRerataId, rowNilaiHurufId) {
+        const rows = document.querySelectorAll(`#${tbodyId} tr`);
+        const rerataInputs = document.querySelectorAll(`#${rowRerataId} .rerata-col`);
+        const nilaiHurufInputs = document.querySelectorAll(`#${rowNilaiHurufId} .nilai-huruf-col`);
 
         rerataInputs.forEach((input, colIdx) => {
             let total = 0;
             let count = 0;
 
             rows.forEach(row => {
-            const inputs = row.querySelectorAll(".score-input");
-            const cellInput = inputs[colIdx];
-            if (cellInput && cellInput.value !== "") {
-                total += parseFloat(cellInput.value) || 0;
-                count++;
-            }
+                const inputs = row.querySelectorAll(".score-input"); 
+                if (inputs[colIdx] && inputs[colIdx].value !== "") {
+                    total += parseFloat(inputs[colIdx].value) || 0;
+                    count++;
+                }
             });
 
             if (count > 0) {
-            const avg = total / count;
-            input.value = avg.toFixed(2);
-
-            if (nilaiHurufInputs[colIdx]) {
-                nilaiHurufInputs[colIdx].value = konversiNilaiHuruf(avg);
-            }
+                const avg = total / count;
+                input.value = avg.toFixed(2);
+                if (nilaiHurufInputs[colIdx]) {
+                    nilaiHurufInputs[colIdx].value = konversiNilaiHuruf(avg);
+                }
             } else {
-            input.value = "";
-            if (nilaiHurufInputs[colIdx]) nilaiHurufInputs[colIdx].value = "";
+                input.value = "";
+                if (nilaiHurufInputs[colIdx]) nilaiHurufInputs[colIdx].value = "";
             }
         });
     }
 
-    // ensure all student inputs have .score-input (adds class if missing)
-    document.querySelectorAll("tbody.rubrik-penilaian tr").forEach(row => {
-        // student inputs start after the first 3 + 4 kategori columns (index 7...), but simpler:
-        row.querySelectorAll("td input[type='number']").forEach(inp => {
-        if (!inp.classList.contains("score-input")) inp.classList.add("score-input");
-        });
-    });
-
-    // attach listener to score inputs
+    // Listener Input
     document.querySelectorAll(".score-input").forEach(inp => {
-        inp.addEventListener("input", hitungRerata);
-    });
-    // initial calc
-    hitungRerata();
-
-    // -------------- toggle kategori handler --------------
-    toggleBtn.addEventListener("click", () => {
-        kategoriVisible = !kategoriVisible;
-
-        // toggle merged header text cell
-        kategoriHeader.style.display = kategoriVisible ? "" : "none";
-
-        // toggle all category cells (header & body) that have .col-kategori
-        document.querySelectorAll("#penilaianTable .col-kategori").forEach(el => {
-        el.style.display = kategoriVisible ? "" : "none";
+        inp.addEventListener("input", (e) => {
+            const tbody = e.target.closest("tbody").id;
+            if (tbody === "tabelPenilaian") {
+                hitungRerataUntukTabel("tabelPenilaian", "rowRerata", "rowNilaiHuruf");
+            } else if (tbody === "tabelPenilaianInstansi") {
+                hitungRerataUntukTabel("tabelPenilaianInstansi", "rowRerataInstansi", "rowNilaiHurufInstansi");
+            }
         });
+    });
 
-        // update footer colspan
-        updateRerataColspan();
 
-        // update button label
-        toggleBtn.textContent = kategoriVisible ? "▼ Sembunyikan Kategori" : "▶ Tampilkan Kategori";
+    // -------------- TOGGLE KATEGORI UNTUK KEDUA TABEL --------------
+    let kategoriVisible = true;
+
+    function updateRerataColspan() {
+        let baseCols = 2; 
+        if (kategoriVisible) baseCols += 4;
+        
+        // Update colspan di semua label footer
+        ["rerataLabel", "nilaiHurufLabel", "rerataLabelInstansi", "nilaiHurufLabelInstansi"].forEach(id => {
+            const el = document.getElementById(id);
+            if(el) el.colSpan = baseCols;
+        });
+    }
+    updateRerataColspan();
+
+    // Ambil SEMUA tombol toggle (berdasarkan id yang mengandung kata toggleKategori)
+    const toggleBtns = document.querySelectorAll("[id^='toggleKategori']");
+    
+    toggleBtns.forEach(btn => {
+        btn.addEventListener("click", () => {
+            kategoriVisible = !kategoriVisible;
+
+            // Toggle merged header di kedua tabel
+            const katH1 = document.getElementById("kategoriHeader");
+            const katH2 = document.getElementById("kategoriHeaderInstansi");
+            if(katH1) katH1.style.display = kategoriVisible ? "" : "none";
+            if(katH2) katH2.style.display = kategoriVisible ? "" : "none";
+
+            // Toggle semua cell kategori di kedua tabel
+            document.querySelectorAll(".col-kategori").forEach(el => {
+                el.style.display = kategoriVisible ? "" : "none";
+            });
+
+            updateRerataColspan();
+
+            // Ubah teks di semua tombol toggle secara bersamaan
+            toggleBtns.forEach(b => {
+                b.textContent = kategoriVisible ? "▼ Sembunyikan Kategori" : "▶ Tampilkan Kategori";
+            });
+        });
     });
 
     // --- Autocomplete Dosen ---
@@ -364,6 +378,67 @@ document.addEventListener("DOMContentLoaded", async () => {
             .finally(() => {
                 loadingOverlay.style.display = "none";
             });
+    }
+
+    // --- KIRIM DATA INSTANSI KP ---
+    const btnKirimInstansi = document.getElementById("btnKirimInstansi");
+    if (btnKirimInstansi) {
+        btnKirimInstansi.addEventListener("click", () => {
+            const namaPembimbingInstansi = document.getElementById("inputPembimbingInstansi").value.trim();
+
+            if (!namaPembimbingInstansi) {
+                Swal.fire('Peringatan', 'Nama Pembimbing Instansi belum diisi.', 'warning');
+                return;
+            }
+
+            Swal.fire({
+                title: "Kirim Nilai Instansi KP?",
+                icon: "question",
+                showCancelButton: true,
+                confirmButtonText: "Ya, Kirim!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    jalankanKirimDataInstansi(namaPembimbingInstansi);
+                }
+            });
+        });
+    }
+
+    function jalankanKirimDataInstansi(namaPembimbingInstansi) {
+        loadingOverlay.style.display = "flex";
+
+        const scoresInstansi = [];
+        const rowsInstansi = document.querySelectorAll("#tabelPenilaianInstansi tr");
+        rowsInstansi.forEach(row => {
+            const inputs = row.querySelectorAll(".score-input");
+            scoresInstansi.push(Array.from(inputs).map(inp => parseFloat(inp.value) || 0));
+        });
+
+        // Ingat, kita tidak perlu mengirim judulRealisasi atau keterangan lagi
+        const data = {
+            namaPembimbingInstansi: namaPembimbingInstansi,
+            mahasiswa: dataMahasiswa, 
+            scores: scoresInstansi,
+            tanggal: getTanggalIndonesia()
+        };
+
+        const formBody = new URLSearchParams();
+        formBody.append("data", JSON.stringify(data));
+
+        fetch("https://script.google.com/macros/s/AKfycbyru-pbVpsf-1JqGK_1YdmOOZMD6WxNg9FNX-YqywesSPYIob3FKfCJ3I0efdu6eI6LKA/exec", { 
+            method: "POST",
+            body: formBody
+        })
+        .then(res => res.json())
+        .then(result => {
+             if (result.status === "success") {
+                 Swal.fire('Berhasil', 'Nilai Instansi berhasil dikirim!', 'success');
+             } else {
+                 Swal.fire('Gagal', result.message, 'error');
+             }
+        })
+        .catch(err => Swal.fire('Error', 'Gagal mengirim data instansi.', 'error'))
+        .finally(() => loadingOverlay.style.display = "none");
     }
 
     // --- Helper: Tanggal Indonesia ---
