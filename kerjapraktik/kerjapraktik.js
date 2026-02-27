@@ -49,26 +49,28 @@ async function loadKPData() {
             const instansiKP = rows[0][14] || "";
 
             const COL_PEMBIMBING   = 46;
-
             const email_pembimbing = rows[0][COL_PEMBIMBING] || "";
 
             // Indices for checking if scores already exist
             const COL_SCORE_PEMBIMBING = 22; // Col W
+            const COL_SCORE_INSTANSIKP = 32; // Col AG
 
             const isPembimbing = (email_pembimbing || "").toLowerCase().trim() === currentEmail;
             const isAdminHere = isAdmin;
 
             let role = null;
-            let hasBeenAssessed = false;
+            
+            // Cek status penilaian masing-masing pembimbing
+            const isDinilaiGeodesi = !!rows[0][COL_SCORE_PEMBIMBING];
+            const isDinilaiInstansi = !!rows[0][COL_SCORE_INSTANSIKP];
+            
+            // Status utama akan hijau (true) JIKA KEDUANYA sudah menilai
+            const hasBeenAssessed = isDinilaiGeodesi && isDinilaiInstansi;
 
             // Role assignment
-            // 2. Assign Role AND Check if already assessed
-            // We check rows[0] because if one student in the group is graded, 
-            // usually the whole group session is done.
             if (isPembimbing) {
                 role = "pembimbing";
-                hasBeenAssessed = !!rows[0][COL_SCORE_PEMBIMBING]; 
-            }  else if (isAdminHere) {
+            } else if (isAdminHere) {
                 role = "admin";
             } else {
                 return; // Skip if not authorized
@@ -77,7 +79,7 @@ async function loadKPData() {
             // 3. Define Styles based on Role and Status
             const statusColor = hasBeenAssessed ? "#28a745" : "#dc3545"; // Green if done, Red if pending
             const bgColor = hasBeenAssessed ? "#e8f5e9" : "#fff5f5";    // Very light green vs light red
-            const statusText = hasBeenAssessed ? "SUDAH DINILAI" : "BELUM DINILAI";
+            const statusText = hasBeenAssessed ? "SUDAH DINILAI" : "BELUM LENGKAP";
 
             hasVisibleCard = true;
 
@@ -113,16 +115,29 @@ async function loadKPData() {
                                 <ol class="text-start small mb-3 ps-3">
                                     ${rows.map(r => `<li>${r[1]}</li>`).join("")}
                                 </ol>
+
+                                <div class="text-start small mb-3 p-2 rounded" style="background-color: rgba(255,255,255,0.6); border: 1px solid #ddd;">
+                                    <div class="mb-1 fw-bold text-muted">Status Penilaian:</div>
+                                    <div class="d-flex align-items-center mb-1">
+                                        <i class="bi ${isDinilaiGeodesi ? 'bi-check-circle-fill text-success' : 'bi-x-circle-fill text-danger'} me-2"></i>
+                                        <span>Dosen Geodesi</span>
+                                    </div>
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi ${isDinilaiInstansi ? 'bi-check-circle-fill text-success' : 'bi-x-circle-fill text-danger'} me-2"></i>
+                                        <span>Pembimbing Instansi KP</span>
+                                    </div>
+                                </div>
                                 
                                 <a href="kerjapraktik/page_penilaiankp.html?${encodedParams}"
                                 class="btn ${hasBeenAssessed ? 'btn-outline-success' : 'btn-primary'} btn-sm w-100">
+                                    <i class="bi ${hasBeenAssessed ? 'bi-pencil-square' : 'bi-clipboard-check'}"></i>
                                     ${hasBeenAssessed ? 'Ubah Nilai' : 'Lakukan Penilaian'}
                                 </a>
                             </div>
                         </div>
                     </div>
                 `;
-            });
+        });
 
         if (!hasVisibleCard) {
             document.getElementById("kerjapraktikList").innerHTML =

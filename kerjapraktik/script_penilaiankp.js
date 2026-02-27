@@ -513,4 +513,97 @@ document.addEventListener("DOMContentLoaded", async () => {
             el.textContent = "-";
         }
     }
-});
+
+    // =========================================================================
+    // FITUR LOAD NILAI (GEODESI & INSTANSI)
+    // =========================================================================
+
+    // GANTI STRING INI DENGAN URL DEPLOY GAS 'doGet' YANG BARU DIBUAT TADI
+    const GAS_LOAD_URL = "https://script.google.com/macros/s/AKfycbz2qUQX4iZ4O1eWHgkXH9bLF92GqAEOXPYMsqx3NXxluyFEhT6x3wZu2RS7HWtsGcWPZA/exec"; 
+
+    async function jalankanLoadNilai(tipe, btnId, tbodyId, rowRerataId, rowNilaiHurufId) {
+        const btn = document.getElementById(btnId);
+        const originalText = btn.innerHTML;
+        
+        // Ubah state tombol saat loading
+        btn.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...`;
+        btn.disabled = true;
+
+        try {
+            // Gabungkan semua NIM mahasiswa menjadi satu string dipisah koma
+            const nims = dataMahasiswa.map(m => m.nim).join(",");
+            const url = `${GAS_LOAD_URL}?type=${tipe}&nims=${encodeURIComponent(nims)}`;
+            
+            const res = await fetch(url);
+            const result = await res.json();
+
+            if (result.status === "success") {
+                const fetchedData = result.data;
+                const rows = document.querySelectorAll(`#${tbodyId} tr`);
+                
+                let dataFound = false;
+
+                // Loop tiap mahasiswa berdasarkan posisinya di kolom tabel
+                dataMahasiswa.forEach((m, colIdx) => {
+                    const nim = m.nim.trim();
+                    const scoresMhs = fetchedData[nim]; // Array nilai [q1, q2, q3, ...]
+
+                    if (scoresMhs && scoresMhs.length > 0) {
+                        // Cek apakah ada minimal 1 nilai yang tidak kosong untuk memvalidasi data ada
+                        if (scoresMhs.some(s => s !== "")) dataFound = true;
+
+                        // Loop tiap baris CPMK pada tabel
+                        rows.forEach((row, rowIdx) => {
+                            const inputs = row.querySelectorAll(".score-input");
+                            // Jika ada kolom input untuk mahasiswa ini dan ada data nilainya
+                            if (inputs[colIdx] && scoresMhs[rowIdx] !== undefined) {
+                                inputs[colIdx].value = scoresMhs[rowIdx];
+                            }
+                        });
+                    }
+                });
+
+                if (dataFound) {
+                    // Kalkulasi ulang rerata & nilai huruf secara otomatis setelah nilai dimasukkan
+                    hitungRerataUntukTabel(tbodyId, rowRerataId, rowNilaiHurufId);
+                    
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Nilai Berhasil Dimuat',
+                        text: `Data nilai ${tipe === 'geodesi' ? 'Dosen' : 'Instansi'} telah ditarik dari database.`,
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                } else {
+                    Swal.fire('Info', `Belum ada data nilai ${tipe === 'geodesi' ? 'Dosen' : 'Instansi'} yang tersimpan untuk kelompok ini.`, 'info');
+                }
+
+            } else {
+                Swal.fire('Gagal', result.message || 'Gagal memuat data.', 'error');
+            }
+        } catch (err) {
+            console.error(err);
+            Swal.fire('Error', 'Terjadi kesalahan jaringan saat menarik data.', 'error');
+        } finally {
+            // Kembalikan state tombol
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    }
+
+    // Attach Event Listener ke Tombol Load Geodesi
+    const btnLoadNilai = document.getElementById("btnLoadNilai");
+    if (btnLoadNilai) {
+        btnLoadNilai.addEventListener("click", () => {
+            jalankanLoadNilai("geodesi", "btnLoadNilai", "tabelPenilaian", "rowRerata", "rowNilaiHuruf");
+        });
+    }
+
+    // Attach Event Listener ke Tombol Load Instansi
+    const btnLoadNilaiInstansi = document.getElementById("btnLoadNilaiInstansi");
+    if (btnLoadNilaiInstansi) {
+        btnLoadNilaiInstansi.addEventListener("click", () => {
+            jalankanLoadNilai("instansi", "btnLoadNilaiInstansi", "tabelPenilaianInstansi", "rowRerataInstansi", "rowNilaiHurufInstansi");
+        });
+    }
+});    
