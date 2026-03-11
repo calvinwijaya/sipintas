@@ -30,9 +30,11 @@ async function loadKPData() {
             const niu     = r[4];
             const pembimbing = r[5];
             const topikusulan = r[6];
-            const instansiKP = r[14];
             const linkGDriveProposalKP = r[8];
             const linkGDriveLapAkhirKP = r[9];
+            const linkGDrivePosterKP = r[10];
+            const instansiKP = r[14];
+            const alamatKP = r[15];
             if (!groups[kelompok]) groups[kelompok] = [];
             groups[kelompok].push(r);
         });
@@ -46,7 +48,9 @@ async function loadKPData() {
             const topikusulan = rows[0][6] || "";
             const linkGDriveProposalKP = rows[0][8] || "";
             const linkGDriveLapAkhirKP = rows[0][9] || "";
+            const linkGDrivePosterKP = rows[0][10] || "";
             const instansiKP = rows[0][14] || "";
+            const alamatKP = rows[0][15] || "";
 
             const COL_PEMBIMBING   = 46;
             const email_pembimbing = rows[0][COL_PEMBIMBING] || "";
@@ -88,8 +92,10 @@ async function loadKPData() {
                 topikusulan, 
                 linkGDriveProposalKP, 
                 linkGDriveLapAkhirKP,
+                linkGDrivePosterKP,
                 kelompok,
                 instansiKP,
+                alamatKP,
                 role
             });
             encodedParams.append("kelompok", kelompok);

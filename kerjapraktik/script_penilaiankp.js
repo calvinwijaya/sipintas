@@ -28,6 +28,8 @@ function getKelompokInfoFromQuery() {
         instansiKP: params.get("instansiKP") || "",
         linkGDriveProposalKP: params.get("linkGDriveProposalKP") || "",
         linkGDriveLapAkhirKP: params.get("linkGDriveLapAkhirKP") || "",
+        linkGDrivePosterKP: params.get("linkGDrivePosterKP") || "",
+        alamatKP: params.get("alamatKP") || ""
     };
 }
 
@@ -94,10 +96,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     
     // Pastikan ID instansiKP ada di HTML
     const instansiEl = document.getElementById("instansiKP");
+    const alamatEl = document.getElementById("alamatKP");
     if(instansiEl) instansiEl.textContent = kelompokInfo.instansiKP;
+    if(alamatEl) alamatEl.textContent = kelompokInfo.alamatKP;
 
     setLink("linkGoogleDriveProposalKP", kelompokInfo.linkGDriveProposalKP);
     setLink("linkGoogleDriveLaporanAkhirKP", kelompokInfo.linkGDriveLapAkhirKP);
+    setLink("linkGoogleDrivePosterKP", kelompokInfo.linkGDrivePosterKP);
 
     // --- FUNGSI HELPER UNTUK SETUP KEDUA TABEL PENILAIAN ---
     function setupTabelPenilaian(tbodyId, rowRerataId, rowNilaiHurufId, headerRowId, mergedHeaderId) {
@@ -331,6 +336,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         const judulRealisasiEl = document.getElementById("inputJudulRealisasi");
         const judulRealisasi = judulRealisasiEl ? judulRealisasiEl.value.trim() : "";
 
+        const tglMulaiEl = document.getElementById("tglMulaiKP");
+        const tglSelesaiEl = document.getElementById("tglSelesaiKP");
+        const tglMulai = tglMulaiEl ? tglMulaiEl.value : "";
+        const tglSelesai = tglSelesaiEl ? tglSelesaiEl.value : "";
+       
         const keteranganInputs = document.querySelectorAll(".input-keterangan");
         const mahasiswaLengkap = dataMahasiswa.map((m, idx) => {
             return {
@@ -346,12 +356,14 @@ document.addEventListener("DOMContentLoaded", async () => {
             scores: scores,
             tanggal: getTanggalIndonesia(),
             judulRealisasi: judulRealisasi,
+            tglMulai: tglMulai,
+            tglSelesai: tglSelesai
         };
 
         const formBody = new URLSearchParams();
         formBody.append("data", JSON.stringify(data));
 
-        fetch("https://script.google.com/macros/s/AKfycbxz_hVWK5DpATV0ME_vmA7Tus36Xn1wWyhpgCuX5uueMcvMhUSBEDnrbDHaRtjQW3iq/exec", {
+        fetch("https://script.google.com/macros/s/AKfycbxbvr6f_Ff5AwlBxoElXQBxwCjmvYSm0kDNRt2kVrFlh6LXonVRJonWHmOwbuImXx9r/exec", {
             method: "POST",
             body: formBody
         })
