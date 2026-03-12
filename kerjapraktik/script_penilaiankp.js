@@ -29,7 +29,6 @@ function getKelompokInfoFromQuery() {
         linkGDriveProposalKP: params.get("linkGDriveProposalKP") || "",
         linkGDriveLapAkhirKP: params.get("linkGDriveLapAkhirKP") || "",
         linkGDrivePosterKP: params.get("linkGDrivePosterKP") || "",
-        alamatKP: params.get("alamatKP") || ""
     };
 }
 
@@ -96,9 +95,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     
     // Pastikan ID instansiKP ada di HTML
     const instansiEl = document.getElementById("instansiKP");
-    const alamatEl = document.getElementById("alamatKP");
     if(instansiEl) instansiEl.textContent = kelompokInfo.instansiKP;
-    if(alamatEl) alamatEl.textContent = kelompokInfo.alamatKP;
 
     setLink("linkGoogleDriveProposalKP", kelompokInfo.linkGDriveProposalKP);
     setLink("linkGoogleDriveLaporanAkhirKP", kelompokInfo.linkGDriveLapAkhirKP);
