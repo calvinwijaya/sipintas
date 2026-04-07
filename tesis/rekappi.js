@@ -58,7 +58,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const f1 = avgFromRow(f1Indices).toFixed(2);
             const g5 = avgFromRow(g5Indices).toFixed(2);
 
-            const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby0jyVe6oKleFIZ27SZy52Zzw7ZHpdVkgskYOP_RhTieiiFJurWxOnjUu4whyXG4EU/exec"; // ganti URL mu
+            const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxyfgnqMxEkeUGf-pWdY-vxaF7aKkCwYS_QeLOFhJKoEQ6-K_vhimgOIy1kanS9exXN/exec"; // ganti URL mu
 
             async function sendData() {
                 const payload = {
