@@ -8,56 +8,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <style>
-        body {
-            min-height: 100vh;
-            display: flex;
-        }
-        .sidebar {
-            min-width: 250px;
-            max-width: 350px;
-            background-color: #0d6efd;
-            color: white;
-            transition: all 0.3s;
-        }
-        .sidebar.collapsed {
-            min-width: 70px;
-            max-width: 70px;
-        }
-        .sidebar .nav-link {
-            color: white;
-            white-space: nowrap;
-        }
-        .sidebar .nav-link:hover {
-            background-color: rgba(255,255,255,0.2);
-        }
-        .sidebar .nav-link.active {
-            background-color: rgba(255,255,255,0.3);
-        }
-        .sidebar .nav-link .label {
-            transition: opacity 0.3s;
-        }
-        .sidebar.collapsed .nav-link .label {
-            opacity: 0;
-            pointer-events: none;
-        }
-        .sidebar .toggle-btn {
-            cursor: pointer;
-            padding: 10px;
-            display: flex;
-            justify-content: flex-end;
-            color: white;
-        }
-        .sidebar.collapsed .toggle-btn {
-            justify-content: center;
-        }
-        .content {
-            flex: 1;
-            padding: 20px;
-            background-color: #f8f9fa;
-            transition: margin-left 0.3s;
-        }
-    </style>
+    <link rel="stylesheet" href="css/dashboard.css">
 </head>
 <body>
 
@@ -66,6 +17,14 @@
         <div class="toggle-btn" id="toggleSidebar">
             <i class="bi bi-list fs-4"></i>
         </div>
+        <div class="user-profile text-center my-3">
+            <img src="assets/logo.png" alt="Profile" id="userProfilePic" class="rounded-circle profile-img mb-2 shadow-sm bg-white" style="width: 80px; height: 80px; object-fit: cover;">
+            <div class="label">
+                <h6 class="text-white mb-0 fw-bold" id="sidebarUserNama">Nama User</h6>
+                <small class="text-light" id="sidebarUserRole" style="font-size: 0.75rem;">Role</small>
+            </div>
+        </div>
+        <hr class="text-white my-1 label">
         <ul class="nav nav-pills flex-column mb-auto">
             <li>
                 <a href="index.html" class="nav-link">
@@ -168,13 +127,6 @@
         </div>
     </div>
 
-    <script>
-        const user = JSON.parse(sessionStorage.getItem("user"));
-        if (!user) {
-            window.location.href = 'login.html';
-        }
-        document.getElementById("userNama").textContent = user.nama;
-    </script>    
     <script src="skripsi/proposalskripsi.js"></script>
     <script src="skripsi/ujianskripsi.js"></script>
     <script src="skripsi/rekapskripsi.js"></script>
@@ -200,204 +152,6 @@
     <script src="dashboard.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        document.getElementById('toggleSidebar').addEventListener('click', function () {
-            const sidebar = document.getElementById('sidebar');
-            sidebar.classList.toggle('collapsed');
-
-            // Tutup semua submenu ketika sidebar dicollapse
-            if (sidebar.classList.contains('collapsed')) {
-                document.querySelectorAll('.sidebar .collapse.show').forEach(el => {
-                    const bsCollapse = bootstrap.Collapse.getInstance(el);
-                    if (bsCollapse) {
-                        bsCollapse.hide();
-                    } else {
-                        new bootstrap.Collapse(el, { toggle: false }).hide();
-                    }
-                });
-            }
-        });
-
-        function loadPage(page, key) {
-            fetch(page)
-                .then(res => res.text())
-                .then(html => {
-                    document.getElementById("mainContent").innerHTML = html;
-
-                    if (page === "skripsi/dashboard_proposalskripsi.html") {
-                        loadProposalSkripsiData(); 
-                    } if (page === "skripsi/dashboard_ujianskripsi.html") {
-                        loadUjianSkripsiData(); 
-                    } if (page === "skripsi/dashboard_rekapskripsi.html") {
-                        loadRekapSkripsiData(); 
-                    } if (page === "tesis/dashboard_proposaltesis.html") {
-                        loadProposalData();
-                    } if (page === "tesis/dashboard_publikasitesis.html") {
-                        loadPublikasiS2Data(); 
-                    } if (page === "tesis/dashboard_ujiantesis.html") {
-                        loadUjianTesisData(); 
-                    } if (page === "tesis/dashboard_rekaptesis.html") {
-                        loadRekapTesisData(); 
-                    } if (page === "disertasi/dashboard_ujiankomprehensif.html") {
-                        loadQualificationAssessmentData(); 
-                    } if (page === "disertasi/dashboard_seminar1.html") {
-                        loadSeminar1Data(); 
-                    } if (page === "disertasi/dashboard_seminar2.html") {
-                        loadSeminar2Data(); 
-                    } if (page === "disertasi/dashboard_publikasidisertasi.html") {
-                        loadUjianKelayakanData(); 
-                    } if (page === "disertasi/dashboard_ujiantertutup.html") {
-                        loadujianTertutupData(); 
-                    } if (page === "disertasi/dashboard_naskahakhir.html") {
-                        loadnaskahAkhirData(); 
-                    } if (page === "disertasi/dashboard_kinerja.html") {
-                        loadKinerjaData(); 
-                    } if (page === "disertasi/dashboard_rekapdisertasi.html") {
-                        loadRekapDisertasiData(); 
-                    } if (page === "kemahkerja/dashboard_pretestkk.html") {
-                        loadPreTestKKData(); 
-                    } if (page === "kemahkerja/dashboard_kkshift1.html") {
-                        loadKKShift1Data(); 
-                    } if (page === "kemahkerja/dashboard_kkshift2.html") {
-                        loadKKShift2Data(); 
-                    } if (page === "kemahkerja/dashboard_kkshift3.html") {
-                        loadKKShift3Data(); 
-                    } if (page === "kemahkerja/dashboard_kkstudio.html") {
-                        loadKKStudioData(); 
-                    } if (page === "prgg/dashboard_prgg.html") {
-                        loadPRGGData(); 
-                    } if (page === "kerjapraktik/dashboard_kerjapraktik.html") {
-                        loadKPData(); 
-                    }
-
-                    history.pushState({page}, "", `?page=${key}`);
-                })
-                .catch(err => {
-                    document.getElementById("mainContent").innerHTML = "<p class='text-danger'>Gagal memuat halaman.</p>";
-                    console.error(err);
-                });
-        }
-
-        document.addEventListener("DOMContentLoaded", () => {
-            const params = new URLSearchParams(window.location.search);
-            const pageKey = params.get("page");
-
-            if (pageKey === "proposalskripsi") {
-                loadPage("skripsi/dashboard_proposalskripsi.html", "proposalskripsi");
-            } else if (pageKey === "ujianskripsi") {
-                loadPage("skripsi/dashboard_ujianskripsi.html", "ujianskripsi");
-            } else if (pageKey === "rekapskripsi") {
-                loadPage("skripsi/dashboard_rekapskripsi.html", "rekapskripsi");
-            } 
-            
-            else if (pageKey === "proposaltesis") {
-                loadPage("tesis/dashboard_proposaltesis.html", "proposaltesis");
-            } else if (pageKey === "publikasitesis") {
-                loadPage("tesis/dashboard_publikasitesis.html", "publikasitesis");
-            } else if (pageKey === "ujiantesis") {
-                loadPage("tesis/dashboard_ujiantesis.html", "ujiantesis");
-            } else if (pageKey === "rekaptesis") {
-                loadPage("tesis/dashboard_rekaptesis.html", "rekaptesis");
-            } else if (pageKey === "rekaptesis") {
-                loadPage("tesis/dashboard_rekaptesis.html", "rekaptesis");
-            } 
-            
-            else if (pageKey === "ujiankomprehensifdisertasi") {
-                loadPage("disertasi/dashboard_ujiankomprehensif.html", "ujiankomprehensifdisertasi");
-            } else if (pageKey === "disertasiseminar1") {
-                loadPage("disertasi/dashboard_seminar1.html", "disertasiseminar1");
-            } else if (pageKey === "disertasiseminar2") {
-                loadPage("disertasi/dashboard_seminar2.html", "disertasiseminar2");
-            } else if (pageKey === "publikasidisertasi") {
-                loadPage("disertasi/dashboard_publikasidisertasi.html", "publikasidisertasi");
-            } else if (pageKey === "ujiantertutupdisertasi") {
-                loadPage("disertasi/dashboard_ujiantertutup.html", "ujiantertutupdisertasi");
-            } else if (pageKey === "naskahakhirdisertasi") {
-                loadPage("disertasi/dashboard_naskahakhir.html", "naskahakhirdisertasi");
-            } else if (pageKey === "kinerjadisertasi") {
-                loadPage("disertasi/dashboard_kinerja.html", "kinerjadisertasi");
-            } else if (pageKey === "rekapdisertasi") {
-                loadPage("disertasi/dashboard_rekapdisertasi.html", "rekapdisertasi");
-            } 
-            
-            else if (pageKey === "pretestkk") {
-                loadPage("kemahkerja/dashboard_pretestkk.html", "pretestkk");
-            } else if (pageKey === "kkshift1") {
-                loadPage("kemahkerja/dashboard_kkshift1.html", "kkshift1");
-            } else if (pageKey === "kkshift2") {
-                loadPage("kemahkerja/dashboard_kkshift2.html", "kkshift2");
-            } else if (pageKey === "kkshift3") {
-                loadPage("kemahkerja/dashboard_kkshift3.html", "kkshift3");
-            } else if (pageKey === "kkstudio") {
-                loadPage("kemahkerja/dashboard_kkstudio.html", "kkstudio");
-            } 
-
-            else if (pageKey === "prgg") {
-                loadPage("prgg/dashboard_prgg.html", "prgg");
-            }
-
-            else if (pageKey === "kerjapraktik") {
-                loadPage("kerjapraktik/dashboard_kerjapraktik.html", "kerjapraktik");
-            }
-            
-            else {
-                
-            }
-        });
-    </script>
-    <script>
-        document.getElementById("btnLogout").addEventListener("click", (e) => {
-            e.preventDefault();
-
-            Swal.fire({
-                title: 'Keluar dari Sistem?',
-                text: "Anda harus login kembali untuk mengakses data penilaian.",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#dc3545', // Bootstrap Danger color
-                cancelButtonColor: '#6c757d', // Bootstrap Secondary color
-                confirmButtonText: 'Ya, Keluar',
-                cancelButtonText: 'Batal',
-                reverseButtons: true
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    performLogout();
-                }
-            });
-        });
-
-        function performLogout() {
-            try {
-                const userRaw = sessionStorage.getItem("user");
-                const user = userRaw ? JSON.parse(userRaw) : null;
-                const email = user?.email;
-
-                if (window.google?.accounts?.id) {
-                    google.accounts.id.disableAutoSelect();
-                    if (email) {
-                        google.accounts.id.revoke(email, () => {
-                            console.log("Google session revoked");
-                        });
-                    }
-                }
-            } catch (err) {
-                console.warn("Logout cleanup error:", err);
-            }
-
-            sessionStorage.clear();
-            localStorage.clear();
-            
-            // Optional: Show a quick success message before redirecting
-            Swal.fire({
-                title: 'Berhasil Keluar',
-                icon: 'success',
-                timer: 1500,
-                showConfirmButton: false
-            }).then(() => {
-                window.location.href = "login.html";
-            });
-        }
-    </script>
 
 </body>
 </html>
