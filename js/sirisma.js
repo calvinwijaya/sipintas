@@ -239,16 +239,22 @@ window.handleSaveArtikel = function() {
     });
 
     const currentUser = JSON.parse(sessionStorage.getItem("user"));
-    const targetFull = document.getElementById("targetIndeksasi").value;
-    const skorSintaNum = targetFull.includes(" - Skor SINTA ") ? targetFull.split(" - Skor SINTA ")[1] : 0;
+    
+    // CARA BENAR MENGAMBIL SKOR SINTA DARI DROPDOWN
+    const ddlTarget = document.getElementById("targetIndeksasi");
+    const targetFullText = ddlTarget.options[ddlTarget.selectedIndex].text; // Misal: "Q1 - Skor SINTA 40"
+    const targetShortValue = targetFullText.split(" - ")[0]; // "Q1"
+    const skorSintaNum = targetFullText.includes(" - Skor SINTA ") ? parseInt(targetFullText.split(" - Skor SINTA ")[1]) : 0;
+
     const payloadData = {
         action: "save_artikel",
         recordId: document.getElementById("recordId").value,
+        emailSubmitter: currentUser.email, // PERBAIKAN: Menambahkan email PIC
         judul: document.getElementById("judulArtikel").value,
         tahunTarget: document.getElementById("tahunTarget").value,
         rencanaSubmit: document.getElementById("rencanaSubmit").value,
-        targetIndeksasi: targetFull.split(" - ")[0],
-        skorSinta: skorSintaNum,
+        targetIndeksasi: targetShortValue, // Kirim teks pendek (Buku Ajar, Q1)
+        skorSinta: skorSintaNum,           // Kirim angka skor murni (20, 40)
         sumber: document.getElementById("proposalSkripsiList") || document.getElementById("ujianSkripsiList") ? "SIPINTAS" : "SIRISMA",
         namaJurnal: document.getElementById("namaJurnal").value,
         daftarPenulis: listPenulis.join(", "),
@@ -260,7 +266,6 @@ window.handleSaveArtikel = function() {
 
     Swal.fire({ title: 'Menyimpan...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
 
-    // Di dalam window.handleSaveArtikel, bagian fetch:
     fetch(GAS_DATABASE, { method: "POST", body: JSON.stringify(payloadData) })
     .then(res => res.json())
     .then(data => {
