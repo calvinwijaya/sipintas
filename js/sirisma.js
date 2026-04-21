@@ -238,14 +238,17 @@ window.handleSaveArtikel = function() {
     });
 
     const currentUser = JSON.parse(sessionStorage.getItem("user"));
+    const targetFull = document.getElementById("targetIndeksasi").value;
+    const skorSintaNum = targetFull.includes(" - Skor SINTA ") ? targetFull.split(" - Skor SINTA ")[1] : 0;
     const payloadData = {
         action: "save_artikel",
-        recordId: document.getElementById("recordId").value, // Kirim ID (kosong jika baru, terisi jika edit)
-        emailSubmitter: currentUser.email,
+        recordId: document.getElementById("recordId").value,
         judul: document.getElementById("judulArtikel").value,
         tahunTarget: document.getElementById("tahunTarget").value,
         rencanaSubmit: document.getElementById("rencanaSubmit").value,
-        targetIndeksasi: document.getElementById("targetIndeksasi").value.split(" - ")[0],
+        targetIndeksasi: targetFull.split(" - ")[0],
+        skorSinta: skorSintaNum,
+        sumber: document.getElementById("proposalSkripsiList") || document.getElementById("ujianSkripsiList") ? "SIPINTAS" : "SIRISMA",
         namaJurnal: document.getElementById("namaJurnal").value,
         daftarPenulis: listPenulis.join(", "),
         keterlibatanMahasiswa: listMahasiswaNiu.join(", "),
