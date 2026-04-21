@@ -14,8 +14,14 @@ let authorCount = 0;
 let studentCount = 0;
 
 const optPeranAuthor = ["First Author", "Corresponding Author", "Co-Author"];
-const optIndeksasiJurnal = ["Q1", "Q2", "Q3", "Q4", "Non-Q", "Sinta 1", "Sinta 2", "Sinta 3", "Sinta 4", "Sinta 5", "Sinta 6", "Non-Sinta"];
-const optIndeksasiProsiding = ["Internasional", "Nasional"];
+const optIndeksasiJurnal = [
+        "Q1 - Skor SINTA 40", "Q2 - Skor SINTA 24", "Q3 - Skor SINTA 22", "Q4 - Skor SINTA 20", "Non-Q - Skor SINTA 30", 
+        "Sinta 1 - Skor SINTA 25", "Sinta 2 - Skor SINTA 25", "Sinta 3 - Skor SINTA 20", "Sinta 4 - Skor SINTA 20", 
+        "Sinta 5 - Skor SINTA 15", "Sinta 6 - Skor SINTA 15", "Non-Sinta - Skor SINTA 10"
+    ];
+    const optIndeksasiProsiding = [
+        "Internasional - Skor SINTA 30", "Nasional - Skor SINTA 10"
+    ];
 const optStatusJurnal = ["Draft", "Draft Ready", "Submitted", "On Review Round 1", "Revision Round 1", "Revision Round 1 Submitted", "On Review Round 2", "Revision Round 2", "Revision Round 2 Submitted", "Accepted", "Copyediting/ Proofread", "Published"];
 const optStatusProsiding = ["Draft", "Draft Ready", "Submitted", "On Review", "Revision", "Revision Submitted", "Accepted", "Presented", "Published"];
 
