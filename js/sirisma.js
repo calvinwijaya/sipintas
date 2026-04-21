@@ -2,8 +2,8 @@
 // KONFIGURASI SIRISMA UNTUK SIPINTAS
 // ===================================================================
 
-const GAS_LOGIN = "https://script.google.com/macros/s/AKfycbyzb9CRyCDC2m-KEzp7_or8jj-hkGm1Zv1GM9xDqezYVGX0BSqPNIC8J_RcFDwWEnxo/exec";
-const GAS_DATABASE = "https://script.google.com/macros/s/AKfycbxjBGq7BJ0CfSkFMqzu41WjexwKf7XxBoL42Htw9OMPNglCUduvp22ouFgSepGGe_o/exec";
+const GAS_LOGIN = "https://script.google.com/macros/s/AKfycbxnPRiupDEcSswpEt_zLxAXxxd-bJL7DE8pJTGumkAblJfB8w6FguYsvsJXdaqC020K/exec";
+const GAS_DATABASE = "https://script.google.com/macros/s/AKfycbxbTkoXSt28Pybf9XR8NH8k4pM1Akyns_J5kdAS5RAhpkz0XQcinlAaJAd7gQ1GeFVWeA/exec";
 const GAS_MAHASISWA = "https://script.google.com/macros/s/AKfycbywanxoTB4sJStnJmDLlrjlaNVHiaBz8DPA_LCR8sMJqE84T4B4NgyOCcZ1kuzcs8kC/exec";
 
 // Gunakan window agar variabelnya global dan bisa diakses oleh file JS lain
