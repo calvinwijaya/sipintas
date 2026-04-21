@@ -71,7 +71,17 @@ window.openEndorseModal = async function(namaMhs, nimMhs, judulMhs) {
 
         updateDropdownOptions(existingArtikel[6]);
         setTimeout(() => {
-            document.getElementById("targetIndeksasi").value = existingArtikel[7];
+            const valFromSheet = existingArtikel[7];
+            const ddl = document.getElementById("targetIndeksasi");
+            
+            // Loop untuk mencocokkan data pendek ke opsi panjang
+            for (let i = 0; i < ddl.options.length; i++) {
+                if (ddl.options[i].value.startsWith(valFromSheet)) {
+                    ddl.value = ddl.options[i].value;
+                    break;
+                }
+            }
+            
             document.getElementById("statusTerkini").value = existingArtikel[11];
             if (existingArtikel[11] === "Published") {
                 document.getElementById("containerUrlPublish").classList.remove("d-none");
@@ -235,7 +245,7 @@ window.handleSaveArtikel = function() {
         judul: document.getElementById("judulArtikel").value,
         tahunTarget: document.getElementById("tahunTarget").value,
         rencanaSubmit: document.getElementById("rencanaSubmit").value,
-        targetIndeksasi: document.getElementById("targetIndeksasi").value,
+        targetIndeksasi: document.getElementById("targetIndeksasi").value.split(" - ")[0],
         namaJurnal: document.getElementById("namaJurnal").value,
         daftarPenulis: listPenulis.join(", "),
         keterlibatanMahasiswa: listMahasiswaNiu.join(", "),
