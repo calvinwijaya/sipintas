@@ -3,7 +3,7 @@
 // ===================================================================
 
 const GAS_LOGIN = "https://script.google.com/macros/s/AKfycbxnPRiupDEcSswpEt_zLxAXxxd-bJL7DE8pJTGumkAblJfB8w6FguYsvsJXdaqC020K/exec";
-const GAS_DATABASE = "https://script.google.com/macros/s/AKfycbxbTkoXSt28Pybf9XR8NH8k4pM1Akyns_J5kdAS5RAhpkz0XQcinlAaJAd7gQ1GeFVWeA/exec";
+const GAS_DATABASE = "https://script.google.com/macros/s/AKfycbwNW7tJsJAAcahZgLt6dlTeFYzzqqER-ksPWiDojxUvjHS6tV2NFDJN6sJLUH87sBNz9g/exec";
 const GAS_MAHASISWA = "https://script.google.com/macros/s/AKfycbywanxoTB4sJStnJmDLlrjlaNVHiaBz8DPA_LCR8sMJqE84T4B4NgyOCcZ1kuzcs8kC/exec";
 
 // Gunakan window agar variabelnya global dan bisa diakses oleh file JS lain
@@ -70,24 +70,25 @@ window.openEndorseModal = async function(namaMhs, nimMhs, judulMhs) {
         document.getElementById("rencanaSubmit").value = existingArtikel[6];
 
         updateDropdownOptions(existingArtikel[6]);
+        
         setTimeout(() => {
-            const valFromSheet = existingArtikel[7];
+            const valFromSheet = String(existingArtikel[7]).trim(); 
             const ddl = document.getElementById("targetIndeksasi");
             
-            // Loop untuk mencocokkan data pendek ke opsi panjang
             for (let i = 0; i < ddl.options.length; i++) {
-                if (ddl.options[i].value.startsWith(valFromSheet)) {
-                    ddl.value = ddl.options[i].value;
+                const optValueShort = ddl.options[i].value.split(" - ")[0].trim();
+                if (optValueShort === valFromSheet) {
+                    ddl.selectedIndex = i;
                     break;
                 }
             }
-            
+
             document.getElementById("statusTerkini").value = existingArtikel[11];
             if (existingArtikel[11] === "Published") {
                 document.getElementById("containerUrlPublish").classList.remove("d-none");
                 document.getElementById("urlPublish").value = existingArtikel[12];
             }
-        }, 100);
+        }, 150);
 
         document.getElementById("namaJurnal").value = existingArtikel[8];
         document.getElementById("catatanKendala").value = existingArtikel[34];
