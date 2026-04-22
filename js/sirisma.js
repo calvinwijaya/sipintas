@@ -3,7 +3,7 @@
 // ===================================================================
 
 const GAS_LOGIN = "https://script.google.com/macros/s/AKfycbxnPRiupDEcSswpEt_zLxAXxxd-bJL7DE8pJTGumkAblJfB8w6FguYsvsJXdaqC020K/exec";
-const GAS_DATABASE = "https://script.google.com/macros/s/AKfycbwNW7tJsJAAcahZgLt6dlTeFYzzqqER-ksPWiDojxUvjHS6tV2NFDJN6sJLUH87sBNz9g/exec";
+const GAS_DATABASE = "https://script.google.com/macros/s/AKfycbyGQ6_t7D2WGZLOPEpGOxGUOigTR1mfRiNzeWqD2PJZuv0ryZcXT0lh05FYcnAnsL6C6w/exec";
 const GAS_MAHASISWA = "https://script.google.com/macros/s/AKfycbywanxoTB4sJStnJmDLlrjlaNVHiaBz8DPA_LCR8sMJqE84T4B4NgyOCcZ1kuzcs8kC/exec";
 
 // Gunakan window agar variabelnya global dan bisa diakses oleh file JS lain
@@ -15,13 +15,17 @@ let studentCount = 0;
 
 const optPeranAuthor = ["First Author", "Corresponding Author", "Co-Author"];
 const optIndeksasiJurnal = [
-        "Q1 - Skor SINTA 40", "Q2 - Skor SINTA 24", "Q3 - Skor SINTA 22", "Q4 - Skor SINTA 20", "Non-Q - Skor SINTA 30", 
-        "Sinta 1 - Skor SINTA 25", "Sinta 2 - Skor SINTA 25", "Sinta 3 - Skor SINTA 20", "Sinta 4 - Skor SINTA 20", 
-        "Sinta 5 - Skor SINTA 15", "Sinta 6 - Skor SINTA 15", "Non-Sinta - Skor SINTA 10"
-    ];
-    const optIndeksasiProsiding = [
-        "Internasional - Skor SINTA 30", "Nasional - Skor SINTA 10"
-    ];
+    "Q1 - Skor SINTA 40", "Q2 - Skor SINTA 24", "Q3 - Skor SINTA 22", "Q4 - Skor SINTA 20", "Non-Q - Skor SINTA 30", 
+    "Sinta 1 - Skor SINTA 25", "Sinta 2 - Skor SINTA 25", "Sinta 3 - Skor SINTA 20", "Sinta 4 - Skor SINTA 20", 
+    "Sinta 5 - Skor SINTA 15", "Sinta 6 - Skor SINTA 15", "Non-Sinta - Skor SINTA 10"
+];
+const optIndeksasiProsiding = [
+    "Internasional - Skor SINTA 30", "Nasional - Skor SINTA 10"
+];
+const optIndeksasiBuku = [
+    "Buku Ajar - Skor SINTA 20", "Buku Referensi - Skor SINTA 40", "Buku Monograf - Skor SINTA 20"
+];
+
 const optStatusJurnal = ["Draft", "Draft Ready", "Submitted", "On Review Round 1", "Revision Round 1", "Revision Round 1 Submitted", "On Review Round 2", "Revision Round 2", "Revision Round 2 Submitted", "Accepted", "Copyediting/ Proofread", "Published"];
 const optStatusProsiding = ["Draft", "Draft Ready", "Submitted", "On Review", "Revision", "Revision Submitted", "Accepted", "Presented", "Published"];
 
@@ -83,15 +87,18 @@ window.openEndorseModal = async function(namaMhs, nimMhs, judulMhs) {
                 }
             }
 
-            document.getElementById("statusTerkini").value = existingArtikel[11];
-            if (existingArtikel[11] === "Published") {
+            // PERBAIKAN INDEX: Status Terkini (13) & URL Publish (14)
+            document.getElementById("statusTerkini").value = existingArtikel[13];
+            if (existingArtikel[13] === "Published") {
                 document.getElementById("containerUrlPublish").classList.remove("d-none");
-                document.getElementById("urlPublish").value = existingArtikel[12];
+                document.getElementById("urlPublish").value = existingArtikel[14];
             }
         }, 150);
 
         document.getElementById("namaJurnal").value = existingArtikel[8];
-        document.getElementById("catatanKendala").value = existingArtikel[34];
+        
+        // PERBAIKAN INDEX: Catatan Kendala (36)
+        document.getElementById("catatanKendala").value = existingArtikel[36];
 
         const authors = String(existingArtikel[9]).split(", ");
         authors.forEach(authorText => {
@@ -143,7 +150,9 @@ window.updateDropdownOptions = function(tipe) {
     if(!tipe) { ddlIndeksasi.disabled = true; ddlStatus.disabled = true; return; }
 
     ddlIndeksasi.disabled = false; ddlStatus.disabled = false;
-    let targetIndeksasiList = tipe === "Jurnal" ? optIndeksasiJurnal : optIndeksasiProsiding;
+    
+    // PERBAIKAN: Menambahkan dukungan untuk opsi "Buku"
+    let targetIndeksasiList = tipe === "Jurnal" ? optIndeksasiJurnal : (tipe === "Buku" ? optIndeksasiBuku : optIndeksasiProsiding);
     let targetStatusList = tipe === "Jurnal" ? optStatusJurnal : optStatusProsiding;
 
     targetIndeksasiList.forEach(opt => ddlIndeksasi.innerHTML += `<option value="${opt}">${opt}</option>`);
@@ -259,6 +268,11 @@ window.handleSaveArtikel = function() {
         namaJurnal: document.getElementById("namaJurnal").value,
         daftarPenulis: listPenulis.join(", "),
         keterlibatanMahasiswa: listMahasiswaNiu.join(", "),
+        
+        // PERBAIKAN: Kirim string kosong agar array indeks GAS tidak bergeser
+        penulisLuar: "",
+        afiliasiLuar: "",
+        
         statusTerkini: document.getElementById("statusTerkini").value,
         urlPublish: document.getElementById("urlPublish") ? document.getElementById("urlPublish").value : "",
         catatan: document.getElementById("catatanKendala").value,
