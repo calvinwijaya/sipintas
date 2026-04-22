@@ -1,4 +1,4 @@
-const KP_ADMIN_EMAILS = ["cecep.pratama@ugm.ac.id", "calvin.wijaya@mail.ugm.ac.id"];
+const KP_ADMIN_EMAILS = ["sigitm@ugm.ac.id", "cecep.pratama@ugm.ac.id", "calvin.wijaya@mail.ugm.ac.id"];
 
 async function loadKPData() {
     const user = JSON.parse(sessionStorage.getItem("user"));
