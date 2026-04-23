@@ -275,7 +275,7 @@ window.handleSaveArtikel = function() {
 
     Swal.fire({ title: 'Menyimpan...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
 
-    fetch(GAS_DATABASE, { method: "POST", body: JSON.stringify(payloadData) })
+    fetch(GAS_DATABASE_SIRISMA, { method: "POST", body: JSON.stringify(payloadData) })
     .then(res => res.json())
     .then(data => {
         if(data.status === "ok") {
