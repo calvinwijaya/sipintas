@@ -1,11 +1,6 @@
 // ===================================================================
 // KONFIGURASI SIRISMA UNTUK SIPINTAS
 // ===================================================================
-
-const GAS_LOGIN = "https://script.google.com/macros/s/AKfycbxnPRiupDEcSswpEt_zLxAXxxd-bJL7DE8pJTGumkAblJfB8w6FguYsvsJXdaqC020K/exec";
-const GAS_DATABASE = "https://script.google.com/macros/s/AKfycbyGQ6_t7D2WGZLOPEpGOxGUOigTR1mfRiNzeWqD2PJZuv0ryZcXT0lh05FYcnAnsL6C6w/exec";
-const GAS_MAHASISWA = "https://script.google.com/macros/s/AKfycbywanxoTB4sJStnJmDLlrjlaNVHiaBz8DPA_LCR8sMJqE84T4B4NgyOCcZ1kuzcs8kC/exec";
-
 // Gunakan window agar variabelnya global dan bisa diakses oleh file JS lain
 window.masterMahasiswaList = []; 
 window.masterDosenList = [];
@@ -34,9 +29,9 @@ window.loadSirismaData = async function() {
     if (window.masterMahasiswaList.length > 0 && window.masterDosenList.length > 0 && window.masterArtikelData.length > 0) return;
     try {
         const [resMhs, resDosen, resArt] = await Promise.all([
-            fetch(GAS_MAHASISWA).then(r => r.json()),
-            fetch(GAS_LOGIN, { method: "POST", body: JSON.stringify({ action: "get_users" }) }).then(r => r.json()),
-            fetch(GAS_DATABASE + "?t=" + new Date().getTime()).then(r => r.json())
+            fetch(GAS_MAHASISWA_SIRISMA).then(r => r.json()),
+            fetch(GAS_LOGIN_SIRISMA, { method: "POST", body: JSON.stringify({ action: "get_users" }) }).then(r => r.json()),
+            fetch(GAS_DATABASE_SIRISMA + "?t=" + new Date().getTime()).then(r => r.json())
         ]);
         if (resMhs.status === "ok") window.masterMahasiswaList = resMhs.data;
         if (resDosen.status === "ok") window.masterDosenList = resDosen.user;
