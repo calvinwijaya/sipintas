@@ -99,6 +99,8 @@ function loadPage(page, key) {
                 loadPRGGData(); 
             } if (page === "kerjapraktik/dashboard_kerjapraktik.html") {
                 loadKPData(); 
+            } if (page === "kerjapraktik/rekap_kerjapraktik.html") {
+                loadRekapKPData(); 
             }
 
             history.pushState({page}, "", `?page=${key}`);
@@ -169,7 +171,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     else if (pageKey === "kerjapraktik") {
         loadPage("kerjapraktik/dashboard_kerjapraktik.html", "kerjapraktik");
+    }  else if (pageKey === "rekap_kerjapraktik") {
+        loadPage("kerjapraktik/rekap_kerjapraktik.html", "rekap_kerjapraktik");
     }
+
     
     else {
         
