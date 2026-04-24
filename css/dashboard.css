@@ -2,20 +2,33 @@ body {
     min-height: 100vh;
     display: flex;
 }
+
 .sidebar {
-    min-width: 250px;
-    max-width: 350px;
+    /* 1. Kunci ukuran di satu angka pasti, bukan range */
+    width: 260px;
+    min-width: 260px;
+    max-width: 260px;
     background-color: #0d6efd;
     color: white;
-    transition: all 0.3s;
+    
+    /* 2. JANGAN pakai 'all'. Transisikan lebarnya saja agar dropdown tidak memicu animasi melar */
+    transition: width 0.3s ease, min-width 0.3s ease, max-width 0.3s ease;
+    
+    /* 3. Tahan konten agar tidak merusak lebar saat meleber */
+    overflow-x: hidden;
+    flex-shrink: 0;
 }
+
+/* 4. Pastikan ukuran saat dikecilkan (collapse) juga terkunci pasti */
 .sidebar.collapsed {
+    width: 70px;
     min-width: 70px;
     max-width: 70px;
 }
+
 .sidebar .nav-link {
     color: white;
-    white-space: nowrap;
+    white-space: nowrap; /* Mencegah teks turun ke bawah */
 }
 .sidebar .nav-link:hover {
     background-color: rgba(255,255,255,0.2);
