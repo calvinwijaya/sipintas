@@ -25,6 +25,7 @@ async function loadRekapKPData() {
             const nim = r[2] || "";
             const pembimbing = r[5] || "";
             const instansiKP = r[14] || "-";
+            const tanggalKP = r[16] || "-"; // Ekstrak Tanggal dari Kolom Q (Indeks 16)
             const email_pembimbing = (r[46] || "").toLowerCase().trim();
 
             const isDinilaiGeodesi = !!r[22]; // Kolom W (indeks 22)
@@ -52,7 +53,7 @@ async function loadRekapKPData() {
                 <td class="text-center">${nim}</td>
                 <td>${pembimbing}</td>
                 <td>${instansiKP}</td>
-                <td class="text-center">${rerataGeodesi.toFixed(2)}</td>
+                <td class="text-center"><small>${tanggalKP}</small></td> <td class="text-center">${rerataGeodesi.toFixed(2)}</td>
                 <td class="text-center">${rerataInstansi.toFixed(2)}</td>
                 <td class="text-center fw-bold text-primary">${nilaiAkhir.toFixed(2)}</td>
                 <td class="text-center fw-bold fs-5">${nilaiHuruf}</td>
