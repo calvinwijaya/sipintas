@@ -37,34 +37,28 @@ async function loadRekapSkripsiData() {
 
         let userRole = null;
 
-        for (const r of rekapskripsiRows) {
-            const ketua = (r[COL_KETUA] || "").toLowerCase();
-            const penguji1 = (r[COL_PENGUJI1] || "").toLowerCase();
-            const penguji2 = (r[COL_PENGUJI2] || "").toLowerCase();
-
-            if (ketua === currentEmail) {
-                userRole = "ketuaSidang";
-                break;
-            }
-            if (penguji1 === currentEmail || penguji2 === currentEmail) {
-                userRole = "penguji";
-            }
-        }
-
-        if (rekapskripsiRows.length === 0) {
-            document.getElementById("rekapskripsiList").innerHTML = `
-                <div class="alert alert-info">
-                    Tidak ada mahasiswa skripsi dengan status <strong>selesai</strong>
-                    yang berada di bawah kewenangan Anda.
-                </div>
-            `;
-            return;
-        }
-
-        if (!userRole && isAdmin) {
+        // PRIORITAS 1: Admin selalu menang
+        if (isAdmin) {
             userRole = "admin";
+        } else {
+            // PRIORITAS 2 & 3: Hanya cek Ketua/Penguji jika dia bukan Admin
+            for (const r of rekapskripsiRows) {
+                const ketua = (r[COL_KETUA] || "").toLowerCase();
+                const penguji1 = (r[COL_PENGUJI1] || "").toLowerCase();
+                const penguji2 = (r[COL_PENGUJI2] || "").toLowerCase();
+
+                if (ketua === currentEmail) {
+                    userRole = "ketuaSidang";
+                    break;
+                }
+                if (penguji1 === currentEmail || penguji2 === currentEmail) {
+                    userRole = "penguji";
+                    // Jangan dibreak, karena siapa tahu di baris berikutnya dia ketua sidang
+                }
+            }
         }
 
+        // Sekarang validasi alert-nya jadi lebih pasti
         if (userRole === "penguji") {
             document.getElementById("rekapskripsiList").innerHTML = `
                 <div class="alert alert-warning">
@@ -91,30 +85,51 @@ async function loadRekapSkripsiData() {
             return;
         }
 
-        let html = `<div class="row g-3">`;
-        rekapskripsiRows.forEach(r => {
+        let html = `
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped align-middle table-hover">
+                    <thead class="table-primary text-center">
+                        <tr>
+                            <th style="width: 5%">No</th>
+                            <th style="width: 25%">Nama</th>
+                            <th style="width: 15%">NIM</th>
+                            <th style="width: 20%">Pembimbing</th>
+                            <th style="width: 25%">Judul Skripsi</th>
+                            <th style="width: 10%">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+        `;
+
+        // Looping untuk setiap baris data
+        rekapskripsiRows.forEach((r, index) => {
             const [status, no, nama, nim, pembimbing, judulProposal, ketuaSidangProposal, penguji1Proposal, penguji2Proposal, linkGDriveProposal, judulskripsi] = r;
 
-            hasVisibleCard = true;
-            
             const encodedParams = new URLSearchParams({ nama, nim, pembimbing, judulProposal, judulskripsi, role: userRole }).toString();
 
+            // Tambahkan baris <tr> untuk setiap mahasiswa
             html += `
-                <div class="col-md-6">
-                    <div class="card shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title">${nama} <small class="text-muted">(${nim})</small></h5>
-                            <p class="card-text"><strong>Pembimbing:</strong> ${pembimbing}</p>
-                            <p class="card-text"><em>${judulskripsi}</em></p>
-                            <a href="skripsi/page_rekapskripsi.html?${encodedParams}" class="btn btn-primary btn-sm">
-                                Rekapitulasi Nilai
-                            </a>
-                        </div>
-                    </div>
-                </div>
+                        <tr>
+                            <td class="text-center">${index + 1}</td>
+                            <td class="fw-bold">${nama}</td>
+                            <td class="text-center">${nim}</td>
+                            <td>${pembimbing}</td>
+                            <td><small><em>${judulskripsi}</em></small></td>
+                            <td class="text-center">
+                                <a href="skripsi/page_rekapskripsi.html?${encodedParams}" class="btn btn-primary btn-sm w-100">
+                                    <i class="bi bi-card-checklist"></i> Lihat Nilai
+                                </a>
+                            </td>
+                        </tr>
             `;
         });
-        html += `</div>`;
+
+        // Tutup tag tabel
+        html += `
+                    </tbody>
+                </table>
+            </div>
+        `;
 
         document.getElementById("rekapskripsiList").innerHTML = html;
 
