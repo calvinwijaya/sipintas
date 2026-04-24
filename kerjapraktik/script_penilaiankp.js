@@ -423,18 +423,23 @@ document.addEventListener("DOMContentLoaded", async () => {
             scoresInstansi.push(Array.from(inputs).map(inp => parseFloat(inp.value) || 0));
         });
 
+        // AMBIL LINK BUKTI DOKUMEN
+        const linkBuktiEl = document.getElementById("linkBuktiPenilaianInstansi");
+        const linkBukti = linkBuktiEl ? linkBuktiEl.value.trim() : "";
+
         // Ingat, kita tidak perlu mengirim judulRealisasi atau keterangan lagi
         const data = {
             namaPembimbingInstansi: namaPembimbingInstansi,
             mahasiswa: dataMahasiswa, 
             scores: scoresInstansi,
-            tanggal: getTanggalIndonesia()
+            tanggal: getTanggalIndonesia(),
+            linkBukti: linkBukti
         };
 
         const formBody = new URLSearchParams();
         formBody.append("data", JSON.stringify(data));
 
-        fetch("https://script.google.com/macros/s/AKfycbyru-pbVpsf-1JqGK_1YdmOOZMD6WxNg9FNX-YqywesSPYIob3FKfCJ3I0efdu6eI6LKA/exec", { 
+        fetch("https://script.google.com/macros/s/AKfycbxBD7BuocEoV5dGU3fYNou9qJiFWYvJWI3OKx71SuDFTF98ZAcXcDXPGxBJHPC7aYi5pA/exec", { 
             method: "POST",
             body: formBody
         })
@@ -528,7 +533,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     // =========================================================================
 
     // GANTI STRING INI DENGAN URL DEPLOY GAS 'doGet' YANG BARU DIBUAT TADI
-    const GAS_LOAD_URL = "https://script.google.com/macros/s/AKfycbz2qUQX4iZ4O1eWHgkXH9bLF92GqAEOXPYMsqx3NXxluyFEhT6x3wZu2RS7HWtsGcWPZA/exec"; 
+    const GAS_LOAD_URL = "https://script.google.com/macros/s/AKfycbxRxzRGOzMyG2MiG0AloEHSrxVIAAHNeH1BtDDouIurR49vUdRuUBCkP-QS5eCzfkctOQ/exec"; 
 
     async function jalankanLoadNilai(tipe, btnId, tbodyId, rowRerataId, rowNilaiHurufId) {
         const btn = document.getElementById(btnId);
