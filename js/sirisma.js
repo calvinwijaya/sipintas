@@ -1,7 +1,6 @@
 // ===================================================================
 // KONFIGURASI SIRISMA UNTUK SIPINTAS
 // ===================================================================
-// Gunakan window agar variabelnya global dan bisa diakses oleh file JS lain
 window.masterMahasiswaList = []; 
 window.masterDosenList = [];
 window.masterArtikelData = [];
@@ -53,7 +52,7 @@ window.openEndorseModal = async function(namaMhs, nimMhs, judulMhs) {
     document.getElementById("authorContainer").innerHTML = "";
     document.getElementById("studentContainer").innerHTML = "";
 
-    // Ekstraksi NIU dari format NIM (misal: 22/493101/TK/53988 -> 493101)
+    // Ekstraksi NIU dari format NIM
     const niuParts = nimMhs.split('/');
     const niu = niuParts.length > 1 ? niuParts[1] : nimMhs;
 
@@ -82,7 +81,6 @@ window.openEndorseModal = async function(namaMhs, nimMhs, judulMhs) {
                 }
             }
 
-            // PERBAIKAN INDEX: Status Terkini (13) & URL Publish (14)
             document.getElementById("statusTerkini").value = existingArtikel[13];
             if (existingArtikel[13] === "Published") {
                 document.getElementById("containerUrlPublish").classList.remove("d-none");
@@ -91,8 +89,6 @@ window.openEndorseModal = async function(namaMhs, nimMhs, judulMhs) {
         }, 150);
 
         document.getElementById("namaJurnal").value = existingArtikel[8];
-        
-        // PERBAIKAN INDEX: Catatan Kendala (36)
         document.getElementById("catatanKendala").value = existingArtikel[36];
 
         const authors = String(existingArtikel[9]).split(", ");
@@ -119,7 +115,7 @@ window.openEndorseModal = async function(namaMhs, nimMhs, judulMhs) {
         }
     } else {
         // === MODE ENDORSE BARU ===
-        document.getElementById("modalLabel").innerHTML = `<i class="bi bi-journal-plus me-2"></i>Endorse Skripsi ke Artikel`;
+        document.getElementById("modalLabel").innerHTML = `<i class="bi bi-journal-plus me-2"></i>Endorse ke Artikel`;
         document.getElementById("judulArtikel").value = judulMhs;
         createAuthorRow(true); 
 
@@ -146,7 +142,6 @@ window.updateDropdownOptions = function(tipe) {
 
     ddlIndeksasi.disabled = false; ddlStatus.disabled = false;
     
-    // PERBAIKAN: Menambahkan dukungan untuk opsi "Buku"
     let targetIndeksasiList = tipe === "Jurnal" ? optIndeksasiJurnal : (tipe === "Buku" ? optIndeksasiBuku : optIndeksasiProsiding);
     let targetStatusList = tipe === "Jurnal" ? optStatusJurnal : optStatusProsiding;
 
@@ -221,6 +216,31 @@ window.createStudentRow = function() {
     container.insertAdjacentHTML('beforeend', rowHTML);
 };
 
+// ===================================================================
+// DETEKTOR SUMBER OTOMATIS
+// ===================================================================
+function getSipintasSourceContext() {
+    const path = window.location.href.toLowerCase();
+    
+    if (document.getElementById("proposalSkripsiList") || document.getElementById("ujianSkripsiList") || path.includes("skripsi")) {
+        return "SIPINTAS/ Skripsi";
+    }
+    // if (document.getElementById("proposalTesisList") || document.getElementById("ujianTesisList") || path.includes("tesis")) {
+    //     return "SIPINTAS/ Tesis";
+    // }
+    // if (document.getElementById("proposalDisertasiList") || document.getElementById("ujianDisertasiList") || path.includes("disertasi")) {
+    //     return "SIPINTAS/ Disertasi";
+    // }
+    // if (path.includes("prgg")) {
+    //     return "SIPINTAS/ PRGG";
+    // }
+    // if (path.includes("kerjapraktik") || path.includes("kp")) {
+    //     return "SIPINTAS/ Kerja Praktik";
+    // }
+    
+    return "SIPINTAS"; // Fallback aman
+}
+
 window.handleSaveArtikel = function() {
     const form = document.getElementById("formArtikel");
     if (!form.checkValidity()) { form.reportValidity(); return; }
@@ -244,27 +264,28 @@ window.handleSaveArtikel = function() {
 
     const currentUser = JSON.parse(sessionStorage.getItem("user"));
     
-    // CARA BENAR MENGAMBIL SKOR SINTA DARI DROPDOWN
     const ddlTarget = document.getElementById("targetIndeksasi");
-    const targetFullText = ddlTarget.options[ddlTarget.selectedIndex].text; // Misal: "Q1 - Skor SINTA 40"
-    const targetShortValue = targetFullText.split(" - ")[0]; // "Q1"
+    const targetFullText = ddlTarget.options[ddlTarget.selectedIndex].text; 
+    const targetShortValue = targetFullText.split(" - ")[0]; 
     const skorSintaNum = targetFullText.includes(" - Skor SINTA ") ? parseInt(targetFullText.split(" - Skor SINTA ")[1]) : 0;
 
     const payloadData = {
         action: "save_artikel",
         recordId: document.getElementById("recordId").value,
-        emailSubmitter: currentUser.email, // PERBAIKAN: Menambahkan email PIC
+        emailSubmitter: currentUser.email, 
         judul: document.getElementById("judulArtikel").value,
         tahunTarget: document.getElementById("tahunTarget").value,
         rencanaSubmit: document.getElementById("rencanaSubmit").value,
-        targetIndeksasi: targetShortValue, // Kirim teks pendek (Buku Ajar, Q1)
-        skorSinta: skorSintaNum,           // Kirim angka skor murni (20, 40)
-        sumber: document.getElementById("proposalSkripsiList") || document.getElementById("ujianSkripsiList") ? "SIPINTAS" : "SIRISMA",
+        targetIndeksasi: targetShortValue, 
+        skorSinta: skorSintaNum,           
+        
+        // PERBAIKAN: Menggunakan Detektor Sumber
+        sumber: getSipintasSourceContext(),
+        
         namaJurnal: document.getElementById("namaJurnal").value,
         daftarPenulis: listPenulis.join(", "),
         keterlibatanMahasiswa: listMahasiswaNiu.join(", "),
         
-        // PERBAIKAN: Kirim string kosong agar array indeks GAS tidak bergeser
         penulisLuar: "",
         afiliasiLuar: "",
         
@@ -281,18 +302,13 @@ window.handleSaveArtikel = function() {
         if(data.status === "ok") {
             Swal.fire('Berhasil!', 'Data Endorsement berhasil disimpan ke SIRISMA.', 'success')
             .then(() => {
-                // Refresh data background agar State up-to-date
                 window.masterArtikelData = []; 
                 window.loadSirismaData().then(() => {
-                    // SMART REFRESH (Aman dari null error)
-                    const isProposalOpen = document.getElementById("proposalSkripsiList") !== null;
-                    const isUjianOpen = document.getElementById("ujianSkripsiList") !== null;
-
-                    if (isProposalOpen && typeof loadProposalSkripsiData === 'function') {
-                        loadProposalSkripsiData();
-                    } else if (isUjianOpen && typeof loadUjianSkripsiData === 'function') {
-                        loadUjianSkripsiData();
-                    }
+                    // SMART REFRESH yang di-scale-up untuk semua jenis SIPINTAS
+                    if (typeof loadProposalSkripsiData === 'function' && document.getElementById("proposalSkripsiList")) loadProposalSkripsiData();
+                    if (typeof loadUjianSkripsiData === 'function' && document.getElementById("ujianSkripsiList")) loadUjianSkripsiData();
+                    if (typeof loadProposalTesisData === 'function' && document.getElementById("proposalTesisList")) loadProposalTesisData();
+                    if (typeof loadUjianTesisData === 'function' && document.getElementById("ujianTesisList")) loadUjianTesisData();
                 });
             });
             bootstrap.Modal.getInstance(document.getElementById('modalFormArtikel')).hide();
