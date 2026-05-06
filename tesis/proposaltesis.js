@@ -10,13 +10,17 @@ async function loadProposalData() {
     const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Sheet1?key=${API_KEY}`;
 
     try {
+        if (typeof window.loadSirismaData === 'function') {
+            await window.loadSirismaData();
+        }
+        
         const res = await fetch(url);
         const data = await res.json();
         const rows = data.values?.slice(1) || [];
         const proposalRows = rows.filter(r => r[0]?.trim().toLowerCase() === "proposal");
 
         if (proposalRows.length === 0) {
-            document.getElementById("proposalList").innerHTML =
+            document.getElementById("proposalTesisList").innerHTML =
                 `<div class="alert alert-info">Tidak ada mahasiswa ujian proposal.</div>`;
             return;
         }
@@ -96,6 +100,12 @@ async function loadProposalData() {
 
             const encodedParams = new URLSearchParams({ nama, nim, pembimbing, judul, linkGoogleDriveProposalTesis, role }).toString();
 
+            const escapedJudul = judul ? judul.replace(/'/g, "\\'").replace(/"/g, '&quot;') : "";
+
+            const niuParts = String(nim).split('/');
+            const niu = niuParts.length > 1 ? niuParts[1] : nim;
+            const isEndorsed = window.masterArtikelData && window.masterArtikelData.some(row => String(row[10]).includes(niu));
+
             html += `
                 <div class="col-md-6">
                     <div class="card shadow-sm h-100" style="border-top: 5px solid ${statusColor}; background-color: ${bgColor};">
@@ -122,9 +132,14 @@ async function loadProposalData() {
                             ` : ""}
 
                             ${role === "ketuaSidang" || role === "admin" ? `
-                                <a href="tesis/page_beritaproposaltesis.html?${encodedParams}" class="btn btn-outline-primary btn-sm">
+                                <a href="tesis/page_beritaproposaltesis.html?${encodedParams}" class="btn btn-outline-primary btn-sm shadow-sm">
                                     Buat Berita Acara
                                 </a>
+                                
+                                <button type="button" class="btn ${isEndorsed ? 'btn-warning' : 'btn-success'} btn-sm fw-bold ${isEndorsed ? 'text-dark' : 'text-white'} shadow-sm" 
+                                    onclick="openEndorseModal('${nama}', '${nim}', '${escapedJudul}')">
+                                    <i class="bi ${isEndorsed ? 'bi-pencil-square' : 'bi-journal-plus'} me-1"></i> ${isEndorsed ? 'Edit Endorse' : 'Endorse Artikel'}
+                                </button>
                             ` : ""}
                             </div>
                         </div>
@@ -134,18 +149,18 @@ async function loadProposalData() {
         });
         html += `</div>`;
         if (!hasVisibleCard) {
-            document.getElementById("proposalList").innerHTML =
+            document.getElementById("proposalTesisList").innerHTML =
                 `<div class="alert alert-info">
                     Tidak ada mahasiswa Seminar Proposal yang ditugaskan kepada Anda.
                 </div>`;
             return;
         }
 
-        document.getElementById("proposalList").innerHTML = html;
+        document.getElementById("proposalTesisList").innerHTML = html;
 
     } catch (err) {
         console.error("Error loading proposal data:", err);
-        document.getElementById("proposalList").innerHTML =
+        document.getElementById("proposalTesisList").innerHTML =
             `<div class="alert alert-danger">Gagal memuat data proposal.</div>`;
     }
 }

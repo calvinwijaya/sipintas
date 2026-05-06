@@ -93,22 +93,17 @@
                 </div>
             </li>
             <li><a href="#" onclick="loadPage('prgg/dashboard_prgg.html', 'prgg')" class="nav-link"><i class="bi bi-diagram-3 me-2"></i> <span class="label">Penilaian PRGG</span></a></li>
-            <li class="nav-item">
-                <a href="#kpSubmenu" data-bs-toggle="collapse" class="nav-link dropdown-toggle align-middle">
-                    <i class="bi bi-briefcase me-2"></i> <span class="label">Kerja Praktik</span>
+            <li>
+                <a class="nav-link dropdown-toggle" data-bs-toggle="collapse" href="#kpmenu" role="button" aria-expanded="false">
+                    <i class="bi bi-briefcase me-2"></i>
+                    <span class="label">Penilaian Kerja Praktik</span>
                 </a>
-                <ul class="collapse nav flex-column ms-3" id="kpSubmenu" data-bs-parent="#sidebarMenu">
-                    <li class="w-100">
-                        <a href="#" onclick="loadPage('kerjapraktik/dashboard_kerjapraktik.html', 'kerjapraktik')" class="nav-link px-2">
-                            <i class="bi bi-pencil-square me-2"></i> Penilaian KP
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#" onclick="loadPage('kerjapraktik/rekap_kerjapraktik.html', 'rekap_kerjapraktik')" class="nav-link px-2">
-                            <i class="bi bi-table me-2"></i> Rekapitulasi KP
-                        </a>
-                    </li>
-                </ul>
+                <div class="collapse ps-3" id="kpmenu">
+                    <ul class="nav flex-column">
+                        <li><a href="#" onclick="loadPage('kerjapraktik/dashboard_kerjapraktik.html', 'kerjapraktik')" class="nav-link">Penilaian KP</a></li>
+                        <li><a href="#" onclick="loadPage('kerjapraktik/rekap_kerjapraktik.html', 'rekap_kerjapraktik')" class="nav-link">Rekapitulasi KP</a></li>
+                    </ul>
+                </div>
             </li>
             <hr class="text-white my-1 label">
             <li><a href="#" class="nav-link text-danger" id="btnLogout"><i class="bi bi-box-arrow-right me-2"></i><span class="label">Log Out</span></a></li>

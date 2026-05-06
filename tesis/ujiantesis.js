@@ -10,6 +10,10 @@ async function loadUjianTesisData() {
     const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Sheet1?key=${API_KEY}`;
 
     try {
+        if (typeof window.loadSirismaData === 'function') {
+            await window.loadSirismaData();
+        }
+
         const res = await fetch(url);
         const data = await res.json();
         const rows = data.values?.slice(1) || [];
@@ -100,6 +104,11 @@ async function loadUjianTesisData() {
             const judul = judulTesis;
             const encodedParams = new URLSearchParams({ nama, nim, pembimbing, judul, linkGoogleDriveNaskahTesis, role }).toString();
 
+            const escapedJudul = judul ? judul.replace(/'/g, "\\'").replace(/"/g, '&quot;') : "";
+            const niuParts = String(nim).split('/');
+            const niu = niuParts.length > 1 ? niuParts[1] : nim;
+            const isEndorsed = window.masterArtikelData && window.masterArtikelData.some(row => String(row[10]).includes(niu));
+
             html += `
                 <div class="col-md-6">
                     <div class="card shadow-sm h-100" style="border-top: 5px solid ${statusColor}; background-color: ${bgColor};">
@@ -126,9 +135,14 @@ async function loadUjianTesisData() {
                             ` : ""}
 
                             ${role === "ketuaSidang" || role === "admin" ? `
-                                <a href="tesis/page_beritaujiantesis.html?${encodedParams}" class="btn btn-outline-primary btn-sm">
+                                <a href="tesis/page_beritaujiantesis.html?${encodedParams}" class="btn btn-outline-primary btn-sm shadow-sm">
                                     Buat Berita Acara
                                 </a>
+                                
+                                <button type="button" class="btn ${isEndorsed ? 'btn-warning' : 'btn-success'} btn-sm fw-bold ${isEndorsed ? 'text-dark' : 'text-white'} shadow-sm" 
+                                    onclick="openEndorseModal('${nama}', '${nim}', '${escapedJudul}')">
+                                    <i class="bi ${isEndorsed ? 'bi-pencil-square' : 'bi-journal-plus'} me-1"></i> ${isEndorsed ? 'Edit Endorse' : 'Endorse Artikel'}
+                                </button>
                             ` : ""}
                             </div>
                         </div>

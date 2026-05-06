@@ -4,6 +4,7 @@
 window.masterMahasiswaList = []; 
 window.masterDosenList = [];
 window.masterArtikelData = [];
+window.currentLoadedJenjang = null;
 let authorCount = 0;
 let studentCount = 0;
 
@@ -25,14 +26,33 @@ const optStatusProsiding = ["Draft", "Draft Ready", "Submitted", "On Review", "R
 
 // Memuat ketiga database SIRISMA secara paralel
 window.loadSirismaData = async function() {
-    if (window.masterMahasiswaList.length > 0 && window.masterDosenList.length > 0 && window.masterArtikelData.length > 0) return;
+    const context = getSipintasSourceContext();
+    const targetJenjang = context === "SIPINTAS/ Tesis" ? "S2" : "S1";
+
+    // Modifikasi: Hanya gunakan data lama JIKA panjangnya > 0 DAN jenjangnya sama!
+    if (window.masterMahasiswaList.length > 0 && 
+        window.masterDosenList.length > 0 && 
+        window.masterArtikelData.length > 0 &&
+        window.currentLoadedJenjang === targetJenjang) {
+        return; 
+    }
+
     try {
+        let urlMahasiswa = GAS_MAHASISWA_SIRISMA;
+        if (targetJenjang === "S2") {
+            urlMahasiswa += "?jenjang=S2";
+        }
+
         const [resMhs, resDosen, resArt] = await Promise.all([
-            fetch(GAS_MAHASISWA_SIRISMA).then(r => r.json()),
+            fetch(urlMahasiswa).then(r => r.json()),
             fetch(GAS_LOGIN_SIRISMA, { method: "POST", body: JSON.stringify({ action: "get_users" }) }).then(r => r.json()),
             fetch(GAS_DATABASE_SIRISMA + "?t=" + new Date().getTime()).then(r => r.json())
         ]);
-        if (resMhs.status === "ok") window.masterMahasiswaList = resMhs.data;
+        
+        if (resMhs.status === "ok") {
+            window.masterMahasiswaList = resMhs.data;
+            window.currentLoadedJenjang = targetJenjang; // Update penanda memori
+        }
         if (resDosen.status === "ok") window.masterDosenList = resDosen.user;
         if (resArt.status === "ok") window.masterArtikelData = resArt.data;
     } catch (err) {
@@ -41,7 +61,12 @@ window.loadSirismaData = async function() {
 };
 
 window.openEndorseModal = async function(namaMhs, nimMhs, judulMhs) {
-    if (window.masterMahasiswaList.length === 0) {
+    // 1. Cek dulu sedang di halaman apa
+    const context = getSipintasSourceContext();
+    const targetJenjang = context === "SIPINTAS/ Tesis" ? "S2" : "S1";
+
+    // 2. Load ulang data JIKA datanya masih kosong ATAU jenjangnya berbeda dari sebelumnya
+    if (window.masterMahasiswaList.length === 0 || window.currentLoadedJenjang !== targetJenjang) {
         Swal.fire({ title: 'Menyiapkan Form...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
         await window.loadSirismaData();
         Swal.close();
@@ -51,7 +76,7 @@ window.openEndorseModal = async function(namaMhs, nimMhs, judulMhs) {
     document.getElementById("recordId").value = "";
     document.getElementById("authorContainer").innerHTML = "";
     document.getElementById("studentContainer").innerHTML = "";
-
+    
     // Ekstraksi NIU dari format NIM
     const niuParts = nimMhs.split('/');
     const niu = niuParts.length > 1 ? niuParts[1] : nimMhs;
@@ -119,7 +144,7 @@ window.openEndorseModal = async function(namaMhs, nimMhs, judulMhs) {
         document.getElementById("judulArtikel").value = judulMhs;
         createAuthorRow(true); 
 
-        const mhs = window.masterMahasiswaList.find(m => String(m.nim) === String(nimMhs));
+        const mhs = window.masterMahasiswaList.find(m => String(m.nim).trim() === String(nimMhs).trim());
         if (mhs) {
             document.getElementById("emptyStudentText").classList.add("d-none");
             createStudentRow(); 
@@ -222,21 +247,21 @@ window.createStudentRow = function() {
 function getSipintasSourceContext() {
     const path = window.location.href.toLowerCase();
     
-    if (document.getElementById("proposalSkripsiList") || document.getElementById("ujianSkripsiList") || path.includes("skripsi")) {
+    // 1. Prioritaskan pengecekan dari URL (Paling Akurat jika routingnya jalan)
+    if (path.includes("tesis")) return "SIPINTAS/ Tesis";
+    if (path.includes("skripsi")) return "SIPINTAS/ Skripsi";
+    if (path.includes("disertasi")) return "SIPINTAS/ Disertasi";
+    
+    // 2. Jika URL tidak spesifik, cek DOM, TAPI pastikan elemennya benar-benar TAMPIL (offsetParent !== null)
+    const skripsiEl = document.getElementById("proposalSkripsiList") || document.getElementById("ujianSkripsiList");
+    const tesisEl = document.getElementById("proposalTesisList") || document.getElementById("ujianTesisList");
+    
+    if (tesisEl && tesisEl.offsetParent !== null) {
+        return "SIPINTAS/ Tesis";
+    }
+    if (skripsiEl && skripsiEl.offsetParent !== null) {
         return "SIPINTAS/ Skripsi";
     }
-    // if (document.getElementById("proposalTesisList") || document.getElementById("ujianTesisList") || path.includes("tesis")) {
-    //     return "SIPINTAS/ Tesis";
-    // }
-    // if (document.getElementById("proposalDisertasiList") || document.getElementById("ujianDisertasiList") || path.includes("disertasi")) {
-    //     return "SIPINTAS/ Disertasi";
-    // }
-    // if (path.includes("prgg")) {
-    //     return "SIPINTAS/ PRGG";
-    // }
-    // if (path.includes("kerjapraktik") || path.includes("kp")) {
-    //     return "SIPINTAS/ Kerja Praktik";
-    // }
     
     return "SIPINTAS"; // Fallback aman
 }
