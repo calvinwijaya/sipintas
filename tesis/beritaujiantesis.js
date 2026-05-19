@@ -1,16 +1,65 @@
+// Fungsi untuk memuat Tim Penguji dari Spreadsheet Master secara otomatis
+async function loadTimPengujiOtomatis() {
+    const params = new URLSearchParams(window.location.search);
+    const nim = params.get("nim");
+    
+    if (!nim) return;
+
+    // ID Spreadsheet Master Penilaian Tesis
+    const SHEET_ID = "1lg2tfyzMX99Ib-b5gZ31dGnHHqLHDpElQO22VMVaPbs";
+    const API_KEY = "AIzaSyA3Pgj8HMdb4ak9jToAiTQV0XFdmgvoYPI"; 
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Sheet1?key=${API_KEY}`;
+
+    try {
+        const res = await fetch(url);
+        const data = await res.json();
+        const rows = data.values || [];
+
+        // Cari baris yang mengandung NIM (mencari di seluruh kolom untuk keamanan)
+        const row = rows.find(r => r.includes(nim));
+
+        if (row) {
+            // Tarik kode dosen dari Kolom L (11), M (12), dan N (13)
+            const kodeKetua = (row[11] || "").trim();
+            const kodePenguji1 = (row[12] || "").trim();
+            const kodePenguji2 = (row[13] || "").trim();
+
+            // Petakan ke nama lengkap menggunakan DOSEN_MAP (fallback ke kode aslinya jika tidak ada di map)
+            // Pastikan js/config.js di-load lebih dulu di HTML agar DOSEN_MAP dikenali
+            const namaKetua = DOSEN_MAP[kodeKetua] || kodeKetua || "-";
+            const namaPenguji1 = DOSEN_MAP[kodePenguji1] || kodePenguji1 || "-";
+            const namaPenguji2 = DOSEN_MAP[kodePenguji2] || kodePenguji2 || "-";
+
+            // Masukkan ke DOM
+            const elKetua = document.getElementById("ketuaSidang");
+            const elPenguji1 = document.getElementById("penguji1");
+            const elPenguji2 = document.getElementById("penguji2");
+
+            if (elKetua) elKetua.textContent = namaKetua;
+            if (elPenguji1) elPenguji1.textContent = namaPenguji1;
+            if (elPenguji2) elPenguji2.textContent = namaPenguji2;
+        }
+    } catch (err) {
+        console.error("Gagal memuat tim penguji otomatis:", err);
+    }
+}
+
 document.addEventListener("DOMContentLoaded", function () {
     const hasilRadios = document.querySelectorAll('input[name="hasil"]');
 
     hasilRadios.forEach(radio => {
         radio.addEventListener("change", function () {
-        // Remove highlight from all
-        hasilRadios.forEach(r => r.parentElement.classList.remove("result-selected"));
-        // Add highlight to the selected one
-        if (this.checked) {
-            this.parentElement.classList.add("result-selected");
-        }
+            // Remove highlight from all
+            hasilRadios.forEach(r => r.parentElement.classList.remove("result-selected"));
+            // Add highlight to the selected one
+            if (this.checked) {
+                this.parentElement.classList.add("result-selected");
+            }
         });
     });
+
+    // Jalankan fungsi fetch tim penguji saat halaman selesai dimuat
+    loadTimPengujiOtomatis();
 });
 
 // Function to collect all form/page data
@@ -26,6 +75,7 @@ function collectBeritaAcaraData() {
 
     // From DOM
     data["Hari"] = document.getElementById("hari").textContent || "";
+    
     // Format tanggal from YYYY-MM-DD → DD Month YYYY (Indonesian)
     const rawDate = document.getElementById("tanggal").value || "";
     if (rawDate) {
@@ -60,7 +110,7 @@ function collectBeritaAcaraData() {
     data["Skor_Penguji2"] = document.getElementById("nilaiP3").textContent || "";
     data["Rata"] = document.getElementById("nilaiRekap").textContent || "";
 
-    // Names of examiners
+    // Names of examiners (Sekarang ditarik otomatis tanpa nunggu Load Nilai)
     data["NamaKetuaSidang"] = document.getElementById("ketuaSidang").textContent || "";
     data["NamaPenguji1"] = document.getElementById("penguji1").textContent || "";
     data["NamaPenguji2"] = document.getElementById("penguji2").textContent || "";
