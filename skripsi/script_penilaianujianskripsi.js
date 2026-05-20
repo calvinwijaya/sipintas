@@ -310,4 +310,75 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("btnModalOk").addEventListener("click", () => {
         document.getElementById("notifyModal").classList.add("hidden");
         });    
+    
+    // =========================================================================
+    // FITUR PREVIU NILAI KESELURUHAN (PROPOSAL & UJIAN AKHIR)
+    // =========================================================================
+    const btnLoadPreviuNilai = document.getElementById("btnLoadPreviuNilai");
+    
+    if (btnLoadPreviuNilai) {
+        btnLoadPreviuNilai.addEventListener("click", async () => {
+            const nim = new URLSearchParams(window.location.search).get("nim");
+            if (!nim) {
+                Swal.fire("Error", "NIM tidak ditemukan di URL.", "error");
+                return;
+            }
+
+            document.getElementById("loadingText").innerText = "Mengambil previu nilai dari sistem...";
+            loadingOverlay.style.display = "flex";
+
+            const SHEET_ID = "1THmInPem3cxfB1kJJifuC4C1MMi4cPH3zlFN20grBJA";
+            const API_KEY = "AIzaSyA3Pgj8HMdb4ak9jToAiTQV0XFdmgvoYPI";
+            const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Sheet1?key=${API_KEY}`;
+
+            try {
+                const res = await fetch(url);
+                const data = await res.json();
+                const rows = data.values || [];
+
+                // Cari baris berdasarkan NIM di kolom D (index 3)
+                const row = rows.find(r => r[3] && r[3].toString().trim() === nim.toString().trim());
+
+                if (!row) {
+                    Swal.fire("Info", "Data untuk NIM ini belum tersedia di database utama.", "info");
+                    return;
+                }
+
+                // --- Inject Nilai Proposal ---
+                document.getElementById("prevPropPem").textContent = row[25] || "-"; // Kolom Z
+                document.getElementById("prevPropP1").textContent  = row[34] || "-"; // Kolom AI
+                document.getElementById("prevPropP2").textContent  = row[43] || "-"; // Kolom AR
+                document.getElementById("prevPropRata").textContent= row[44] || "-"; // Kolom AS
+
+                // --- Inject Nilai Ujian Akhir ---
+                document.getElementById("prevUjianPem").textContent = row[60] || "-"; // Kolom BI
+                document.getElementById("prevUjianP1").textContent  = row[74] || "-"; // Kolom BW
+                document.getElementById("prevUjianP2").textContent  = row[88] || "-"; // Kolom CK
+                document.getElementById("prevUjianRata").textContent= row[89] || "-"; // Kolom CL
+
+                // --- Inject Nilai Akhir Total ---
+                document.getElementById("prevNilaiAkhir").textContent = row[91] || "-"; // Kolom CN
+                document.getElementById("prevNilaiHuruf").textContent = row[92] || "-"; // Kolom CO
+
+                // Buka Collapsible Table Otomatis jika masih tertutup
+                const collapseEl = document.getElementById("collapsePreviuNilai");
+                const bsCollapse = bootstrap.Collapse.getInstance(collapseEl) || new bootstrap.Collapse(collapseEl, { toggle: false });
+                bsCollapse.show();
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Previu Dimuat',
+                    text: 'Data nilai telah berhasil diperbarui.',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+
+            } catch (err) {
+                console.error(err);
+                Swal.fire("Error", "Gagal menarik data dari server.", "error");
+            } finally {
+                loadingOverlay.style.display = "none";
+            }
+        });
+    }
 });
