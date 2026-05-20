@@ -310,6 +310,68 @@
                     </a>
                 </div>
 
+                <div class="mt-5 border-top pt-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <button class="btn btn-outline-info" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePreviuNilaiTesis" aria-expanded="false" aria-controls="collapsePreviuNilaiTesis">
+                            <i class="bi bi-eye"></i> Lihat Previu Nilai
+                        </button>
+                        <button id="btnLoadPreviuNilaiTesis" class="btn btn-info text-white">
+                            <i class="bi bi-cloud-download"></i> Load Data
+                        </button>
+                    </div>
+
+                    <div class="collapse" id="collapsePreviuNilaiTesis">
+                        <div class="card card-body shadow-sm">
+                            <h5 class="fw-bold text-primary mb-3">Previu Rekapitulasi Nilai Tesis</h5>
+                            <div class="table-responsive">
+                                <table class="table table-bordered align-middle text-center mb-0" style="font-size: 0.85rem;">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th colspan="4" class="table-primary">Seminar Proposal</th>
+                                            <th colspan="4" class="table-warning">Publikasi</th>
+                                            <th colspan="4" class="table-success">Ujian Akhir</th>
+                                            <th rowspan="2" class="align-middle table-dark">Nilai Akhir Tesis</th>
+                                            <th rowspan="2" class="align-middle table-dark">Nilai Huruf</th>
+                                        </tr>
+                                        <tr>
+                                            <th>Pemb.</th>
+                                            <th>Peng. 1</th>
+                                            <th>Peng. 2</th>
+                                            <th class="bg-light fw-bold">Rata</th>
+                                            <th>Pemb.</th>
+                                            <th>Peng. 1</th>
+                                            <th>Peng. 2</th>
+                                            <th class="bg-light fw-bold">Rata</th>
+                                            <th>Pemb.</th>
+                                            <th>Peng. 1</th>
+                                            <th>Peng. 2</th>
+                                            <th class="bg-light fw-bold">Rata</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td id="prevPropPem">-</td>
+                                            <td id="prevPropP1">-</td>
+                                            <td id="prevPropP2">-</td>
+                                            <td id="prevPropRata" class="fw-bold bg-light">-</td>
+                                            <td id="prevPubPem">-</td>
+                                            <td id="prevPubP1">-</td>
+                                            <td id="prevPubP2">-</td>
+                                            <td id="prevPubRata" class="fw-bold bg-light">-</td>
+                                            <td id="prevUjianPem">-</td>
+                                            <td id="prevUjianP1">-</td>
+                                            <td id="prevUjianP2">-</td>
+                                            <td id="prevUjianRata" class="fw-bold bg-light">-</td>
+                                            <td id="prevNilaiAkhir" class="fw-bold text-primary fs-6 bg-light">-</td>
+                                            <td id="prevNilaiHuruf" class="fw-bold text-success fs-6 bg-light">-</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div id="loadingOverlay" 
                     style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
                             background:rgba(255,255,255,0.8); z-index:2000; 

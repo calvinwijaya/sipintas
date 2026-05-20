@@ -303,4 +303,85 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("btnModalOk").addEventListener("click", () => {
         document.getElementById("notifyModal").classList.add("hidden");
         });        
+
+    // =========================================================================
+    // FITUR PREVIU NILAI TESIS KESELURUHAN (PROPOSAL, PUBLIKASI, & UJIAN AKHIR)
+    // =========================================================================
+    const btnLoadPreviuNilaiTesis = document.getElementById("btnLoadPreviuNilaiTesis");
+    
+    if (btnLoadPreviuNilaiTesis) {
+        btnLoadPreviuNilaiTesis.addEventListener("click", async () => {
+            const nim = new URLSearchParams(window.location.search).get("nim");
+            if (!nim) {
+                Swal.fire("Error", "NIM tidak ditemukan di URL.", "error");
+                return;
+            }
+
+            // Ubah teks indikator pada overlay loading
+            const loadingTextEl = document.getElementById("loadingText");
+            if (loadingTextEl) loadingTextEl.innerText = "Mengambil previu nilai tesis dari sistem...";
+            loadingOverlay.style.display = "flex";
+
+            const SHEET_ID = "1lg2tfyzMX99Ib-b5gZ31dGnHHqLHDpElQO22VMVaPbs";
+            const API_KEY = "AIzaSyA3Pgj8HMdb4ak9jToAiTQV0XFdmgvoYPI";
+            const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Sheet1?key=${API_KEY}`;
+
+            try {
+                const res = await fetch(url);
+                const data = await res.json();
+                const rows = data.values || [];
+
+                // Cari baris mahasiswa berdasarkan NIM di Kolom D (index 3)
+                const row = rows.find(r => r[3] && r[3].toString().trim() === nim.toString().trim());
+
+                if (!row) {
+                    Swal.fire("Info", "Data untuk NIM ini belum tersedia di database utama tesis.", "info");
+                    return;
+                }
+
+                // --- 1. Pemetaan Nilai Seminar Proposal ---
+                document.getElementById("prevPropPem").textContent  = row[32] || "-"; // Kolom AG (indeks 32)
+                document.getElementById("prevPropP1").textContent   = row[44] || "-"; // Kolom AS (indeks 44)
+                document.getElementById("prevPropP2").textContent   = row[56] || "-"; // Kolom BE (indeks 56)
+                document.getElementById("prevPropRata").textContent = row[57] || "-"; // Kolom BF (indeks 57)
+
+                // --- 2. Pemetaan Nilai Publikasi ---
+                document.getElementById("prevPubPem").textContent   = row[70] || "-"; // Kolom BS (indeks 70)
+                document.getElementById("prevPubP1").textContent    = row[82] || "-"; // Kolom CE (indeks 82)
+                document.getElementById("prevPubP2").textContent    = row[94] || "-"; // Kolom CQ (indeks 94)
+                document.getElementById("prevPubRata").textContent  = row[95] || "-"; // Kolom CR (indeks 95)
+
+                // --- 3. Pemetaan Nilai Ujian Akhir Tesis ---
+                document.getElementById("prevUjianPem").textContent  = row[107] || "-"; // Kolom DD (indeks 107)
+                document.getElementById("prevUjianP1").textContent   = row[118] || "-"; // Kolom DO (indeks 118)
+                document.getElementById("prevUjianP2").textContent   = row[129] || "-"; // Kolom DZ (indeks 129)
+                document.getElementById("prevUjianRata").textContent = row[130] || "-"; // Kolom EA (indeks 130)
+
+                // --- 4. Pemetaan Nilai Akhir Total & Huruf ---
+                document.getElementById("prevNilaiAkhir").textContent = row[131] || "-";  // Kolom EB (indeks 131)
+                document.getElementById("prevNilaiHuruf").textContent = row[132] || "-"; // Kolom EC (indeks 132)
+
+                // Buka Collapsible Menu otomatis jika data berhasil terisi
+                const collapseEl = document.getElementById("collapsePreviuNilaiTesis");
+                if (collapseEl) {
+                    const bsCollapse = bootstrap.Collapse.getInstance(collapseEl) || new bootstrap.Collapse(collapseEl, { toggle: false });
+                    bsCollapse.show();
+                }
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Previu Tesis Dimuat',
+                    text: 'Data rekapitulasi nilai berhasil diperbarui.',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+
+            } catch (err) {
+                console.error(err);
+                Swal.fire("Error", "Gagal menarik rekap data dari database server.", "error");
+            } finally {
+                loadingOverlay.style.display = "none";
+            }
+        });
+    }
 });
