@@ -1,16 +1,65 @@
+// Fungsi untuk memuat Tim Penguji dari Spreadsheet Master Skripsi secara otomatis
+async function loadTimPengujiOtomatis() {
+    const params = new URLSearchParams(window.location.search);
+    const nim = params.get("nim");
+    
+    if (!nim) return;
+
+    // ID Spreadsheet Master Penilaian Skripsi
+    const SHEET_ID = "1THmInPem3cxfB1kJJifuC4C1MMi4cPH3zlFN20grBJA";
+    const API_KEY = "AIzaSyA3Pgj8HMdb4ak9jToAiTQV0XFdmgvoYPI"; 
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Sheet1?key=${API_KEY}`;
+
+    try {
+        const res = await fetch(url);
+        const data = await res.json();
+        const rows = data.values || [];
+
+        // Cari baris yang mengandung NIM
+        const row = rows.find(r => r.includes(nim));
+
+        if (row) {
+            // Tarik kode dosen dari Kolom L (11), M (12), dan N (13)
+            // Di Skripsi, Kolom L biasanya adalah Pembimbing/Ketua Sidang
+            const kodePembimbing = (row[11] || "").trim();
+            const kodePenguji1 = (row[12] || "").trim();
+            const kodePenguji2 = (row[13] || "").trim();
+
+            // Petakan ke nama lengkap menggunakan DOSEN_MAP
+            const namaPembimbing = DOSEN_MAP[kodePembimbing] || kodePembimbing || "-";
+            const namaPenguji1 = DOSEN_MAP[kodePenguji1] || kodePenguji1 || "-";
+            const namaPenguji2 = DOSEN_MAP[kodePenguji2] || kodePenguji2 || "-";
+
+            // Masukkan ke elemen DOM
+            const elPembimbing = document.getElementById("pembimbingskripsi");
+            const elPenguji1 = document.getElementById("penguji1");
+            const elPenguji2 = document.getElementById("penguji2");
+
+            if (elPembimbing) elPembimbing.textContent = namaPembimbing;
+            if (elPenguji1) elPenguji1.textContent = namaPenguji1;
+            if (elPenguji2) elPenguji2.textContent = namaPenguji2;
+        }
+    } catch (err) {
+        console.error("Gagal memuat tim penguji otomatis:", err);
+    }
+}
+
 document.addEventListener("DOMContentLoaded", function () {
     const hasilRadios = document.querySelectorAll('input[name="hasil"]');
 
     hasilRadios.forEach(radio => {
         radio.addEventListener("change", function () {
-        // Remove highlight from all
-        hasilRadios.forEach(r => r.parentElement.classList.remove("result-selected"));
-        // Add highlight to the selected one
-        if (this.checked) {
-            this.parentElement.classList.add("result-selected");
-        }
+            // Remove highlight from all
+            hasilRadios.forEach(r => r.parentElement.classList.remove("result-selected"));
+            // Add highlight to the selected one
+            if (this.checked) {
+                this.parentElement.classList.add("result-selected");
+            }
         });
     });
+
+    // Jalankan fungsi fetch tim penguji saat halaman selesai dimuat
+    loadTimPengujiOtomatis();
 });
 
 // Function to collect all form/page data
@@ -21,11 +70,12 @@ function collectBeritaAcaraData() {
     const params = new URLSearchParams(window.location.search);
     data["Nama"] = params.get("nama") || "";
     data["NIM"] = params.get("nim") || "";
-    data["Pembimbing"] = params.get("pembimbing") || "";
+    data["Pembimbing"] = params.get("pembimbing") || ""; // Menyimpan string nama pembimbing bawaan (jika perlu)
     data["JudulSkripsi"] = params.get("judulskripsi") || "";
 
     // From DOM
     data["Hari"] = document.getElementById("hari").textContent || "";
+    
     // Format tanggal from YYYY-MM-DD → DD Month YYYY (Indonesian)
     const rawDate = document.getElementById("tanggal").value || "";
     if (rawDate) {
@@ -46,6 +96,7 @@ function collectBeritaAcaraData() {
         data["Tanggal"] = "";
         data["TanggalRevisi"] = "";
     }
+    
     data["JamAwal"] = document.getElementById("jamAwal").value || "";
     data["JamAkhir"] = document.getElementById("jamAkhir").value || "";
     data["Ruang"] = document.getElementById("tempat").value || "";
@@ -64,7 +115,7 @@ function collectBeritaAcaraData() {
 
     data["Rerata"] = document.getElementById("nilaiRekap").textContent || "";
 
-    // Names of examiners
+    // Names of examiners (ditarik dari hasil fetch yang sudah dipetakan ke DOSEN_MAP)
     data["NamaPembimbing"] = document.getElementById("pembimbingskripsi").textContent || "";
     data["NamaPenguji1"] = document.getElementById("penguji1").textContent || "";
     data["NamaPenguji2"] = document.getElementById("penguji2").textContent || "";
