@@ -40,7 +40,7 @@ async function loadUjianSkripsiData() {
 
             const judulskripsi = r[10] || "";
             const linkGoogleDriveSkripsi = r[14] || "";
-            const ketua = r[96] || ""; const penguji1 = r[97] || ""; const penguji2 = r[98] || "";
+            const ketua = r[97] || ""; const penguji1 = r[98] || ""; const penguji2 = r[99] || "";
 
             let role = null; let colCheck = null;
             if (ketua.toLowerCase() === currentEmail) { role = "ketuaSidang"; colCheck = 48; } 
