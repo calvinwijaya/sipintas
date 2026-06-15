@@ -36,7 +36,7 @@ async function loadProposalSkripsiData() {
 
             const COL_LINK = 9; 
             const linkGoogleDriveProposal = r[COL_LINK] || "";
-            const ketua = r[94] || ""; const penguji1 = r[95] || ""; const penguji2 = r[96] || "";
+            const ketua = r[93] || ""; const penguji1 = r[94] || ""; const penguji2 = r[95] || "";
 
             let role = null; let colCheck = null;
             if (ketua.toLowerCase() === currentEmail) { role = "ketuaSidang"; colCheck = 18; } 
