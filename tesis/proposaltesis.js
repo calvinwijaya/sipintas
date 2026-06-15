@@ -1,4 +1,4 @@
-const PROPOSAL_ADMIN_EMAILS = ["afiat@ugm.ac.id", "calvin.wijaya@mail.ugm.ac.id"];
+const PROPOSAL_ADMIN_EMAILS = ["afiat@ugm.ac.id"];
 
 async function loadProposalData() {
     const user = JSON.parse(sessionStorage.getItem("user"));
