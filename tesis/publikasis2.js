@@ -67,20 +67,26 @@ async function loadPublikasiS2Data() {
 
             // Logika pengecekan apakah sudah dinilai            
             let hasBeenAssessed = false;
-            if (colCheck !== null) {
-                hasBeenAssessed = !!r[colCheck]; 
-            }
+            let customStatusText = null; 
 
             if (role === "admin") {
                 const sudahKetua   = !!r[60];
                 const sudahPenguji1 = !!r[72];
                 const sudahPenguji2 = !!r[84];
                 
-                // Admin dianggap "Sudah Dinilai" jika Ketua sudah mengisi
-                hasBeenAssessed = sudahKetua; 
+                // Admin: TRUE jika ketiganya sudah menilai
+                hasBeenAssessed = (sudahKetua && sudahPenguji1 && sudahPenguji2); 
                 
-                // Opsional: Tambahkan info tambahan untuk Admin nantinya
+                // Jika belum komplit tapi ada yang mulai mengisi
+                if (!hasBeenAssessed && (sudahKetua || sudahPenguji1 || sudahPenguji2)) {
+                    customStatusText = "NILAI BELUM LENGKAP";
+                }
+
                 var statusDetailAdmin = `K:${sudahKetua?'✅':'❌'} P1:${sudahPenguji1?'✅':'❌'} P2:${sudahPenguji2?'✅':'❌'}`;
+            
+            } else if (colCheck !== null) {
+                // Untuk dosen biasa
+                hasBeenAssessed = !!r[colCheck]; 
             }
 
             const roleLabels = {
@@ -90,10 +96,20 @@ async function loadPublikasiS2Data() {
                 "admin": "Admin"
             };
 
-            // Tentukan warna dan teks berdasarkan status
-            const statusColor = hasBeenAssessed ? "#28a745" : "#dc3545"; 
-            const bgColor = hasBeenAssessed ? "#e8f5e9" : "#fff5f5";    
-            const statusText = hasBeenAssessed ? "SUDAH DINILAI" : "BELUM DINILAI";
+            // Tentukan warna berdasarkan status
+            let statusColor = "#dc3545"; // Merah
+            let bgColor = "#fff5f5";
+            let statusText = "BELUM DINILAI";
+
+            if (hasBeenAssessed) {
+                statusColor = "#28a745"; // Hijau
+                bgColor = "#e8f5e9";
+                statusText = "SUDAH DINILAI";
+            } else if (customStatusText) {
+                statusColor = "#fd7e14"; // Orange
+                bgColor = "#fff8e6";
+                statusText = customStatusText;
+            }
 
             hasVisibleCard = true;
             

@@ -1,4 +1,4 @@
-const PROPOSAL_ADMIN_EMAILS = ["afiat@ugm.ac.id"];
+const PROPOSAL_ADMIN_EMAILS = ["afiat@ugm.ac.id", "calvin.wijaya@mail.ugm.ac.id"];
 
 async function loadProposalData() {
     const user = JSON.parse(sessionStorage.getItem("user"));
@@ -68,20 +68,29 @@ async function loadProposalData() {
 
             // Logika pengecekan apakah sudah dinilai            
             let hasBeenAssessed = false;
-            if (colCheck !== null) {
-                hasBeenAssessed = !!r[colCheck]; 
-            }
+            
+            // Variabel untuk menyimpan status teks kustom agar lebih detail (khusus Admin)
+            let customStatusText = null; 
 
             if (role === "admin") {
                 const sudahKetua   = !!r[22];
                 const sudahPenguji1 = !!r[34];
                 const sudahPenguji2 = !!r[46];
                 
-                // Admin dianggap "Sudah Dinilai" jika Ketua sudah mengisi
-                hasBeenAssessed = sudahKetua; 
+                // Status Admin: TRUE HANYA JIKA ketiganya sudah menilai
+                hasBeenAssessed = (sudahKetua && sudahPenguji1 && sudahPenguji2); 
                 
-                // Opsional: Tambahkan info tambahan untuk Admin nantinya
+                // Jika belum lengkap, tapi sudah ada minimal 1 yang menilai, ubah teksnya
+                if (!hasBeenAssessed && (sudahKetua || sudahPenguji1 || sudahPenguji2)) {
+                    customStatusText = "NILAI BELUM LENGKAP";
+                }
+
+                // Info detail checkbox untuk Admin
                 var statusDetailAdmin = `K:${sudahKetua?'✅':'❌'} P1:${sudahPenguji1?'✅':'❌'} P2:${sudahPenguji2?'✅':'❌'}`;
+            
+            } else if (colCheck !== null) {
+                // Untuk dosen biasa, cek kolom miliknya sendiri
+                hasBeenAssessed = !!r[colCheck]; 
             }
 
             const roleLabels = {
@@ -91,10 +100,24 @@ async function loadProposalData() {
                 "admin": "Admin"
             };
 
-            // Tentukan warna dan teks berdasarkan status
-            const statusColor = hasBeenAssessed ? "#28a745" : "#dc3545"; 
-            const bgColor = hasBeenAssessed ? "#e8f5e9" : "#fff5f5";    
-            const statusText = hasBeenAssessed ? "SUDAH DINILAI" : "BELUM DINILAI";
+            // Tentukan warna berdasarkan status
+            // Jika 'hasBeenAssessed' = true -> Hijau
+            // Jika customStatusText ada nilainya ("NILAI BELUM LENGKAP") -> Kuning/Orange (opsional)
+            // Jika tidak keduanya -> Merah (BELUM DINILAI sama sekali)
+            
+            let statusColor = "#dc3545"; // Default Merah
+            let bgColor = "#fff5f5";
+            let statusText = "BELUM DINILAI";
+
+            if (hasBeenAssessed) {
+                statusColor = "#28a745"; // Hijau
+                bgColor = "#e8f5e9";
+                statusText = "SUDAH DINILAI";
+            } else if (customStatusText) {
+                statusColor = "#fd7e14"; // Orange agar terlihat "Sedang proses"
+                bgColor = "#fff8e6";
+                statusText = customStatusText; // "NILAI BELUM LENGKAP"
+            }
 
             hasVisibleCard = true;
 
